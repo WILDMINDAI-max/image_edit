@@ -255,12 +255,11 @@ export function ContextToolbar() {
     return (
         <div className="h-12 bg-[#F8F9FA] border-b border-gray-200 flex items-center px-4 gap-2">
             {/* Element Info */}
-            {/* tirth */}
             <div className="flex items-center gap-2 pr-4 border-r border-gray-200">
                 <span className="text-gray-800 text-sm font-medium">
                     {selectedElements.length === 1
-                        ? element?.name || 'Unnamed.'
-                        : `${selectedElements.length} elements selected. `}
+                        ? element?.name || 'Unnamed'
+                        : `${selectedElements.length} elements selected`}
                 </span>
             </div>
 
@@ -375,7 +374,7 @@ export function ContextToolbar() {
                             title="Strikethrough"
                         >
 
-
+                            
                             <Strikethrough size={14} />
                         </button>
                         <button
