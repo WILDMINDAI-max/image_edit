@@ -337,53 +337,53 @@ export function ContextToolbar() {
                     <div className="flex items-center gap-0.5">
                         <button
                             onClick={toggleBold}
-                            className={`p-2 rounded transition-all ${textElement.textStyle.fontWeight === 'bold' || textElement.textStyle.fontWeight === 700
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.fontWeight === 'bold' || textElement.textStyle.fontWeight === 700
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                                 }`}
                             title="Bold"
                         >
-                            <Bold size={16} />
+                            <Bold size={14} />
                         </button>
                         <button
                             onClick={toggleItalic}
-                            className={`p-2 rounded transition-all ${textElement.textStyle.fontStyle === 'italic'
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.fontStyle === 'italic'
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                                 }`}
                             title="Italic"
                         >
-                            <Italic size={16} />
+                            <Italic size={14} />
                         </button>
                         <button
                             onClick={toggleUnderline}
-                            className={`p-2 rounded transition-all ${textElement.textStyle.textDecoration === 'underline'
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textDecoration === 'underline'
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                                 }`}
                             title="Underline"
                         >
-                            <Underline size={16} />
+                            <Underline size={14} />
                         </button>
                         <button
                             onClick={toggleStrikethrough}
-                            className={`p-2 rounded transition-all ${textElement.textStyle.textDecoration === 'line-through'
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textDecoration === 'line-through'
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                                 }`}
                             title="Strikethrough"
                         >
-                            <Strikethrough size={16} />
+                            <Strikethrough size={14} />
                         </button>
                         <button
                             onClick={toggleUppercase}
-                            className={`p-2 rounded transition-all ${textElement.textStyle.textTransform === 'uppercase'
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textTransform === 'uppercase'
                                 ? 'bg-blue-100 text-blue-600'
                                 : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                                 }`}
                             title="Uppercase"
                         >
-                            <CaseSensitive size={16} />
+                            <CaseSensitive size={14} />
                         </button>
                     </div>
 
@@ -397,13 +397,13 @@ export function ContextToolbar() {
                             const nextIndex = (currentIndex + 1) % alignments.length;
                             setAlignment(alignments[nextIndex]);
                         }}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                         title={`Align ${textElement.textStyle.textAlign} (click to change)`}
                     >
-                        {textElement.textStyle.textAlign === 'left' && <AlignLeft size={16} />}
-                        {textElement.textStyle.textAlign === 'center' && <AlignCenter size={16} />}
-                        {textElement.textStyle.textAlign === 'right' && <AlignRight size={16} />}
-                        {!['left', 'center', 'right'].includes(textElement.textStyle.textAlign) && <AlignLeft size={16} />}
+                        {textElement.textStyle.textAlign === 'left' && <AlignLeft size={14} />}
+                        {textElement.textStyle.textAlign === 'center' && <AlignCenter size={14} />}
+                        {textElement.textStyle.textAlign === 'right' && <AlignRight size={14} />}
+                        {!['left', 'center', 'right'].includes(textElement.textStyle.textAlign) && <AlignLeft size={14} />}
                     </button>
 
                     <div className="w-px h-6 bg-gray-200" />
@@ -416,13 +416,13 @@ export function ContextToolbar() {
                             const nextIndex = (currentIndex + 1) % types.length;
                             setListType(types[nextIndex]);
                         }}
-                        className={`p-2 rounded transition-all ${listType !== 'none'
+                        className={`p-1.5 rounded transition-all ${listType !== 'none'
                             ? 'bg-blue-100 text-blue-600'
                             : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                             }`}
                         title={listType === 'none' ? 'No list' : listType === 'bullet' ? 'Bullet list' : 'Numbered list'}
                     >
-                        {listType === 'numbered' ? <ListOrdered size={16} /> : <List size={16} />}
+                        {listType === 'numbered' ? <ListOrdered size={14} /> : <List size={14} />}
                     </button>
 
                     <div className="w-px h-6 bg-gray-200" />
