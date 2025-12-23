@@ -1,10 +1,10 @@
 'use client';
 
-import { useMemo, useState, useRef } from 'react';
+import { useMemo, useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { SolidBackground } from '@/types/project';
-import { ImageElement, TextElement } from '@/types/canvas';
+import { CanvasElement, ImageElement, TextElement } from '@/types/canvas';
 import { COLOR_PALETTE, applyColorReplacement } from '@/utils/colorReplace';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { fabric } from 'fabric';
@@ -24,14 +24,19 @@ import {
     Underline,
     Strikethrough,
     CaseSensitive,
-    AlignLeft,
-    AlignCenter,
-    AlignRight,
+    AlignHorizontalJustifyStart,
+    AlignHorizontalJustifyCenter,
+    AlignHorizontalJustifyEnd,
+    AlignVerticalJustifyStart,
+    AlignVerticalJustifyCenter,
+    AlignVerticalJustifyEnd,
     List,
     ListOrdered,
     Minus,
     Plus,
     Palette,
+    ChevronDown,
+    Sparkles,
 } from 'lucide-react';
 
 export function ContextToolbar() {
@@ -50,11 +55,33 @@ export function ContextToolbar() {
 
     const activePage = useActivePage();
     const updatePage = useEditorStore((state) => state.updatePage);
+    const setRightPanel = useEditorStore((state) => state.setRightPanel);
     const openColorsPanel = useEditorStore((state) => state.openColorsPanel);
     const openFiltersPanel = useEditorStore((state) => state.openFiltersPanel);
 
     // List type state for text elements
     const [listType, setListType] = useState<'none' | 'bullet' | 'numbered'>('none');
+
+    // Alignment popup state
+    const [showAlignPopup, setShowAlignPopup] = useState(false);
+    const alignPopupRef = useRef<HTMLDivElement>(null);
+
+    // Close popup when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (alignPopupRef.current && !alignPopupRef.current.contains(event.target as Node)) {
+                setShowAlignPopup(false);
+            }
+        };
+
+        if (showAlignPopup) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, [showAlignPopup]);
 
     // Get current background color
     const currentBgColor = useMemo(() => {
@@ -135,10 +162,13 @@ export function ContextToolbar() {
         }
     };
 
-    // Derive selected elements from IDs - only recompute when selectedIds change
+    // Derive selected elements from IDs - recompute when elements change
     const selectedElements = useMemo(() => {
-        return selectedIds.map(id => getElement(id)).filter(Boolean);
-    }, [selectedIds, getElement]);
+        if (!activePage) return [];
+        return selectedIds
+            .map(id => activePage.elements.find(el => el.id === id))
+            .filter(Boolean) as CanvasElement[];
+    }, [selectedIds, activePage?.elements]);
 
     // Flip handlers
     const handleFlipHorizontal = () => {
@@ -197,45 +227,142 @@ export function ContextToolbar() {
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, fontSize: newSize }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ fontSize: newSize });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ fontSize: newSize });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const toggleBold = () => {
         if (!textElement) return;
         const isBold = textElement.textStyle.fontWeight === 'bold' || textElement.textStyle.fontWeight === 700;
+        const newWeight = isBold ? 'normal' : 'bold';
         updateElement(textElement.id, {
-            textStyle: { ...textElement.textStyle, fontWeight: isBold ? 'normal' : 'bold' }
+            textStyle: { ...textElement.textStyle, fontWeight: newWeight }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ fontWeight: newWeight });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ fontWeight: newWeight });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const toggleItalic = () => {
         if (!textElement) return;
+        const newStyle = textElement.textStyle.fontStyle === 'italic' ? 'normal' : 'italic';
         updateElement(textElement.id, {
-            textStyle: { ...textElement.textStyle, fontStyle: textElement.textStyle.fontStyle === 'italic' ? 'normal' : 'italic' }
+            textStyle: { ...textElement.textStyle, fontStyle: newStyle }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ fontStyle: newStyle });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ fontStyle: newStyle });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const toggleUnderline = () => {
         if (!textElement) return;
         const isUnderline = textElement.textStyle.textDecoration === 'underline';
+        const newDecoration = isUnderline ? 'none' : 'underline';
         updateElement(textElement.id, {
-            textStyle: { ...textElement.textStyle, textDecoration: isUnderline ? 'none' : 'underline' }
+            textStyle: { ...textElement.textStyle, textDecoration: newDecoration }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ textDecoration: newDecoration });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ underline: newDecoration === 'underline', linethrough: false });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const toggleStrikethrough = () => {
         if (!textElement) return;
         const isStrikethrough = textElement.textStyle.textDecoration === 'line-through';
+        const newDecoration = isStrikethrough ? 'none' : 'line-through';
         updateElement(textElement.id, {
-            textStyle: { ...textElement.textStyle, textDecoration: isStrikethrough ? 'none' : 'line-through' }
+            textStyle: { ...textElement.textStyle, textDecoration: newDecoration }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ textDecoration: newDecoration });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ linethrough: newDecoration === 'line-through', underline: false });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const toggleUppercase = () => {
         if (!textElement) return;
         const isUppercase = textElement.textStyle.textTransform === 'uppercase';
+        const newTransform = isUppercase ? 'none' : 'uppercase';
+
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+
+        if (fabricObj && fabricObj.type === 'i-text') {
+            const currentText = (fabricObj as any).text;
+            // When turning on uppercase, convert current text to uppercase
+            // When turning off, convert current text to lowercase (preserving user edits)
+            const newText = newTransform === 'uppercase'
+                ? currentText.toUpperCase()
+                : currentText.toLowerCase();
+
+            (fabricObj as any).set({ text: newText });
+            fabricCanvas.getCanvas()?.renderAll();
+
+            // Also update the store with the new content
+            updateElement(textElement.id, {
+                content: newText,
+                textStyle: { ...textElement.textStyle, textTransform: newTransform }
+            } as Partial<TextElement>);
+        } else {
+            // Fallback if no fabric object
+            updateElement(textElement.id, {
+                textStyle: { ...textElement.textStyle, textTransform: newTransform }
+            } as Partial<TextElement>);
+        }
+    };
+
+    const handleLetterSpacingChange = (delta: number) => {
+        if (!textElement) return;
+        const currentSpacing = textElement.textStyle.letterSpacing || 0;
+        const newSpacing = Math.max(-5, Math.min(20, currentSpacing + delta));
         updateElement(textElement.id, {
-            textStyle: { ...textElement.textStyle, textTransform: isUppercase ? 'none' : 'uppercase' }
+            textStyle: { ...textElement.textStyle, letterSpacing: newSpacing }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas (charSpacing is in 1/1000 em)
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ letterSpacing: newSpacing });
+        } else if (fabricObj) {
+            (fabricObj as any).set({ charSpacing: newSpacing * 100 });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const setAlignment = (align: 'left' | 'center' | 'right') => {
@@ -243,6 +370,17 @@ export function ContextToolbar() {
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, textAlign: align }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj && 'updateTextStyle' in fabricObj) {
+            (fabricObj as any).updateTextStyle({ textAlign: align });
+        } else if (fabricObj) {
+            // Fallback for regular fabric.IText
+            (fabricObj as any).set({ textAlign: align });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
     };
 
     const handleTextColorChange = (color: string) => {
@@ -250,6 +388,124 @@ export function ContextToolbar() {
         updateElement(textElement.id, {
             style: { ...textElement.style, fill: color }
         } as Partial<TextElement>);
+
+        // Sync to Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObj) {
+            (fabricObj as any).set({ fill: color });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
+    };
+
+    // Handle list type change
+    const handleListTypeChange = () => {
+        if (!textElement) return;
+
+        const types: ('none' | 'bullet' | 'numbered')[] = ['none', 'bullet', 'numbered'];
+        const currentIndex = types.indexOf(listType);
+        const nextIndex = (currentIndex + 1) % types.length;
+        const newListType = types[nextIndex];
+        setListType(newListType);
+
+        // Apply list formatting to the text content
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(textElement.id);
+
+        if (fabricObj && fabricObj.type === 'i-text') {
+            const currentText = (fabricObj as any).text as string;
+            const lines = currentText.split('\n');
+
+            let newText: string;
+            if (newListType === 'bullet') {
+                // Add bullet points
+                newText = lines.map(line => {
+                    const cleanLine = line.replace(/^(\d+\.\s*|•\s*)/, '').trim();
+                    return cleanLine ? `• ${cleanLine}` : cleanLine;
+                }).join('\n');
+            } else if (newListType === 'numbered') {
+                // Add numbers
+                let num = 1;
+                newText = lines.map(line => {
+                    const cleanLine = line.replace(/^(\d+\.\s*|•\s*)/, '').trim();
+                    return cleanLine ? `${num++}. ${cleanLine}` : cleanLine;
+                }).join('\n');
+            } else {
+                // Remove list formatting
+                newText = lines.map(line => line.replace(/^(\d+\.\s*|•\s*)/, '').trim()).join('\n');
+            }
+
+            (fabricObj as any).set({ text: newText });
+            fabricCanvas.getCanvas()?.renderAll();
+
+            // Update store
+            updateElement(textElement.id, {
+                content: newText
+            } as Partial<TextElement>);
+        }
+    };
+
+    // Get canvas dimensions
+    const canvasWidth = activePage?.width || 1080;
+    const canvasHeight = activePage?.height || 1080;
+
+    // Get element bounds for positioning (actual visual size, not bounding rect)
+    const getElementBounds = () => {
+        if (!textElement) return { width: 0, height: 0 };
+        const fabricCanvas = getFabricCanvas();
+        const fabricObject = fabricCanvas.getObjectById(textElement.id);
+        if (fabricObject) {
+            // Use actual scaled dimensions, not bounding rect which includes control padding
+            const scaleX = fabricObject.scaleX || 1;
+            const scaleY = fabricObject.scaleY || 1;
+            const objWidth = (fabricObject.width || 0) * scaleX;
+            const objHeight = (fabricObject.height || 0) * scaleY;
+            return { width: objWidth, height: objHeight };
+        }
+        const width = textElement.transform.width * Math.abs(textElement.transform.scaleX);
+        const height = textElement.transform.height * Math.abs(textElement.transform.scaleY);
+        return { width, height };
+    };
+
+    // Position alignment handlers (like sidebar)
+    const handlePositionAlignLeft = () => {
+        if (!textElement) return;
+        const { width } = getElementBounds();
+        updateTransform(textElement.id, { x: width / 2 });
+        setShowAlignPopup(false);
+    };
+
+    const handlePositionAlignCenter = () => {
+        if (!textElement) return;
+        updateTransform(textElement.id, { x: canvasWidth / 2 });
+        setShowAlignPopup(false);
+    };
+
+    const handlePositionAlignRight = () => {
+        if (!textElement) return;
+        const { width } = getElementBounds();
+        updateTransform(textElement.id, { x: canvasWidth - width / 2 });
+        setShowAlignPopup(false);
+    };
+
+    const handlePositionAlignTop = () => {
+        if (!textElement) return;
+        const { height } = getElementBounds();
+        updateTransform(textElement.id, { y: height / 2 });
+        setShowAlignPopup(false);
+    };
+
+    const handlePositionAlignMiddle = () => {
+        if (!textElement) return;
+        updateTransform(textElement.id, { y: canvasHeight / 2 });
+        setShowAlignPopup(false);
+    };
+
+    const handlePositionAlignBottom = () => {
+        if (!textElement) return;
+        const { height } = getElementBounds();
+        updateTransform(textElement.id, { y: canvasHeight - height / 2 });
+        setShowAlignPopup(false);
     };
 
     return (
@@ -310,24 +566,37 @@ export function ContextToolbar() {
             {/* Text Formatting Options */}
             {isText && textElement && (
                 <>
+                    {/* Font Family Button */}
+                    <button
+                        onClick={() => setRightPanel('fonts')}
+                        className="flex items-center gap-1 px-2 py-1 text-sm text-gray-700 hover:bg-gray-100 rounded-md transition-colors border border-gray-200"
+                        style={{ fontFamily: textElement.textStyle.fontFamily }}
+                        title="Change font"
+                    >
+                        <span className="max-w-[100px] truncate">{textElement.textStyle.fontFamily}</span>
+                        <ChevronDown size={12} className="text-gray-400" />
+                    </button>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
                     {/* Font Size */}
-                    <div className="flex items-center gap-1 px-2">
+                    <div className="flex items-center gap-0.5 px-1">
                         <button
                             onClick={() => handleFontSizeChange(-2)}
-                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                            className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Decrease font size"
                         >
-                            <Minus size={14} />
+                            <Minus size={12} />
                         </button>
-                        <span className="text-sm font-medium text-gray-700 w-8 text-center">
+                        <span className="text-xs font-medium text-gray-700 w-6 text-center">
                             {textElement.textStyle.fontSize}
                         </span>
                         <button
                             onClick={() => handleFontSizeChange(2)}
-                            className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                            className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Increase font size"
                         >
-                            <Plus size={14} />
+                            <Plus size={12} />
                         </button>
                     </div>
 
@@ -374,7 +643,7 @@ export function ContextToolbar() {
                             title="Strikethrough"
                         >
 
-                            
+
                             <Strikethrough size={14} />
                         </button>
                         <button
@@ -391,40 +660,117 @@ export function ContextToolbar() {
 
                     <div className="w-px h-6 bg-gray-200" />
 
-                    {/* Alignment - Single button that cycles through options */}
-                    <button
-                        onClick={() => {
-                            const alignments: ('left' | 'center' | 'right')[] = ['left', 'center', 'right'];
-                            const currentIndex = alignments.indexOf(textElement.textStyle.textAlign as 'left' | 'center' | 'right');
-                            const nextIndex = (currentIndex + 1) % alignments.length;
-                            setAlignment(alignments[nextIndex]);
-                        }}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
-                        title={`Align ${textElement.textStyle.textAlign} (click to change)`}
-                    >
-                        {textElement.textStyle.textAlign === 'left' && <AlignLeft size={14} />}
-                        {textElement.textStyle.textAlign === 'center' && <AlignCenter size={14} />}
-                        {textElement.textStyle.textAlign === 'right' && <AlignRight size={14} />}
-                        {!['left', 'center', 'right'].includes(textElement.textStyle.textAlign) && <AlignLeft size={14} />}
-                    </button>
+                    {/* Letter Spacing */}
+                    <div className="flex items-center gap-0.5 px-1">
+                        <button
+                            onClick={() => handleLetterSpacingChange(-0.5)}
+                            className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                            title="Decrease letter spacing"
+                        >
+                            <Minus size={10} />
+                        </button>
+                        <div
+                            className="flex items-center justify-center px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono text-gray-600 min-w-[32px]"
+                            title={`Letter spacing: ${textElement.textStyle.letterSpacing || 0}`}
+                        >
+                            <span className="font-medium">
+                                {(textElement.textStyle.letterSpacing || 0).toFixed(1)}
+                            </span>
+                        </div>
+                        <button
+                            onClick={() => handleLetterSpacingChange(0.5)}
+                            className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                            title="Increase letter spacing"
+                        >
+                            <Plus size={10} />
+                        </button>
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Alignment - Button with popup for all options */}
+                    <div className="relative" ref={alignPopupRef}>
+                        <button
+                            onClick={() => setShowAlignPopup(!showAlignPopup)}
+                            className={`p-1 rounded transition-all flex items-center gap-0.5 ${showAlignPopup
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align element"
+                        >
+                            <AlignHorizontalJustifyCenter size={12} />
+                            <ChevronDown size={10} />
+                        </button>
+
+                        {/* Alignment Popup */}
+                        {showAlignPopup && (
+                            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50">
+                                <div className="grid grid-cols-6 gap-1 min-w-[200px]">
+                                    <button
+                                        onClick={handlePositionAlignLeft}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Left"
+                                    >
+                                        <AlignHorizontalJustifyStart size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Left</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignCenter}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Center"
+                                    >
+                                        <AlignHorizontalJustifyCenter size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Center</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignRight}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Right"
+                                    >
+                                        <AlignHorizontalJustifyEnd size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Right</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignTop}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Top"
+                                    >
+                                        <AlignVerticalJustifyStart size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Top</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignMiddle}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Middle"
+                                    >
+                                        <AlignVerticalJustifyCenter size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Middle</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignBottom}
+                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        title="Align Bottom"
+                                    >
+                                        <AlignVerticalJustifyEnd size={14} />
+                                        <span className="text-[9px] mt-1 font-medium">Bottom</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
 
                     <div className="w-px h-6 bg-gray-200" />
 
                     {/* List - Single button that cycles through options */}
                     <button
-                        onClick={() => {
-                            const types: ('none' | 'bullet' | 'numbered')[] = ['none', 'bullet', 'numbered'];
-                            const currentIndex = types.indexOf(listType);
-                            const nextIndex = (currentIndex + 1) % types.length;
-                            setListType(types[nextIndex]);
-                        }}
-                        className={`p-1.5 rounded transition-all ${listType !== 'none'
+                        onClick={handleListTypeChange}
+                        className={`p-1 rounded transition-all ${listType !== 'none'
                             ? 'bg-blue-100 text-blue-600'
                             : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
                             }`}
                         title={listType === 'none' ? 'No list' : listType === 'bullet' ? 'Bullet list' : 'Numbered list'}
                     >
-                        {listType === 'numbered' ? <ListOrdered size={14} /> : <List size={14} />}
+                        {listType === 'numbered' ? <ListOrdered size={12} /> : <List size={12} />}
                     </button>
 
                     <div className="w-px h-6 bg-gray-200" />
@@ -435,19 +781,32 @@ export function ContextToolbar() {
                             type="color"
                             value={typeof textElement.style.fill === 'string' ? textElement.style.fill : '#000000'}
                             onChange={(e) => handleTextColorChange(e.target.value)}
-                            className="absolute inset-0 opacity-0 w-8 h-8 cursor-pointer"
+                            className="absolute inset-0 opacity-0 w-8 h-8 cursor-pointer z-10"
                             title="Text color"
                         />
                         <div
-                            className="w-7 h-7 rounded-lg border-2 border-gray-200 hover:border-blue-400 transition-all cursor-pointer flex items-center justify-center"
-                            style={{ backgroundColor: typeof textElement.style.fill === 'string' ? textElement.style.fill : '#000000' }}
+                            className="p-1 rounded hover:bg-blue-50 transition-all cursor-pointer flex flex-col items-center justify-center"
                             title="Text color"
                         >
-                            <span className="text-xs font-bold" style={{ color: typeof textElement.style.fill === 'string' && textElement.style.fill.toLowerCase() !== '#ffffff' && textElement.style.fill.toLowerCase() !== 'white' ? '#fff' : '#000' }}>A</span>
+                            <span className="text-sm font-bold text-gray-700 leading-none">A</span>
+                            <div
+                                className="w-4 h-1 rounded-sm mt-0.5"
+                                style={{ backgroundColor: typeof textElement.style.fill === 'string' ? textElement.style.fill : '#000000' }}
+                            />
                         </div>
                     </div>
 
                     <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Effects Button */}
+                    <button
+                        onClick={() => setRightPanel('textEffects')}
+                        className="p-1 rounded transition-all text-gray-500 hover:text-blue-600 hover:bg-blue-50 flex items-center gap-1"
+                        title="Text Effects"
+                    >
+                        <Sparkles size={12} />
+                        <span className="text-[10px] font-medium">Effects</span>
+                    </button>
                 </>
             )}
 

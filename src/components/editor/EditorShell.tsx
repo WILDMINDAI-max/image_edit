@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { useEditorStore } from '@/store/editorStore';
+import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { useHistoryStore } from '@/store/historyStore';
 import { useCanvasStore } from '@/store/canvasStore';
 import { CanvasStage } from '@/components/canvas/CanvasStage';
@@ -9,8 +9,12 @@ import { SidebarContainer } from '@/components/sidebar/SidebarContainer';
 import { TopToolbar } from '@/components/toolbar/TopToolbar';
 import { ContextToolbar } from '@/components/toolbar/ContextToolbar';
 import { ResizeModal } from './ResizeModal';
+import { ExportModal } from './ExportModal';
 import { ColorsPanel } from '@/components/sidebar/ColorsPanel';
 import { ImageEditPanel } from '@/components/sidebar/ImageEditPanel';
+import { TextEditPanel } from '@/components/sidebar/TextEditPanel';
+import { TextEffectsPanel } from '@/components/sidebar/TextEffectsPanel';
+import { FontsPanel } from '@/components/sidebar/FontsPanel';
 import { FilterPanel } from '@/components/sidebar/FilterPanel';
 import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, FileText, AlertCircle, MoreHorizontal, Plus, Copy, ClipboardPaste, CopyPlus, Trash2, EyeOff, Lock } from 'lucide-react';
 
@@ -19,6 +23,14 @@ export function EditorShell() {
     const project = useEditorStore((state) => state.project);
     const pushState = useHistoryStore((state) => state.pushState);
     const selectedIds = useCanvasStore((state) => state.selectedIds);
+    const activePage = useActivePage();
+    const elements = activePage?.elements ?? [];
+
+    // Determine selected element type
+    const selectedElement = selectedIds.length === 1
+        ? elements.find(el => el.id === selectedIds[0])
+        : null;
+    const selectedElementType = selectedElement?.type || null;
 
     // Right panel state from store
     const rightPanel = useEditorStore((state) => state.activeRightPanel);
@@ -292,6 +304,12 @@ export function EditorShell() {
                             <div className="w-80 bg-white border-l border-gray-200 h-full overflow-hidden">
                                 <FilterPanel />
                             </div>
+                        ) : rightPanel === 'textEffects' ? (
+                            <TextEffectsPanel onClose={() => setRightPanel(null)} />
+                        ) : rightPanel === 'fonts' ? (
+                            <FontsPanel onClose={() => setRightPanel(null)} />
+                        ) : selectedElementType === 'text' ? (
+                            <TextEditPanel />
                         ) : (
                             <ImageEditPanel />
                         )}
@@ -363,6 +381,7 @@ export function EditorShell() {
 
             {/* Modals */}
             <ResizeModal />
+            <ExportModal />
         </div>
     );
 }

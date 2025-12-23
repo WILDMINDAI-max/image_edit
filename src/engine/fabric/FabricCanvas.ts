@@ -4,6 +4,7 @@
 import { fabric } from 'fabric';
 import { CanvasElement, TextElement, ImageElement, ShapeElement } from '@/types/canvas';
 import { Page, PageBackground } from '@/types/project';
+import { CustomText } from './CustomText';
 
 export interface FabricCanvasOptions {
     width: number;
@@ -525,7 +526,8 @@ export class FabricCanvas {
     public addText(element: TextElement): fabric.IText {
         if (!this.canvas) throw new Error('Canvas not initialized');
 
-        const text = new fabric.IText(element.content, {
+        // Use CustomText for rich text effects support
+        const text = new CustomText(element.content, {
             left: element.transform.x,
             top: element.transform.y,
             width: element.transform.width,
@@ -550,6 +552,10 @@ export class FabricCanvas {
             lockMovementY: element.locked,
             visible: element.visible,
             data: { id: element.id, type: 'text' },
+            // CustomText specific properties
+            customId: element.id,
+            effect: element.effect,
+            textStyle: element.textStyle,
         });
 
         // Apply shadow if present

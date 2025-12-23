@@ -79,11 +79,61 @@ export interface TextStyle {
     textTransform: 'none' | 'uppercase' | 'lowercase' | 'capitalize';
 }
 
+export type TextEffectType =
+    | 'none'
+    | 'shadow'
+    | 'lift'
+    | 'hollow'
+    | 'splice'
+    | 'outline'
+    | 'echo'
+    | 'glitch'
+    | 'neon'
+    | 'background';
+
+// Shape effect types (can be combined with style effects)
+export type TextShapeType = 'none' | 'curved';
+
 export interface TextEffect {
-    type: 'none' | 'shadow' | 'outline' | 'glow' | 'neon' | 'lift';
-    color?: string;
-    blur?: number;
-    offset?: number;
+    type: TextEffectType; // Style effect type
+    shapeType?: TextShapeType; // Shape effect type (independent from style)
+    // Shadow effect settings
+    shadowColor?: string;
+    shadowOpacity?: number; // 0-100
+    shadowDistance?: number; // 0-100
+    shadowBlur?: number; // 0-100
+    shadowAngle?: number; // 0-360 degrees
+    // Outline effect settings
+    outlineColor?: string;
+    outlineWidth?: number; // 1-100
+    // Lift effect settings (combination of shadow + slight offset)
+    liftDistance?: number; // 0-50
+    liftBlur?: number; // 0-50
+    // Hollow effect settings (just stroke, no fill)
+    hollowColor?: string;
+    hollowWidth?: number; // 1-20
+    // Echo effect settings
+    echoColor?: string;
+    echoOffset?: number; // 1-50
+    echoLayers?: number; // 1-10
+    // Splice effect settings (split with shadow)
+    spliceColor?: string;
+    spliceOffset?: number; // 1-50
+    spliceDirection?: 'horizontal' | 'vertical' | 'diagonal';
+    // Glitch effect settings
+    glitchIntensity?: number; // 1-50
+    glitchColor1?: string;
+    glitchColor2?: string;
+    // Neon effect settings
+    neonColor?: string;
+    neonIntensity?: number; // 1-100 (glow amount)
+    // Background effect settings (text with background box)
+    backgroundColor?: string;
+    backgroundPadding?: number; // 0-50
+    backgroundRadius?: number; // 0-50
+    // Curved effect settings
+    curveAmount?: number; // -360 to 360 degrees (negative = curve down, positive = curve up)
+    curveRadius?: number; // 50-500 (radius of the curve)
 }
 
 export interface TextElement extends BaseElement {
@@ -239,4 +289,45 @@ export const createDefaultImageFilter = (): ImageFilter => ({
     sepia: false,
     invert: false,
     filterPreset: null,
+});
+
+export const createDefaultTextEffect = (): TextEffect => ({
+    type: 'none',
+    shapeType: 'none',
+    // Shadow defaults
+    shadowColor: '#000000',
+    shadowOpacity: 50,
+    shadowDistance: 5,
+    shadowBlur: 10,
+    shadowAngle: 45,
+    // Outline defaults
+    outlineColor: '#000000',
+    outlineWidth: 2,
+    // Lift defaults
+    liftDistance: 8,
+    liftBlur: 15,
+    // Hollow defaults
+    hollowColor: '#000000',
+    hollowWidth: 2,
+    // Echo defaults
+    echoColor: '#cccccc',
+    echoOffset: 5,
+    echoLayers: 3,
+    // Splice defaults
+    spliceColor: '#cccccc',
+    spliceOffset: 3,
+    spliceDirection: 'diagonal',
+    // Glitch defaults
+    glitchIntensity: 5,
+    glitchColor1: '#00ffff',
+    glitchColor2: '#ff00ff',
+    // Neon defaults
+    neonColor: '#ff00ff',
+    neonIntensity: 30,
+    // Background defaults
+    backgroundColor: '#f0f0f0',
+    backgroundPadding: 10,
+    backgroundRadius: 5,
+    // Curved defaults
+    curveAmount: 0,
 });
