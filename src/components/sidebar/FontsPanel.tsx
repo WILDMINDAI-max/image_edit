@@ -2,10 +2,10 @@
 
 import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
-import { useActivePage } from '@/store/editorStore';
+import { useActivePage, useEditorStore } from '@/store/editorStore';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { TextElement } from '@/types/canvas';
-import { X, Search, ChevronRight, Check, Loader2 } from 'lucide-react';
+import { X, Search, ChevronRight, Check, Loader2, Monitor, Plus, Trash2 } from 'lucide-react';
 import {
     GOOGLE_FONTS,
     FONT_CATEGORIES,
@@ -34,6 +34,12 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
     const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set(globalLoadedFonts));
     const [loadingFonts, setLoadingFonts] = useState<Set<string>>(new Set());
     const [recentFonts, setRecentFonts] = useState<string[]>([]);
+    const [systemFonts, setSystemFonts] = useState<string[]>([]);
+    const [systemFontsLoaded, setSystemFontsLoaded] = useState(false);
+    const [loadingSystemFonts, setLoadingSystemFonts] = useState(false);
+    const [showSystemFonts, setShowSystemFonts] = useState(false);
+    const [customFonts, setCustomFonts] = useState<{ family: string; url: string }[]>([]);
+    const fontInputRef = useRef<HTMLInputElement>(null);
     const scrollContainerRef = useRef<HTMLDivElement>(null);
 
     // Get selected text element
@@ -49,6 +55,16 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
 
     // Filter fonts based on search and category
     const filteredFonts = useMemo(() => {
+        // If showing system fonts, filter system fonts instead
+        if (showSystemFonts && systemFontsLoaded) {
+            if (searchQuery) {
+                return systemFonts
+                    .filter(f => f.toLowerCase().includes(searchQuery.toLowerCase()))
+                    .map(f => ({ family: f, variants: ['400'], category: 'system' as FontCategory }));
+            }
+            return systemFonts.map(f => ({ family: f, variants: ['400'], category: 'system' as FontCategory }));
+        }
+
         if (searchQuery) {
             return searchFonts(searchQuery, activeCategory || undefined);
         }
@@ -56,7 +72,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
             return GOOGLE_FONTS.filter(f => f.category === activeCategory);
         }
         return GOOGLE_FONTS;
-    }, [searchQuery, activeCategory]);
+    }, [searchQuery, activeCategory, showSystemFonts, systemFontsLoaded, systemFonts]);
 
     // Load a font
     const loadFont = useCallback(async (family: string) => {
@@ -92,24 +108,140 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
         loadInitialFonts();
     }, [filteredFonts, loadFont]);
 
-    // Handle font selection
-    const handleSelectFont = async (family: string) => {
+    // Load system fonts using Local Font Access API
+    const loadSystemFonts = async () => {
+        if (systemFontsLoaded || loadingSystemFonts) return;
+
+        setLoadingSystemFonts(true);
+
+        try {
+            // Check if the Local Font Access API is available
+            if (!('queryLocalFonts' in window)) {
+                alert('Your browser does not support local font access. Please use Chrome or Edge.');
+                setLoadingSystemFonts(false);
+                return;
+            }
+
+            // Request permission and get fonts
+            // @ts-ignore - Local Font Access API is not yet in TypeScript
+            const fonts = await window.queryLocalFonts();
+
+            // Get unique font family names
+            const fontFamilies = new Set<string>();
+            for (const font of fonts) {
+                fontFamilies.add(font.family);
+            }
+
+            const sortedFonts = Array.from(fontFamilies).sort((a, b) => a.localeCompare(b));
+            setSystemFonts(sortedFonts);
+            setSystemFontsLoaded(true);
+            setShowSystemFonts(true);
+            setActiveCategory(null);
+
+            // Mark all system fonts as "loaded" since they're already on the system
+            sortedFonts.forEach(f => globalLoadedFonts.add(f));
+            setLoadedFonts(new Set(globalLoadedFonts));
+
+            console.log(`[FontsPanel] Loaded ${sortedFonts.length} system fonts`);
+        } catch (error) {
+            console.error('Failed to load system fonts:', error);
+            if ((error as Error).name === 'NotAllowedError') {
+                alert('Permission to access local fonts was denied.');
+            } else {
+                alert('Failed to load system fonts. Please try again.');
+            }
+        } finally {
+            setLoadingSystemFonts(false);
+        }
+    };
+
+    // Handle custom font file upload
+    const handleFontUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        for (const file of Array.from(files)) {
+            const validExtensions = ['.ttf', '.otf', '.woff', '.woff2'];
+            const ext = file.name.toLowerCase().substring(file.name.lastIndexOf('.'));
+
+            if (!validExtensions.includes(ext)) {
+                alert(`Invalid file type: ${file.name}. Please select .ttf, .otf, .woff, or .woff2 files.`);
+                continue;
+            }
+
+            try {
+                // Create a blob URL for the font file
+                const fontUrl = URL.createObjectURL(file);
+
+                // Extract font family name from filename (remove extension)
+                const fontFamily = file.name.replace(/\.(ttf|otf|woff|woff2)$/i, '').replace(/[_-]/g, ' ');
+
+                // Create and load the font
+                const fontFace = new FontFace(fontFamily, `url(${fontUrl})`);
+                await fontFace.load();
+
+                // Add to document fonts
+                document.fonts.add(fontFace);
+
+                // Add to custom fonts list
+                setCustomFonts(prev => [...prev, { family: fontFamily, url: fontUrl }]);
+
+                // Mark as loaded
+                globalLoadedFonts.add(fontFamily);
+                setLoadedFonts(prev => new Set([...prev, fontFamily]));
+
+                console.log(`[FontsPanel] Custom font loaded: ${fontFamily}`);
+            } catch (error) {
+                console.error(`Failed to load font: ${file.name}`, error);
+                alert(`Failed to load font: ${file.name}. Please make sure it's a valid font file.`);
+            }
+        }
+
+        // Reset the input
+        if (fontInputRef.current) {
+            fontInputRef.current.value = '';
+        }
+    };
+
+    // Handle font selection - optionally with a specific weight
+    const handleSelectFont = async (family: string, weightToSet?: number) => {
         if (!selectedElement) return;
 
         const font = GOOGLE_FONTS.find(f => f.family === family);
-        const variants = font?.variants || ['400'];
+        const isSystemFont = systemFonts.includes(family);
 
-        // Load the font with all variants
-        await loadGoogleFont(family, variants);
+        // Only load from Google if it's a Google Font (not a system font)
+        if (font && !isSystemFont) {
+            const variants = font.variants || ['400'];
+            try {
+                await loadGoogleFont(family, variants);
+            } catch (error) {
+                console.warn(`[FontsPanel] Could not load Google font ${family}:`, error);
+            }
+        }
+
+        // Mark as loaded (system fonts are always available)
         globalLoadedFonts.add(family);
         setLoadedFonts(prev => new Set([...prev, family]));
 
-        // Update the element
+        // Get the current element from the store (fresh data) to avoid stale state issues
+        const state = useEditorStore.getState();
+        const activePage = state.project?.pages.find((p: { id: string }) => p.id === state.project?.activePageId);
+        const currentElement = activePage?.elements.find((el: { id: string }) => el.id === selectedElement.id) as TextElement | undefined;
+
+        if (!currentElement) return;
+
+        // Update the element with fontFamily, and optionally fontWeight if provided
+        const newTextStyle = {
+            ...currentElement.textStyle,
+            fontFamily: family,
+            ...(weightToSet !== undefined ? { fontWeight: weightToSet } : {}),
+        };
+
+        console.log(`[FontsPanel] handleSelectFont - saving textStyle:`, JSON.stringify(newTextStyle));
+
         updateElement(selectedElement.id, {
-            textStyle: {
-                ...selectedElement.textStyle,
-                fontFamily: family,
-            },
+            textStyle: newTextStyle,
         });
 
         // Update Fabric canvas
@@ -117,6 +249,9 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
         const fabricObj = fabricCanvas.getObjectById(selectedElement.id);
         if (fabricObj && 'fontFamily' in fabricObj) {
             (fabricObj as any).fontFamily = family;
+            if (weightToSet !== undefined) {
+                (fabricObj as any).fontWeight = weightToSet;
+            }
             fabricObj.dirty = true;
             fabricCanvas.getCanvas()?.renderAll();
         }
@@ -134,17 +269,25 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
 
         const numWeight = parseInt(weight) || 400;
 
+        console.log(`[FontsPanel] handleSelectWeight called with weight: ${weight}, numWeight: ${numWeight}`);
+        console.log(`[FontsPanel] Current selectedElement.textStyle:`, JSON.stringify(selectedElement.textStyle));
+
+        const newTextStyle = {
+            ...selectedElement.textStyle,
+            fontWeight: numWeight,
+        };
+
+        console.log(`[FontsPanel] New textStyle to save:`, JSON.stringify(newTextStyle));
+
         updateElement(selectedElement.id, {
-            textStyle: {
-                ...selectedElement.textStyle,
-                fontWeight: numWeight,
-            },
+            textStyle: newTextStyle,
         });
 
         // Update Fabric canvas
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(selectedElement.id);
         if (fabricObj && 'fontWeight' in fabricObj) {
+            console.log(`[FontsPanel] Updating Fabric object fontWeight to: ${numWeight}`);
             (fabricObj as any).fontWeight = numWeight;
             fabricObj.dirty = true;
             fabricCanvas.getCanvas()?.renderAll();
@@ -182,24 +325,65 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
 
             {/* Search */}
             <div className="p-3 border-b border-gray-100">
-                <div className="relative">
-                    <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <div className="flex gap-2">
+                    <div className="relative flex-1">
+                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search fonts..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                    </div>
+                    {/* Add Font Icon */}
+                    <button
+                        onClick={() => fontInputRef.current?.click()}
+                        className="p-1 hover:bg-gray-100 rounded-md transition-colors flex items-center justify-center"
+                        title="Add custom font from your computer"
+                    >
+                        <Plus size={18} className="text-green-500 hover:text-green-600" />
+                    </button>
                     <input
-                        type="text"
-                        placeholder="Search fonts..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        ref={fontInputRef}
+                        type="file"
+                        accept=".ttf,.otf,.woff,.woff2"
+                        multiple
+                        onChange={handleFontUpload}
+                        className="hidden"
                     />
                 </div>
             </div>
 
             {/* Category filters */}
             <div className="px-3 py-2 border-b border-gray-100">
-                <div className="flex gap-1.5 overflow-x-auto">
+                <div className="flex gap-1.5 overflow-x-auto custom-scrollbar">
+                    {/* System Fonts - First */}
                     <button
-                        onClick={() => setActiveCategory(null)}
-                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === null
+                        onClick={() => {
+                            if (!systemFontsLoaded) {
+                                loadSystemFonts();
+                            } else {
+                                setShowSystemFonts(true);
+                                setActiveCategory(null);
+                            }
+                        }}
+                        disabled={loadingSystemFonts}
+                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors flex items-center gap-1 ${showSystemFonts
+                            ? 'bg-gray-900 text-white'
+                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
+                    >
+                        {loadingSystemFonts ? (
+                            <Loader2 size={10} className="animate-spin" />
+                        ) : (
+                            <Monitor size={10} />
+                        )}
+                        System
+                    </button>
+                    <button
+                        onClick={() => { setActiveCategory(null); setShowSystemFonts(false); }}
+                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === null && !showSystemFonts
                             ? 'bg-gray-900 text-white'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
@@ -209,8 +393,8 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                     {FONT_CATEGORIES.map((cat) => (
                         <button
                             key={cat.id}
-                            onClick={() => setActiveCategory(cat.id)}
-                            className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === cat.id
+                            onClick={() => { setActiveCategory(cat.id); setShowSystemFonts(false); }}
+                            className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === cat.id && !showSystemFonts
                                 ? 'bg-gray-900 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
@@ -222,9 +406,51 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
             </div>
 
             {/* Font list */}
-            <div className="flex-1 overflow-y-auto" ref={scrollContainerRef}>
+            <div className="flex-1 overflow-y-auto custom-scrollbar" ref={scrollContainerRef}>
+                {/* Upload Fonts section */}
+                {customFonts.length > 0 && !searchQuery && !showSystemFonts && (
+                    <div className="p-3 border-b border-gray-100">
+                        <h4 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-3">
+                            Upload Fonts
+                        </h4>
+                        {customFonts.map((font) => (
+                            <div
+                                key={`custom-${font.family}`}
+                                className="flex items-center justify-between py-2 px-1 hover:bg-gray-50 rounded-md cursor-pointer group"
+                            >
+                                <button
+                                    onClick={() => handleSelectFont(font.family)}
+                                    className={`flex-1 text-left text-lg transition-colors ${currentFontFamily === font.family
+                                        ? 'text-blue-600'
+                                        : 'text-gray-700'
+                                        }`}
+                                    style={{ fontFamily: `"${font.family}", sans-serif` }}
+                                >
+                                    {font.family}
+                                </button>
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setCustomFonts(prev => prev.filter(f => f.family !== font.family));
+                                        globalLoadedFonts.delete(font.family);
+                                        setLoadedFonts(prev => {
+                                            const next = new Set(prev);
+                                            next.delete(font.family);
+                                            return next;
+                                        });
+                                    }}
+                                    className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors opacity-0 group-hover:opacity-100"
+                                    title="Remove font"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
                 {/* Recent fonts section */}
-                {recentFonts.length > 0 && !searchQuery && !activeCategory && (
+                {recentFonts.length > 0 && !searchQuery && !activeCategory && !showSystemFonts && (
                     <div className="p-3 border-b border-gray-100">
                         <h4 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
                             Recently Used
@@ -239,6 +465,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                                 isExpanded={expandedFont === family}
                                 currentWeight={currentFontWeight}
                                 onSelect={() => handleSelectFont(family)}
+                                onSelectWithWeight={(weight) => handleSelectFont(family, weight)}
                                 onExpand={() => setExpandedFont(expandedFont === family ? null : family)}
                                 onSelectWeight={handleSelectWeight}
                                 onLoad={() => loadFont(family)}
@@ -262,6 +489,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                             isExpanded={expandedFont === font.family}
                             currentWeight={currentFontWeight}
                             onSelect={() => handleSelectFont(font.family)}
+                            onSelectWithWeight={(weight) => handleSelectFont(font.family, weight)}
                             onExpand={() => setExpandedFont(expandedFont === font.family ? null : font.family)}
                             onSelectWeight={handleSelectWeight}
                             onLoad={() => loadFont(font.family)}
@@ -282,12 +510,13 @@ interface FontItemProps {
     isExpanded: boolean;
     currentWeight: number | string;
     onSelect: () => void;
+    onSelectWithWeight: (weight: number) => void;  // For selecting font with specific weight
     onExpand: () => void;
     onSelectWeight: (weight: string) => void;
     onLoad: () => void;
 }
 
-function FontItem({ family, isSelected, isLoaded, isLoading, isExpanded, currentWeight, onSelect, onExpand, onSelectWeight, onLoad }: FontItemProps) {
+function FontItem({ family, isSelected, isLoaded, isLoading, isExpanded, currentWeight, onSelect, onSelectWithWeight, onExpand, onSelectWeight, onLoad }: FontItemProps) {
     const ref = useRef<HTMLDivElement>(null);
     const variants = getFontVariants(family);
     const hasVariants = variants.length > 1;
@@ -365,8 +594,8 @@ function FontItem({ family, isSelected, isLoaded, isLoading, isExpanded, current
                             <button
                                 key={variant}
                                 onClick={() => {
-                                    onSelect();
-                                    onSelectWeight(variant);
+                                    // Only call onSelectWithWeight - it handles both font and weight atomically
+                                    onSelectWithWeight(weightNum);
                                 }}
                                 className={`w-full flex items-center justify-between px-3 py-1.5 rounded text-xs transition-colors ${isWeightSelected ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100 text-gray-600'
                                     }`}

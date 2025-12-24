@@ -124,7 +124,7 @@ export function TextEditPanel() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Alignment Section */}
                 <div className="p-4">
                     <h4 className="text-xs font-medium text-gray-500 mb-3">Alignment</h4>

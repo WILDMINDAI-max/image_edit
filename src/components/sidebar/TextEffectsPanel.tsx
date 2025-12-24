@@ -265,7 +265,7 @@ export function TextEffectsPanel({ onClose }: TextEffectsProps) {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Transform Section */}
                 <div className="p-3">
                     <h4 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">Transform</h4>

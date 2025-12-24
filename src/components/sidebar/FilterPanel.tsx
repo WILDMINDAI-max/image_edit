@@ -877,7 +877,7 @@ export function FilterPanel() {
             </div>
 
             {/* Content */}
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Filter Presets Section */}
                 <div className="p-4">
                     <h3 className="text-sm font-medium text-gray-700 mb-3">Presets</h3>

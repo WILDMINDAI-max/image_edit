@@ -222,21 +222,49 @@ export const useCanvasStore = create<CanvasStore>()(
                 ? Math.max(...elements.map(e => e.zIndex))
                 : 0;
 
+            // Get canvas dimensions to center the text
+            const project = useEditorStore.getState().project;
+            const activePage = project?.pages.find(p => p.id === project.activePageId);
+            const canvasWidth = activePage?.width || 1080;
+            const canvasHeight = activePage?.height || 1080;
+
+            // Default text box width - wide enough for text to wrap nicely
+            const defaultWidth = Math.min(canvasWidth * 0.6, 400);
+
+            // Build base transform, then apply options, then ensure x/y are centered
+            const baseTransform = {
+                ...createDefaultTransform(),
+                width: defaultWidth,
+                height: 50,
+                scaleX: 1,
+                scaleY: 1,
+            };
+
+            // Merge with options transform (if any), but exclude x/y from options
+            const optionsTransform = options?.transform || {};
+            const mergedTransform = {
+                ...baseTransform,
+                ...optionsTransform,
+                // ALWAYS center the text on canvas (override any x/y from options)
+                x: canvasWidth / 2,
+                y: canvasHeight / 2,
+            };
+
+            // Create element without spreading options at the end (to avoid overriding transform)
             const textElement: TextElement = {
                 id,
                 type: 'text',
-                name: 'Text',
+                name: options?.name ?? 'Text',
                 content: options?.content ?? 'Click to edit text',
-                transform: { ...createDefaultTransform(), ...options?.transform },
+                transform: mergedTransform,
                 style: { ...createDefaultStyle(), fill: '#1a1a1a', ...options?.style },
                 textStyle: { ...createDefaultTextStyle(), ...options?.textStyle },
                 effect: options?.effect ?? { type: 'none' },
-                locked: false,
-                visible: true,
-                selectable: true,
-                editable: true,
+                locked: options?.locked ?? false,
+                visible: options?.visible ?? true,
+                selectable: options?.selectable ?? true,
+                editable: options?.editable ?? true,
                 zIndex: maxZIndex + 1,
-                ...options,
             };
 
             get().addElement(textElement);

@@ -16,7 +16,7 @@ export function AnimationsPanel() {
                 </p>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {/* Entrance Animations */}
                 <div className="mb-6">
                     <h3 className="text-gray-300 text-sm font-medium mb-3">Entrance</h3>

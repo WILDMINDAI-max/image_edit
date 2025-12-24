@@ -26,6 +26,7 @@ export class FabricCanvas {
     public onObjectUpdating?: (id: string) => void;
     public onObjectAdded?: (id: string) => void;
     public onObjectRemoved?: (id: string) => void;
+    public onTextChanged?: (id: string, newText: string) => void;
 
     constructor() {
         this.objectIdMap = new Map();
@@ -129,6 +130,24 @@ export class FabricCanvas {
             if (obj && obj.data?.id) {
                 this.objectIdMap.delete(obj.data.id);
                 this.onObjectRemoved?.(obj.data.id);
+            }
+        });
+
+        // Text editing events - capture text content changes
+        this.canvas.on('text:changed' as any, (e: fabric.IEvent<Event>) => {
+            const obj = e.target as fabric.IText & { data?: { id: string } };
+            if (obj && obj.data?.id && obj.text !== undefined) {
+                console.log('[FabricCanvas] text:changed event for:', obj.data.id, 'new text:', obj.text);
+                this.onTextChanged?.(obj.data.id, obj.text);
+            }
+        });
+
+        // Also capture when text editing is exited (in case text:changed didn't fire)
+        this.canvas.on('text:editing:exited' as any, (e: fabric.IEvent<Event>) => {
+            const obj = e.target as fabric.IText & { data?: { id: string } };
+            if (obj && obj.data?.id && obj.text !== undefined) {
+                console.log('[FabricCanvas] text:editing:exited event for:', obj.data.id, 'text:', obj.text);
+                this.onTextChanged?.(obj.data.id, obj.text);
             }
         });
     }
@@ -523,14 +542,23 @@ export class FabricCanvas {
     /**
      * Add a text element
      */
-    public addText(element: TextElement): fabric.IText {
+    public addText(element: TextElement): fabric.Textbox {
         if (!this.canvas) throw new Error('Canvas not initialized');
 
-        // Use CustomText for rich text effects support
-        const text = new CustomText(element.content, {
+        // DEBUG: Log the font properties being used
+        console.log(`[FabricCanvas] addText - fontFamily: ${element.textStyle.fontFamily}, fontWeight: ${element.textStyle.fontWeight}, fontStyle: ${element.textStyle.fontStyle}, textDecoration: ${element.textStyle.textDecoration}, textTransform: ${element.textStyle.textTransform}`);
+
+        // Handle uppercase text transform - convert content to uppercase if textTransform is uppercase
+        const displayContent = element.textStyle.textTransform === 'uppercase'
+            ? element.content.toUpperCase()
+            : element.content;
+
+        // Use CustomText (extends Textbox) for rich text effects support
+        // Textbox wraps text within width and reflows when resized
+        const text = new CustomText(displayContent, {
             left: element.transform.x,
             top: element.transform.y,
-            width: element.transform.width,
+            width: element.transform.width || 300, // Default width for text wrapping
             fontFamily: element.textStyle.fontFamily,
             fontSize: element.textStyle.fontSize,
             fontWeight: element.textStyle.fontWeight as number,
@@ -538,13 +566,18 @@ export class FabricCanvas {
             textAlign: element.textStyle.textAlign,
             lineHeight: element.textStyle.lineHeight,
             charSpacing: element.textStyle.letterSpacing * 100,
+            // Text decoration properties for Fabric.js
+            underline: element.textStyle.textDecoration === 'underline',
+            linethrough: element.textStyle.textDecoration === 'line-through',
             fill: element.style.fill as string,
             stroke: element.style.stroke ?? undefined,
             strokeWidth: element.style.strokeWidth,
             opacity: element.style.opacity,
             angle: element.transform.rotation,
-            scaleX: element.transform.scaleX,
-            scaleY: element.transform.scaleY,
+            // Note: For Textbox, we don't use scaleX/scaleY for text sizing
+            // The width controls how text wraps, height auto-adjusts
+            scaleX: 1,
+            scaleY: 1,
             originX: element.transform.originX,
             originY: element.transform.originY,
             selectable: element.selectable,
@@ -579,15 +612,31 @@ export class FabricCanvas {
      */
     public async addImage(element: ImageElement): Promise<fabric.Image> {
         if (!this.canvas) throw new Error('Canvas not initialized');
+        console.log('[FabricCanvas] addImage called for element:', element.id, 'src:', element.src?.substring(0, 100));
 
         return new Promise((resolve, reject) => {
+            // Add timeout to prevent infinite hanging
+            const timeout = setTimeout(() => {
+                console.error('[FabricCanvas] addImage timeout for element:', element.id);
+                reject(new Error(`Image loading timeout for element: ${element.id}`));
+            }, 15000); // 15 second timeout
+
             fabric.Image.fromURL(
                 element.src,
                 (img: fabric.Image) => {
+                    clearTimeout(timeout);
+
+                    if (!img) {
+                        console.error('[FabricCanvas] Image failed to load for element:', element.id);
+                        reject(new Error(`Failed to load image: ${element.id}`));
+                        return;
+                    }
+
                     if (!this.canvas) {
                         reject(new Error('Canvas not initialized'));
                         return;
                     }
+                    console.log('[FabricCanvas] Image loaded successfully for element:', element.id);
 
                     img.set({
                         left: element.transform.x,
@@ -610,6 +659,7 @@ export class FabricCanvas {
 
                     this.canvas!.add(img);
                     this.objectIdMap.set(element.id, img);
+                    console.log('[FabricCanvas] Image added to canvas for element:', element.id);
 
                     resolve(img);
                 },
@@ -902,25 +952,44 @@ export class FabricCanvas {
      * Load page elements onto canvas
      */
     public async loadPage(page: Page): Promise<void> {
+        console.log('[FabricCanvas] loadPage called for page:', page.id, page.name);
+        console.log('[FabricCanvas] Page has', page.elements.length, 'elements');
+
         this.clear();
 
-        if (!this.canvas) return;
+        if (!this.canvas) {
+            console.error('[FabricCanvas] Canvas not initialized in loadPage');
+            return;
+        }
 
         // Set dimensions
+        console.log('[FabricCanvas] Setting dimensions:', page.width, 'x', page.height);
         this.resize(page.width, page.height);
 
         // Set background
+        console.log('[FabricCanvas] Setting background:', page.background.type);
         this.setBackground(page.background);
 
         // Sort elements by zIndex
         const sortedElements = [...page.elements].sort((a, b) => a.zIndex - b.zIndex);
+        console.log('[FabricCanvas] Elements sorted by zIndex');
 
         // Add elements
-        for (const element of sortedElements) {
-            await this.addElement(element);
+        for (let i = 0; i < sortedElements.length; i++) {
+            const element = sortedElements[i];
+            console.log(`[FabricCanvas] Adding element ${i + 1}/${sortedElements.length}: type=${element.type}, id=${element.id}`);
+            try {
+                await this.addElement(element);
+                console.log(`[FabricCanvas] Element ${i + 1} added successfully`);
+            } catch (error) {
+                console.error(`[FabricCanvas] Failed to add element ${i + 1}:`, error);
+                // Continue with other elements instead of failing completely
+            }
         }
 
+        console.log('[FabricCanvas] Rendering canvas...');
         this.render();
+        console.log('[FabricCanvas] loadPage completed for page:', page.id);
     }
 
     /**

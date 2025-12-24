@@ -409,8 +409,8 @@ export function LayersPanel() {
                                 onClick={() => bringForward(selectedIds[0])}
                                 disabled={isAtTop}
                                 className={`flex items-center justify-center py-2 px-4 border rounded-lg transition-colors ${isAtTop
-                                        ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
-                                        : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
+                                    ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
+                                    : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
                                     }`}
                                 title="Bring Forward"
                             >
@@ -420,8 +420,8 @@ export function LayersPanel() {
                                 onClick={() => sendBackward(selectedIds[0])}
                                 disabled={isAtBottom}
                                 className={`flex items-center justify-center py-2 px-4 border rounded-lg transition-colors ${isAtBottom
-                                        ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
-                                        : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
+                                    ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
+                                    : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
                                     }`}
                                 title="Send Backward"
                             >

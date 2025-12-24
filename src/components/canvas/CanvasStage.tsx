@@ -203,12 +203,19 @@ export function CanvasStage({ className }: CanvasStageProps) {
             // (since updateTransform also tries to update fabric object)
             const updatedElements = activePage.elements.map(el => {
                 if (el.id === id) {
+                    // For Textbox (text elements), we also need to sync width since Textbox
+                    // changes width when resized, not scaleX/scaleY
+                    const newWidth = fabricObject.width ?? el.transform.width;
+                    const newHeight = fabricObject.height ?? el.transform.height;
+
                     return {
                         ...el,
                         transform: {
                             ...el.transform,
                             x: fabricObject.left ?? el.transform.x,
                             y: fabricObject.top ?? el.transform.y,
+                            width: newWidth,
+                            height: newHeight,
                             scaleX: fabricObject.scaleX ?? el.transform.scaleX,
                             scaleY: fabricObject.scaleY ?? el.transform.scaleY,
                             rotation: fabricObject.angle ?? el.transform.rotation,
@@ -223,6 +230,35 @@ export function CanvasStage({ className }: CanvasStageProps) {
 
         fabricCanvas.onObjectModified = updateStoreFromFabric;
         fabricCanvas.onObjectUpdating = updateStoreFromFabric;
+
+        // Handle text content changes
+        fabricCanvas.onTextChanged = (id: string, newText: string) => {
+            console.log('[CanvasStage] Text changed for element:', id, 'new text:', newText);
+
+            const state = useEditorStore.getState();
+            if (!state.project) return;
+
+            const activePageId = state.project.activePageId;
+            const activePage = state.project.pages.find(p => p.id === activePageId);
+            if (!activePage) return;
+
+            const element = activePage.elements.find(el => el.id === id);
+            if (!element || element.type !== 'text') return;
+
+            // Update the text content in the store
+            const updatedElements = activePage.elements.map(el => {
+                if (el.id === id && el.type === 'text') {
+                    return {
+                        ...el,
+                        content: newText,
+                    };
+                }
+                return el;
+            });
+
+            console.log('[CanvasStage] Updating store with new text content');
+            state.updatePage(activePageId, { elements: updatedElements });
+        };
 
         setIsInitialized(true);
 

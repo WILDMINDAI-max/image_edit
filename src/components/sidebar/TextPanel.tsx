@@ -2,7 +2,7 @@
 
 import { useCanvasStore } from '@/store/canvasStore';
 import { DEFAULT_TEXT_PRESETS } from '@/types/template';
-import { Type, Heading1, Heading2, AlignLeft } from 'lucide-react';
+import { Type } from 'lucide-react';
 
 export function TextPanel() {
     const addTextElement = useCanvasStore((state) => state.addTextElement);
@@ -11,9 +11,7 @@ export function TextPanel() {
         addTextElement({
             content: preset.content,
             transform: {
-                x: 100,
-                y: 100,
-                width: 300,
+                width: 400,
                 height: 50,
                 scaleX: 1,
                 scaleY: 1,
@@ -22,7 +20,7 @@ export function TextPanel() {
                 skewY: 0,
                 originX: 'center',
                 originY: 'center',
-            },
+            } as any,
             textStyle: {
                 fontFamily: preset.fontFamily,
                 fontSize: preset.fontSize,
@@ -48,91 +46,45 @@ export function TextPanel() {
     return (
         <div className="h-full flex flex-col bg-white">
             {/* Header */}
-            <div className="p-4 border-b border-gray-100">
-                <h2 className="text-gray-800 font-semibold text-lg">Text</h2>
+            <div className="px-4 py-2.5 border-b border-gray-100">
+                <h2 className="text-gray-800 font-semibold text-sm">Text</h2>
             </div>
 
-            {/* Scrollable Content */}
-            <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {/* Quick Add Buttons */}
-                <div className="space-y-2 mb-6">
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-3 custom-scrollbar">
+                <div className="space-y-1.5">
+                    {/* Heading */}
                     <button
                         onClick={() => handleAddText(DEFAULT_TEXT_PRESETS[0])}
-                        className="w-full py-4 bg-gradient-to-r from-violet-50 to-blue-50 border border-gray-200 hover:border-violet-400 rounded-xl text-left px-4 transition-all duration-200 group"
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 bg-violet-50 border border-violet-100 hover:border-violet-300 rounded-md transition-all group"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-violet-100 flex items-center justify-center">
-                                <Heading1 size={16} className="text-violet-600" />
-                            </div>
-                            <span className="text-gray-800 text-xl font-bold group-hover:text-violet-700 transition-colors">Add a heading</span>
+                        <div className="w-6 h-6 rounded bg-violet-100 flex items-center justify-center shrink-0">
+                            <span className="text-violet-600 font-bold text-[10px]">H1</span>
                         </div>
+                        <span className="text-gray-800 text-sm font-semibold group-hover:text-violet-700">Add a heading</span>
                     </button>
+
+                    {/* Subheading */}
                     <button
                         onClick={() => handleAddText(DEFAULT_TEXT_PRESETS[1])}
-                        className="w-full py-3 bg-gray-50 border border-gray-200 hover:border-violet-400 rounded-xl text-left px-4 transition-all duration-200 group"
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 bg-gray-50 border border-gray-200 hover:border-violet-300 hover:bg-violet-50 rounded-md transition-all group"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                                <Heading2 size={16} className="text-gray-600" />
-                            </div>
-                            <span className="text-gray-700 text-lg font-semibold group-hover:text-violet-700 transition-colors">Add a subheading</span>
+                        <div className="w-6 h-6 rounded bg-gray-100 group-hover:bg-violet-100 flex items-center justify-center shrink-0 transition-colors">
+                            <span className="text-gray-500 group-hover:text-violet-600 font-semibold text-[10px]">H2</span>
                         </div>
+                        <span className="text-gray-700 text-xs font-medium group-hover:text-violet-700">Add a subheading</span>
                     </button>
+
+                    {/* Body Text */}
                     <button
                         onClick={() => handleAddText(DEFAULT_TEXT_PRESETS[2])}
-                        className="w-full py-3 bg-gray-50 border border-gray-200 hover:border-violet-400 rounded-xl text-left px-4 transition-all duration-200 group"
+                        className="w-full flex items-center gap-2.5 px-2.5 py-2 bg-gray-50 border border-gray-200 hover:border-violet-300 hover:bg-violet-50 rounded-md transition-all group"
                     >
-                        <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center">
-                                <AlignLeft size={16} className="text-gray-600" />
-                            </div>
-                            <span className="text-gray-500 text-sm group-hover:text-violet-700 transition-colors">Add body text</span>
+                        <div className="w-6 h-6 rounded bg-gray-100 group-hover:bg-violet-100 flex items-center justify-center shrink-0 transition-colors">
+                            <Type size={12} className="text-gray-500 group-hover:text-violet-600" />
                         </div>
+                        <span className="text-gray-600 text-xs group-hover:text-violet-700">Add body text</span>
                     </button>
-                </div>
-
-                {/* Text Combinations */}
-                <div className="mb-6">
-                    <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Text Combinations</h3>
-                    <div className="space-y-2">
-                        {[
-                            { name: 'Title + Subtitle', desc: 'Hero section layout' },
-                            { name: 'Quote Block', desc: 'Stylish quotation' },
-                            { name: 'Numbered List', desc: 'Ordered items' },
-                            { name: 'Feature Block', desc: 'Icon + text combo' },
-                        ].map((combo) => (
-                            <button
-                                key={combo.name}
-                                className="w-full py-3 bg-gray-50 border border-gray-200 hover:border-violet-400 rounded-lg text-left px-4 transition-all duration-200 group"
-                            >
-                                <span className="text-gray-700 text-sm font-medium group-hover:text-violet-700">{combo.name}</span>
-                                <span className="text-gray-400 text-xs ml-2">{combo.desc}</span>
-                            </button>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Font Pairings */}
-                <div className="mb-6">
-                    <h3 className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-3">Font Pairings</h3>
-                    <div className="grid grid-cols-2 gap-2">
-                        {[
-                            { name: 'Modern', fonts: 'Inter + Roboto' },
-                            { name: 'Classic', fonts: 'Georgia + Arial' },
-                            { name: 'Playful', fonts: 'Poppins + Nunito' },
-                            { name: 'Elegant', fonts: 'Playfair + Lato' },
-                            { name: 'Bold', fonts: 'Montserrat + Open Sans' },
-                            { name: 'Minimal', fonts: 'Helvetica + Source Sans' },
-                        ].map((pairing) => (
-                            <div
-                                key={pairing.name}
-                                className="aspect-[4/3] bg-gradient-to-br from-gray-50 to-gray-100 border border-gray-200 rounded-lg hover:border-violet-400 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center p-2 group"
-                            >
-                                <span className="text-gray-700 text-sm font-semibold group-hover:text-violet-700">{pairing.name}</span>
-                                <span className="text-gray-400 text-[9px] text-center mt-1">{pairing.fonts}</span>
-                            </div>
-                        ))}
-                    </div>
                 </div>
             </div>
         </div>

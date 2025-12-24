@@ -4,16 +4,17 @@
 import { fabric } from 'fabric';
 import { TextEffect, TextStyle } from '@/types/canvas';
 
-export interface CustomTextOptions extends fabric.ITextOptions {
+export interface CustomTextOptions extends fabric.ITextboxOptions {
     customId?: string;
     effect?: TextEffect;
     textStyle?: Partial<TextStyle>;
 }
 
 /**
- * Extended IText class with additional features
+ * Extended Textbox class with additional features
+ * Uses Textbox instead of IText for proper text wrapping and reflow
  */
-export class CustomText extends fabric.IText {
+export class CustomText extends fabric.Textbox {
     public customId?: string;
     public effect?: TextEffect;
     public customTextStyle?: Partial<TextStyle>;
@@ -23,7 +24,13 @@ export class CustomText extends fabric.IText {
     private _bgColor: string = '';
 
     constructor(text: string, options?: CustomTextOptions) {
-        super(text, options);
+        // Set default width if not provided for proper text wrapping
+        const opts = {
+            ...options,
+            width: options?.width || 300,
+            splitByGrapheme: true, // Better handling of long words
+        };
+        super(text, opts);
 
         this.customId = options?.customId;
         this.effect = options?.effect;

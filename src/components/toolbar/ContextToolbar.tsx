@@ -24,6 +24,9 @@ import {
     Underline,
     Strikethrough,
     CaseSensitive,
+    AlignLeft,
+    AlignCenter,
+    AlignRight,
     AlignHorizontalJustifyStart,
     AlignHorizontalJustifyCenter,
     AlignHorizontalJustifyEnd,
@@ -322,7 +325,7 @@ export function ContextToolbar() {
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(textElement.id);
 
-        if (fabricObj && fabricObj.type === 'i-text') {
+        if (fabricObj && (fabricObj.type === 'textbox' || fabricObj.type === 'i-text')) {
             const currentText = (fabricObj as any).text;
             // When turning on uppercase, convert current text to uppercase
             // When turning off, convert current text to lowercase (preserving user edits)
@@ -412,7 +415,7 @@ export function ContextToolbar() {
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(textElement.id);
 
-        if (fabricObj && fabricObj.type === 'i-text') {
+        if (fabricObj && (fabricObj.type === 'textbox' || fabricObj.type === 'i-text')) {
             const currentText = (fabricObj as any).text as string;
             const lines = currentText.split('\n');
 
@@ -509,7 +512,7 @@ export function ContextToolbar() {
     };
 
     return (
-        <div className="h-12 bg-[#F8F9FA] border-b border-gray-200 flex items-center px-4 gap-2">
+        <div className="h-11 bg-[#F8F9FA] border-b border-gray-200 flex items-center px-2 gap-1 overflow-x-auto custom-scrollbar">
             {/* Element Info */}
             <div className="flex items-center gap-2 pr-4 border-r border-gray-200">
                 <span className="text-gray-800 text-sm font-medium">
@@ -586,7 +589,7 @@ export function ContextToolbar() {
                             className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Decrease font size"
                         >
-                            <Minus size={12} />
+                            <Minus size={14} />
                         </button>
                         <span className="text-xs font-medium text-gray-700 w-6 text-center">
                             {textElement.textStyle.fontSize}
@@ -596,7 +599,43 @@ export function ContextToolbar() {
                             className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Increase font size"
                         >
-                            <Plus size={12} />
+                            <Plus size={14} />
+                        </button>
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Text Align within textbox (left, center, right) */}
+                    <div className="flex items-center gap-0.5">
+                        <button
+                            onClick={() => setAlignment('left')}
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textAlign === 'left'
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align text left"
+                        >
+                            <AlignLeft size={14} />
+                        </button>
+                        <button
+                            onClick={() => setAlignment('center')}
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textAlign === 'center'
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align text center"
+                        >
+                            <AlignCenter size={14} />
+                        </button>
+                        <button
+                            onClick={() => setAlignment('right')}
+                            className={`p-1.5 rounded transition-all ${textElement.textStyle.textAlign === 'right'
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align text right"
+                        >
+                            <AlignRight size={14} />
                         </button>
                     </div>
 
@@ -667,7 +706,7 @@ export function ContextToolbar() {
                             className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Decrease letter spacing"
                         >
-                            <Minus size={10} />
+                            <Minus size={14} />
                         </button>
                         <div
                             className="flex items-center justify-center px-1.5 py-0.5 bg-gray-100 rounded text-xs font-mono text-gray-600 min-w-[32px]"
@@ -682,7 +721,7 @@ export function ContextToolbar() {
                             className="p-1 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                             title="Increase letter spacing"
                         >
-                            <Plus size={10} />
+                            <Plus size={14} />
                         </button>
                     </div>
 
@@ -698,8 +737,8 @@ export function ContextToolbar() {
                                 }`}
                             title="Align element"
                         >
-                            <AlignHorizontalJustifyCenter size={12} />
-                            <ChevronDown size={10} />
+                            <AlignHorizontalJustifyCenter size={14} />
+                            <ChevronDown size={12} />
                         </button>
 
                         {/* Alignment Popup */}
@@ -770,7 +809,7 @@ export function ContextToolbar() {
                             }`}
                         title={listType === 'none' ? 'No list' : listType === 'bullet' ? 'Bullet list' : 'Numbered list'}
                     >
-                        {listType === 'numbered' ? <ListOrdered size={12} /> : <List size={12} />}
+                        {listType === 'numbered' ? <ListOrdered size={14} /> : <List size={14} />}
                     </button>
 
                     <div className="w-px h-6 bg-gray-200" />
@@ -804,8 +843,8 @@ export function ContextToolbar() {
                         className="p-1 rounded transition-all text-gray-500 hover:text-blue-600 hover:bg-blue-50 flex items-center gap-1"
                         title="Text Effects"
                     >
-                        <Sparkles size={12} />
-                        <span className="text-[10px] font-medium">Effects</span>
+                        <Sparkles size={14} />
+                        <span className="text-[11px] font-medium">Effects</span>
                     </button>
                 </>
             )}
@@ -814,24 +853,24 @@ export function ContextToolbar() {
             <div className="flex items-center gap-1">
                 <button
                     onClick={copy}
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                     title="Copy"
                 >
-                    <Copy size={16} />
+                    <Copy size={14} />
                 </button>
                 <button
                     onClick={paste}
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                     title="Paste"
                 >
-                    <Clipboard size={16} />
+                    <Clipboard size={14} />
                 </button>
                 <button
                     onClick={() => duplicateElements()}
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                     title="Duplicate"
                 >
-                    <Copy size={16} />
+                    <Copy size={14} />
                 </button>
             </div>
 
@@ -841,17 +880,17 @@ export function ContextToolbar() {
             <div className="flex items-center gap-1">
                 <button
                     onClick={handleFlipHorizontal}
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                     title="Flip Horizontal"
                 >
-                    <FlipHorizontal size={16} />
+                    <FlipHorizontal size={14} />
                 </button>
                 <button
                     onClick={handleFlipVertical}
-                    className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                    className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                     title="Flip Vertical"
                 >
-                    <FlipVertical size={16} />
+                    <FlipVertical size={14} />
                 </button>
             </div>
 
@@ -862,19 +901,19 @@ export function ContextToolbar() {
                 {canGroup && (
                     <button
                         onClick={() => groupElements(selectedIds)}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                         title="Group"
                     >
-                        <Group size={16} />
+                        <Group size={14} />
                     </button>
                 )}
                 {isGroup && (
                     <button
                         onClick={() => ungroupElement(selectedIds[0])}
-                        className="p-2 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
+                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
                         title="Ungroup"
                     >
-                        <Ungroup size={16} />
+                        <Ungroup size={14} />
                     </button>
                 )}
             </div>
@@ -882,19 +921,19 @@ export function ContextToolbar() {
             {/* Lock */}
             <button
                 onClick={() => isLocked ? unlockElement(selectedIds[0]) : lockElement(selectedIds[0])}
-                className="p-2 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-all"
+                className="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-all"
                 title={isLocked ? 'Unlock' : 'Lock'}
             >
-                {isLocked ? <LockOpen size={16} /> : <Lock size={16} />}
+                {isLocked ? <LockOpen size={14} /> : <Lock size={14} />}
             </button>
 
             {/* Delete */}
             <button
                 onClick={() => removeElement(selectedIds)}
-                className="p-2 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition-all ml-auto"
+                className="p-1.5 text-red-500 hover:text-red-600 hover:bg-red-50 rounded transition-all ml-auto"
                 title="Delete"
             >
-                <Trash2 size={16} />
+                <Trash2 size={14} />
             </button>
         </div>
     );
