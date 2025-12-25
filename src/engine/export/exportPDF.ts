@@ -33,43 +33,66 @@ const hexToRgb = (hex: string): { r: number; g: number; b: number } => {
 export const exportToPDF = async (
     settings: Partial<PDFExportSettings> = {}
 ): Promise<PDFExportResult> => {
+    console.log('[exportPDF] Starting PDF export with settings:', settings);
+
     const renderer = getCanvasRenderer();
+    console.log('[exportPDF] Got canvas renderer');
+
     const dimensions = renderer.getDimensions();
+    console.log('[exportPDF] Canvas dimensions:', dimensions);
 
     // Create PDF document
+    console.log('[exportPDF] Creating PDF document...');
     const pdfDoc = await PDFDocument.create();
+    console.log('[exportPDF] PDF document created');
 
     // Add page with canvas dimensions
     const page = pdfDoc.addPage([dimensions.width, dimensions.height]);
+    console.log('[exportPDF] PDF page added, dimensions:', dimensions.width, 'x', dimensions.height);
 
     // Render canvas to PNG
+    const scale = settings.quality === 'maximum' ? 2 : 1;
+    console.log('[exportPDF] Rendering canvas to PNG with scale:', scale);
     const pngBlob = await renderer.renderToBlob({
         format: 'png',
-        scale: settings.quality === 'maximum' ? 2 : 1,
+        scale,
         quality: 1,
     });
+    console.log('[exportPDF] PNG blob created, size:', pngBlob.size, 'bytes');
 
     // Embed image into PDF
+    console.log('[exportPDF] Embedding PNG into PDF...');
     const pngBytes = await pngBlob.arrayBuffer();
     const pngImage = await pdfDoc.embedPng(pngBytes);
+    console.log('[exportPDF] PNG embedded successfully');
 
     // Draw image on page
+    console.log('[exportPDF] Drawing image on PDF page...');
     page.drawImage(pngImage, {
         x: 0,
         y: 0,
         width: dimensions.width,
         height: dimensions.height,
     });
+    console.log('[exportPDF] Image drawn on PDF page');
 
     // Save PDF
+    console.log('[exportPDF] Saving PDF...');
     const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    console.log('[exportPDF] PDF saved, size:', pdfBytes.length, 'bytes');
 
-    return {
+    // Convert Uint8Array to a type that Blob accepts
+    const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+    console.log('[exportPDF] PDF blob created, size:', blob.size);
+
+    const result = {
         blob,
         pageCount: 1,
         size: blob.size,
     };
+    console.log('[exportPDF] Export complete. Page count:', result.pageCount);
+
+    return result;
 };
 
 /**
@@ -79,26 +102,43 @@ export const exportPagesToPDF = async (
     pages: Page[],
     settings: Partial<PDFExportSettings> = {}
 ): Promise<PDFExportResult> => {
+    console.log('[exportPagesToPDF] Starting multi-page PDF export. Total pages:', pages.length);
+    console.log('[exportPagesToPDF] Settings:', settings);
+
     const renderer = getCanvasRenderer();
+    console.log('[exportPagesToPDF] Got canvas renderer');
 
     // Create PDF document
+    console.log('[exportPagesToPDF] Creating PDF document...');
     const pdfDoc = await PDFDocument.create();
+    console.log('[exportPagesToPDF] PDF document created');
+
+    const scale = settings.quality === 'maximum' ? 2 : 1;
+    console.log('[exportPagesToPDF] Using scale:', scale);
 
     // Add each page
-    for (const canvasPage of pages) {
+    for (let i = 0; i < pages.length; i++) {
+        const canvasPage = pages[i];
+        console.log(`[exportPagesToPDF] Processing page ${i + 1}/${pages.length}:`, canvasPage.id);
+
         // Render page
+        console.log(`[exportPagesToPDF] Rendering page ${i + 1} to PNG...`);
         const pngBlob = await renderer.renderPage(canvasPage, {
             format: 'png',
-            scale: settings.quality === 'maximum' ? 2 : 1,
+            scale,
             quality: 1,
         });
+        console.log(`[exportPagesToPDF] Page ${i + 1} PNG blob created, size:`, pngBlob.size, 'bytes');
 
         // Add PDF page with canvas dimensions
         const pdfPage = pdfDoc.addPage([canvasPage.width, canvasPage.height]);
+        console.log(`[exportPagesToPDF] PDF page ${i + 1} added, dimensions:`, canvasPage.width, 'x', canvasPage.height);
 
         // Embed and draw image
+        console.log(`[exportPagesToPDF] Embedding PNG into PDF page ${i + 1}...`);
         const pngBytes = await pngBlob.arrayBuffer();
         const pngImage = await pdfDoc.embedPng(pngBytes);
+        console.log(`[exportPagesToPDF] PNG embedded for page ${i + 1}`);
 
         pdfPage.drawImage(pngImage, {
             x: 0,
@@ -106,17 +146,26 @@ export const exportPagesToPDF = async (
             width: canvasPage.width,
             height: canvasPage.height,
         });
+        console.log(`[exportPagesToPDF] Image drawn on PDF page ${i + 1}`);
     }
 
     // Save PDF
+    console.log('[exportPagesToPDF] Saving PDF document...');
     const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    console.log('[exportPagesToPDF] PDF saved, size:', pdfBytes.length, 'bytes');
 
-    return {
+    // Convert Uint8Array to a type that Blob accepts
+    const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+    console.log('[exportPagesToPDF] PDF blob created, size:', blob.size);
+
+    const result = {
         blob,
         pageCount: pages.length,
         size: blob.size,
     };
+    console.log('[exportPagesToPDF] Export complete. Page count:', result.pageCount);
+
+    return result;
 };
 
 /**
@@ -222,26 +271,44 @@ export const exportPrintPDF = async (
     }
 
     // Save PDF
+    console.log('[exportPrintPDF] Saving PDF document...');
     const pdfBytes = await pdfDoc.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    console.log('[exportPrintPDF] PDF saved, size:', pdfBytes.length, 'bytes');
 
-    return {
+    // Convert Uint8Array to a type that Blob accepts
+    const blob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+    console.log('[exportPrintPDF] PDF blob created, size:', blob.size);
+
+    const result = {
         blob,
         pageCount: pages.length,
         size: blob.size,
     };
+    console.log('[exportPrintPDF] Export complete. Page count:', result.pageCount);
+
+    return result;
 };
 
 /**
  * Download PDF file
  */
 export const downloadPDF = (blob: Blob, filename: string): void => {
+    console.log('[downloadPDF] Starting download. Filename:', filename);
+    console.log('[downloadPDF] Blob size:', blob.size, 'bytes, type:', blob.type);
+
     const url = URL.createObjectURL(blob);
+    console.log('[downloadPDF] Created object URL:', url);
+
     const link = document.createElement('a');
     link.href = url;
     link.download = `${filename}.pdf`;
+    console.log('[downloadPDF] Download link created:', link.download);
+
     document.body.appendChild(link);
+    console.log('[downloadPDF] Triggering download...');
     link.click();
+
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    console.log('[downloadPDF] Download initiated, cleanup complete');
 };

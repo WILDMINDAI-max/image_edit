@@ -8,6 +8,7 @@ import { TextElement } from '@/types/canvas';
 import { loadGoogleFont, GOOGLE_FONTS } from '@/services/googleFonts';
 import { fabric } from 'fabric';
 import JSZip from 'jszip';
+import { PDFDocument } from 'pdf-lib';
 import {
     X,
     Download,
@@ -371,11 +372,74 @@ export function ExportModal() {
             filename = filename.replace(/[^a-zA-Z0-9_-]/g, '_');
             console.log('[ExportModal] Export filename:', filename);
 
-            const fileExtension = format === 'jpeg' ? 'jpg' : 'png';
+            const fileExtension = format === 'jpeg' ? 'jpg' : format === 'pdf' ? 'pdf' : 'png';
             console.log('[ExportModal] File extension:', fileExtension);
 
-            if (pagesToExport.length === 1) {
-                // Single page export
+            // PDF Export handling
+            if (format === 'pdf') {
+                console.log('[ExportModal] PDF export mode');
+                setExportMessage('Creating PDF document...');
+
+                const pdfDoc = await PDFDocument.create();
+                console.log('[ExportModal] PDF document created');
+
+                for (let i = 0; i < pagesToExport.length; i++) {
+                    const page = pagesToExport[i];
+                    console.log(`[ExportModal] Rendering page ${i + 1}/${pagesToExport.length} for PDF:`, page.id);
+                    setExportMessage(`Rendering page ${i + 1} of ${pagesToExport.length}...`);
+                    setExportProgress(Math.round((i / pagesToExport.length) * 80));
+
+                    const blob = await renderPageToBlob(page);
+                    console.log(`[ExportModal] Page ${i + 1} rendered, blob size:`, blob.size);
+
+                    // Convert blob to array buffer and embed in PDF
+                    const pngBytes = await blob.arrayBuffer();
+                    console.log(`[ExportModal] Converting page ${i + 1} to PNG bytes, size:`, pngBytes.byteLength);
+                    const pngImage = await pdfDoc.embedPng(pngBytes);
+                    console.log(`[ExportModal] Page ${i + 1} PNG embedded in PDF`);
+
+                    // Add PDF page with canvas dimensions
+                    const pdfPage = pdfDoc.addPage([page.width * scale, page.height * scale]);
+                    console.log(`[ExportModal] PDF page ${i + 1} added, dimensions:`, page.width * scale, 'x', page.height * scale);
+
+                    // Draw image on page
+                    pdfPage.drawImage(pngImage, {
+                        x: 0,
+                        y: 0,
+                        width: page.width * scale,
+                        height: page.height * scale,
+                    });
+                    console.log(`[ExportModal] Image drawn on PDF page ${i + 1}`);
+                }
+
+                console.log('[ExportModal] Saving PDF document...');
+                setExportMessage('Saving PDF...');
+                setExportProgress(90);
+
+                const pdfBytes = await pdfDoc.save();
+                console.log('[ExportModal] PDF saved, size:', pdfBytes.length, 'bytes');
+                // Convert Uint8Array to a type that Blob accepts
+                const pdfBlob = new Blob([new Uint8Array(pdfBytes)], { type: 'application/pdf' });
+                console.log('[ExportModal] PDF blob created, size:', pdfBlob.size);
+
+                setExportProgress(100);
+
+                // Download PDF
+                console.log('[ExportModal] Creating PDF download link...');
+                const url = URL.createObjectURL(pdfBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${filename}.pdf`;
+                document.body.appendChild(link);
+                console.log('[ExportModal] Triggering PDF download...');
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+                console.log('[ExportModal] PDF download triggered successfully');
+
+                setExportMessage('Download complete!');
+            } else if (pagesToExport.length === 1) {
+                // Single page export (PNG/JPEG)
                 console.log('[ExportModal] Single page export mode');
                 setExportMessage('Rendering page...');
 
@@ -517,8 +581,8 @@ export function ExportModal() {
     // Format options
     const formatOptions: { id: ExportFormat; name: string; description: string; icon: React.ReactNode; disabled?: boolean }[] = [
         { id: 'png', name: 'PNG', description: 'High quality image with optional transparent background', icon: <ImageIcon size={16} className="text-blue-500" /> },
-        { id: 'jpeg', name: 'JPEG', description: 'Ideal for digital sharing and space-saving', icon: <FileType size={16} className="text-green-500" />, disabled: true },
-        { id: 'pdf', name: 'PDF', description: 'Ideal for documents or printing', icon: <FileType size={16} className="text-red-500" />, disabled: true },
+        { id: 'jpeg', name: 'JPEG', description: 'Ideal for digital sharing and space-saving', icon: <FileType size={16} className="text-green-500" /> },
+        { id: 'pdf', name: 'PDF', description: 'Ideal for documents or printing', icon: <FileType size={16} className="text-red-500" /> },
     ];
 
     if (!isOpen) return null;
@@ -743,6 +807,56 @@ export function ExportModal() {
                                                 <span className="text-sm text-gray-700">Transparent background</span>
                                             </label>
 
+                                            {/* Scale Slider */}
+                                            <div className="flex items-center gap-4">
+                                                <input
+                                                    type="range"
+                                                    min="0.5"
+                                                    max="4"
+                                                    step="0.1"
+                                                    value={scale}
+                                                    onChange={(e) => setScale(parseFloat(e.target.value))}
+                                                    disabled={isExporting}
+                                                    className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
+                                                />
+                                                <span className="text-sm font-medium text-gray-600 w-10 text-right">
+                                                    {scale}x
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-500">
+                                                {outputWidth} x {outputHeight}px
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Scale slider for JPEG */}
+                                    {format === option.id && !option.disabled && option.id === 'jpeg' && (
+                                        <div className="mt-4 space-y-3">
+                                            {/* Scale Slider */}
+                                            <div className="flex items-center gap-4">
+                                                <input
+                                                    type="range"
+                                                    min="0.5"
+                                                    max="4"
+                                                    step="0.1"
+                                                    value={scale}
+                                                    onChange={(e) => setScale(parseFloat(e.target.value))}
+                                                    disabled={isExporting}
+                                                    className="flex-1 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-500 disabled:opacity-50"
+                                                />
+                                                <span className="text-sm font-medium text-gray-600 w-10 text-right">
+                                                    {scale}x
+                                                </span>
+                                            </div>
+                                            <p className="text-sm text-gray-500">
+                                                {outputWidth} x {outputHeight}px
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    {/* Scale slider for PDF */}
+                                    {format === option.id && !option.disabled && option.id === 'pdf' && (
+                                        <div className="mt-4 space-y-3">
                                             {/* Scale Slider */}
                                             <div className="flex items-center gap-4">
                                                 <input

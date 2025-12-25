@@ -4,10 +4,23 @@
 import { fabric } from 'fabric';
 import { ImageFilter, CropData } from '@/types/canvas';
 
-export interface CustomImageOptions extends fabric.IImageOptions {
+export interface CustomImageOptions {
     customId?: string;
-    filters?: ImageFilter;
+    customFilters?: ImageFilter; // Renamed to avoid conflict with fabric.Image.filters
     cropData?: CropData | null;
+    // Fabric.js base image options
+    left?: number;
+    top?: number;
+    width?: number;
+    height?: number;
+    scaleX?: number;
+    scaleY?: number;
+    angle?: number;
+    opacity?: number;
+    flipX?: boolean;
+    flipY?: boolean;
+    crossOrigin?: string;
+    [key: string]: any; // Allow other fabric.Image properties
 }
 
 /**
@@ -26,7 +39,7 @@ export class CustomImage extends fabric.Image {
         super(element as HTMLImageElement, options);
 
         this.customId = options?.customId;
-        this.customFilters = options?.filters;
+        this.customFilters = options?.customFilters;
         this.cropData = options?.cropData;
 
         // Store original element for reset
@@ -102,9 +115,18 @@ export class CustomImage extends fabric.Image {
             blur: 0,
             temperature: 0,
             tint: 0,
+            highlights: 0,
+            shadows: 0,
+            whites: 0,
+            blacks: 0,
+            vibrance: 0,
+            clarity: 0,
+            sharpness: 0,
+            vignette: 0,
             grayscale: false,
             sepia: false,
             invert: false,
+            filterPreset: null,
         };
 
         this.filters = [];
@@ -182,9 +204,18 @@ export class CustomImage extends fabric.Image {
             blur: 0,
             temperature: 0,
             tint: 0,
+            highlights: 0,
+            shadows: 0,
+            whites: 0,
+            blacks: 0,
+            vibrance: 0,
+            clarity: 0,
+            sharpness: 0,
+            vignette: 0,
             grayscale: false,
             sepia: false,
             invert: false,
+            filterPreset: null,
         };
     }
 
@@ -207,7 +238,9 @@ export class CustomImage extends fabric.Image {
         url: string,
         callback?: (image: CustomImage) => void,
         options?: CustomImageOptions
-    ): void {
+    ): CustomImage {
+        let result: CustomImage | null = null;
+
         fabric.Image.fromURL(
             url,
             (img) => {
@@ -216,14 +249,18 @@ export class CustomImage extends fabric.Image {
                     ...img.toObject(),
                 });
 
-                if (options?.filters) {
-                    customImg.applyCustomFilters(options.filters);
+                if (options?.customFilters) {
+                    customImg.applyCustomFilters(options.customFilters);
                 }
 
+                result = customImg;
                 callback?.(customImg);
             },
             { crossOrigin: 'anonymous' }
         );
+
+        // Return a placeholder instance (will be updated via callback)
+        return result || new CustomImage('data:image/gif;base64,R0lGODlhAQABAAAAACw=', options);
     }
 }
 
