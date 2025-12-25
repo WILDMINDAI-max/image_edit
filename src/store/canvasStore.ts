@@ -9,6 +9,8 @@ import {
     TextElement,
     ImageElement,
     ShapeElement,
+    LineElement,
+    LineStyle,
     createDefaultTransform,
     createDefaultStyle,
     createDefaultTextStyle,
@@ -62,6 +64,7 @@ interface CanvasActions {
     addTextElement: (options?: Partial<TextElement>) => string;
     addImageElement: (src: string, options?: Partial<ImageElement>) => string;
     addShapeElement: (shapeType: string, options?: Partial<ShapeElement>) => string;
+    addLineElement: (lineStyle: LineStyle, options?: { x1?: number; y1?: number; x2?: number; y2?: number; strokeColor?: string; strokeWidth?: number }) => string;
     updateElement: (id: string, updates: Partial<CanvasElement>) => void;
     removeElement: (id: string | string[]) => void;
     duplicateElements: (ids?: string[]) => string[];
@@ -323,6 +326,52 @@ export const useCanvasStore = create<CanvasStore>()(
             };
 
             get().addElement(shapeElement);
+            return id;
+        },
+
+        addLineElement: (
+            lineStyle: LineStyle,
+            options?: { x1?: number; y1?: number; x2?: number; y2?: number; strokeColor?: string; strokeWidth?: number }
+        ) => {
+            const id = crypto.randomUUID();
+            const elements = getActivePageElements();
+            const maxZIndex = elements.length > 0
+                ? Math.max(...elements.map(e => e.zIndex))
+                : 0;
+
+            // Default line: horizontal, 200px wide, centered in canvas
+            const editorState = useEditorStore.getState();
+            const activePage = editorState.project?.pages.find(
+                p => p.id === editorState.project?.activePageId
+            );
+            const canvasWidth = activePage?.width || 800;
+            const canvasHeight = activePage?.height || 600;
+            const centerX = canvasWidth / 2;
+            const centerY = canvasHeight / 2;
+
+            const lineElement: LineElement = {
+                id,
+                type: 'line',
+                name: `Line`,
+                // Endpoint coordinates
+                x1: options?.x1 ?? centerX - 100,
+                y1: options?.y1 ?? centerY,
+                x2: options?.x2 ?? centerX + 100,
+                y2: options?.y2 ?? centerY,
+                // Line styling
+                lineStyle,
+                strokeWidth: options?.strokeWidth ?? 4,
+                strokeColor: options?.strokeColor ?? '#1a1a1a',
+                // Base element properties
+                transform: createDefaultTransform(),
+                style: createDefaultStyle(),
+                locked: false,
+                visible: true,
+                selectable: true,
+                zIndex: maxZIndex + 1,
+            };
+
+            get().addElement(lineElement);
             return id;
         },
 

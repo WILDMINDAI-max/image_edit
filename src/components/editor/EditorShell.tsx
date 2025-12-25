@@ -10,6 +10,7 @@ import { TopToolbar } from '@/components/toolbar/TopToolbar';
 import { ContextToolbar } from '@/components/toolbar/ContextToolbar';
 import { ResizeModal } from './ResizeModal';
 import { ExportModal } from './ExportModal';
+import { PreviewMode } from './PreviewMode';
 import { ColorsPanel } from '@/components/sidebar/ColorsPanel';
 import { ImageEditPanel } from '@/components/sidebar/ImageEditPanel';
 import { TextEditPanel } from '@/components/sidebar/TextEditPanel';
@@ -85,6 +86,12 @@ export function EditorShell() {
                     e.preventDefault();
                     store.removePage(project.activePageId);
                 }
+            }
+
+            // Tab key to open preview mode
+            if (e.key === 'Tab') {
+                e.preventDefault();
+                store.openPreviewMode();
             }
         };
 
@@ -382,6 +389,9 @@ export function EditorShell() {
             {/* Modals */}
             <ResizeModal />
             <ExportModal />
+
+            {/* Preview Mode Overlay */}
+            <PreviewMode />
         </div>
     );
 }

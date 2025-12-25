@@ -59,6 +59,7 @@ export function TopToolbar() {
     const resetZoom = useEditorStore((state) => state.resetZoom);
     const fitToScreen = useEditorStore((state) => state.fitToScreen);
     const openExportModal = useEditorStore((state) => state.openExportModal);
+    const openPreviewMode = useEditorStore((state) => state.openPreviewMode);
     const updatePage = useEditorStore((state) => state.updatePage);
 
     const undo = useHistoryStore((state) => state.undo);
@@ -264,7 +265,11 @@ export function TopToolbar() {
                 </div>
 
                 {/* Preview Button */}
-                <button className="px-4 py-1.5 bg-[#27272a] hover:bg-white/10 text-gray-200 text-sm font-medium rounded-lg transition-colors border border-gray-700 flex items-center gap-2">
+                <button
+                    onClick={openPreviewMode}
+                    className="px-4 py-1.5 bg-[#27272a] hover:bg-white/10 text-gray-200 text-sm font-medium rounded-lg transition-colors border border-gray-700 flex items-center gap-2"
+                    title="Preview design (Tab)"
+                >
                     <Play size={14} fill="currentColor" aria-hidden="true" />
                     Preview
                 </button>

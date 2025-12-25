@@ -52,6 +52,10 @@ interface EditorState {
     isExportModalOpen: boolean;
     isResizeModalOpen: boolean;
     isNewProjectModalOpen: boolean;
+
+    // Preview mode state
+    isPreviewMode: boolean;
+    previewPageIndex: number;
 }
 
 interface EditorActions {
@@ -99,6 +103,13 @@ interface EditorActions {
     openNewProjectModal: () => void;
     closeNewProjectModal: () => void;
 
+    // Preview mode actions
+    openPreviewMode: () => void;
+    closePreviewMode: () => void;
+    setPreviewPage: (index: number) => void;
+    nextPreviewPage: () => void;
+    prevPreviewPage: () => void;
+
     // Utility
     markAsChanged: () => void;
     markAsSaved: () => void;
@@ -127,6 +138,8 @@ export const useEditorStore = create<EditorStore>()(
         isExportModalOpen: false,
         isResizeModalOpen: false,
         isNewProjectModalOpen: false,
+        isPreviewMode: false,
+        previewPageIndex: 0,
 
         // Project actions
         createNewProject: (preset?: PagePreset) => {
@@ -408,6 +421,50 @@ export const useEditorStore = create<EditorStore>()(
         closeNewProjectModal: () => {
             set((state) => {
                 state.isNewProjectModalOpen = false;
+            });
+        },
+
+        // Preview mode actions
+        openPreviewMode: () => {
+            const project = get().project;
+            if (!project) return;
+            // Find current page index
+            const currentIndex = project.pages.findIndex(p => p.id === project.activePageId);
+            set((state) => {
+                state.isPreviewMode = true;
+                state.previewPageIndex = currentIndex >= 0 ? currentIndex : 0;
+            });
+        },
+
+        closePreviewMode: () => {
+            set((state) => {
+                state.isPreviewMode = false;
+            });
+        },
+
+        setPreviewPage: (index: number) => {
+            const project = get().project;
+            if (!project) return;
+            set((state) => {
+                state.previewPageIndex = Math.max(0, Math.min(index, project.pages.length - 1));
+            });
+        },
+
+        nextPreviewPage: () => {
+            const project = get().project;
+            if (!project) return;
+            set((state) => {
+                if (state.previewPageIndex < project.pages.length - 1) {
+                    state.previewPageIndex += 1;
+                }
+            });
+        },
+
+        prevPreviewPage: () => {
+            set((state) => {
+                if (state.previewPageIndex > 0) {
+                    state.previewPageIndex -= 1;
+                }
             });
         },
 

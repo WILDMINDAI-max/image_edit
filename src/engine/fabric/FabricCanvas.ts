@@ -2,9 +2,10 @@
 // Core Fabric.js wrapper and initialization
 
 import { fabric } from 'fabric';
-import { CanvasElement, TextElement, ImageElement, ShapeElement } from '@/types/canvas';
+import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement } from '@/types/canvas';
 import { Page, PageBackground } from '@/types/project';
 import { CustomText } from './CustomText';
+import { SHAPE_CATALOG } from '@/types/shapes';
 
 export interface FabricCanvasOptions {
     width: number;
@@ -721,63 +722,188 @@ export class FabricCanvas {
         if (!this.canvas) throw new Error('Canvas not initialized');
 
         let shape: fabric.Object;
+        const width = element.transform.width;
+        const height = element.transform.height;
 
+        // Find shape definition from catalog
+        const shapeDef = SHAPE_CATALOG.find(s => s.id === element.shapeType);
+
+        // Handle parametric shapes first (basic Fabric.js objects)
         switch (element.shapeType) {
+            // Basic shapes
+            case 'square':
             case 'rectangle':
                 shape = new fabric.Rect({
-                    width: element.transform.width,
-                    height: element.transform.height,
+                    width: width,
+                    height: height,
                     rx: element.style.cornerRadius,
                     ry: element.style.cornerRadius,
                 });
                 break;
 
+            case 'rounded-square':
+            case 'rounded-rectangle':
+                shape = new fabric.Rect({
+                    width: width,
+                    height: height,
+                    rx: shapeDef?.params?.cornerRadius || 15,
+                    ry: shapeDef?.params?.cornerRadius || 15,
+                });
+                break;
+
             case 'circle':
                 shape = new fabric.Circle({
-                    radius: Math.min(element.transform.width, element.transform.height) / 2,
+                    radius: Math.min(width, height) / 2,
                 });
                 break;
 
+            case 'triangle-up':
             case 'triangle':
                 shape = new fabric.Triangle({
-                    width: element.transform.width,
-                    height: element.transform.height,
+                    width: width,
+                    height: height,
                 });
                 break;
 
+            // Polygons
+            case 'diamond':
             case 'polygon':
                 shape = new fabric.Polygon(
-                    this.generatePolygonPoints(element.points || 6, 50),
+                    this.generatePolygonPoints(element.points || shapeDef?.params?.sides || 4, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'pentagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(5, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'hexagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(6, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'heptagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(7, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'octagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(8, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'nonagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(9, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            case 'decagon':
+                shape = new fabric.Polygon(
+                    this.generatePolygonPoints(10, Math.min(width, height) / 2),
+                    {}
+                );
+                break;
+
+            // Stars
+            case 'star':
+            case 'star-5':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(5, Math.min(width, height) / 2, Math.min(width, height) * 0.2),
+                    {}
+                );
+                break;
+
+            case 'star-4':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(4, Math.min(width, height) / 2, Math.min(width, height) * 0.2),
+                    {}
+                );
+                break;
+
+            case 'star-6':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(6, Math.min(width, height) / 2, Math.min(width, height) * 0.25),
+                    {}
+                );
+                break;
+
+            case 'star-8':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(8, Math.min(width, height) / 2, Math.min(width, height) * 0.25),
+                    {}
+                );
+                break;
+
+            case 'star-12':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(12, Math.min(width, height) / 2, Math.min(width, height) * 0.3),
+                    {}
+                );
+                break;
+
+            case 'burst':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(16, Math.min(width, height) / 2, Math.min(width, height) * 0.35),
                     {}
                 );
                 break;
 
             case 'line':
-                shape = new fabric.Line([0, 0, element.transform.width, 0], {
+                shape = new fabric.Line([0, 0, width, 0], {
                     strokeWidth: element.style.strokeWidth || 2,
                 });
                 break;
 
-            case 'star':
-                shape = new fabric.Polygon(
-                    this.generateStarPoints(element.points || 5, 50, element.innerRadius || 25),
-                    {}
-                );
-                break;
+            // SVG Path shapes - use shape definition or element's svgPath
+            default: {
+                // Get SVG path from catalog or element
+                const svgPath = element.svgPath || shapeDef?.svgPath;
 
-            default:
-                shape = new fabric.Rect({
-                    width: element.transform.width,
-                    height: element.transform.height,
-                });
+                if (svgPath) {
+                    // Check if this is a line category shape
+                    const isLineShape = shapeDef?.category === 'lines';
+
+                    // Create path from SVG, scaled to element size
+                    shape = new fabric.Path(svgPath, {
+                        scaleX: width / 100,  // SVG paths are normalized to 100x100
+                        scaleY: height / 100,
+                        // Line shapes use stroke, not fill
+                        fill: isLineShape ? 'transparent' : undefined,
+                        stroke: isLineShape ? (element.style.fill as string || '#4A90D9') : undefined,
+                        strokeWidth: isLineShape ? 3 : undefined,
+                    });
+                } else {
+                    // Fallback to rectangle
+                    shape = new fabric.Rect({
+                        width: width,
+                        height: height,
+                    });
+                }
+            }
         }
+
+        // Check if this is a line category shape for proper styling
+        const isLineCategory = shapeDef?.category === 'lines';
 
         shape.set({
             left: element.transform.x,
             top: element.transform.y,
-            fill: element.style.fill as string,
-            stroke: element.style.stroke ?? undefined,
-            strokeWidth: element.style.strokeWidth,
+            // Line shapes use stroke for color, not fill
+            fill: isLineCategory ? 'transparent' : (element.style.fill as string),
+            stroke: isLineCategory ? (element.style.fill as string || '#4A90D9') : (element.style.stroke ?? undefined),
+            strokeWidth: isLineCategory ? 3 : element.style.strokeWidth,
             opacity: element.style.opacity,
             angle: element.transform.rotation,
             scaleX: element.transform.scaleX,
@@ -805,6 +931,404 @@ export class FabricCanvas {
         this.objectIdMap.set(element.id, shape);
 
         return shape;
+    }
+    /**
+     * Add a line element with custom endpoint controls (Canva-style)
+     * ALL line types get the same endpoint-only controls
+     */
+    public addLine(element: LineElement): fabric.Line {
+        if (!this.canvas) throw new Error('Canvas not initialized');
+
+        // Create the main line - ALL lines use fabric.Line for consistent controls
+        const line = new fabric.Line([element.x1, element.y1, element.x2, element.y2], {
+            stroke: element.strokeColor,
+            strokeWidth: element.strokeWidth,
+            strokeLineCap: 'round',
+            strokeLineJoin: 'round',
+            selectable: element.selectable,
+            evented: !element.locked,
+            opacity: element.style.opacity,
+            objectCaching: false,
+        });
+
+        // Apply dash pattern based on lineStyle
+        if (element.lineStyle.dashPattern === 'dashed') {
+            line.strokeDashArray = [element.strokeWidth * 4, element.strokeWidth * 2];
+        } else if (element.lineStyle.dashPattern === 'dotted') {
+            line.strokeDashArray = [element.strokeWidth, element.strokeWidth * 2];
+            line.strokeLineCap = 'round';
+        }
+
+        // Store metadata and line element reference
+        // CRITICAL: Must use 'data' property for selection detection (getSelectedObjectIds uses obj.data?.id)
+        const lineWithMeta = line as fabric.Line & {
+            data?: { id: string; type: string };
+            elementId?: string;
+            elementType?: string;
+            lineElement?: LineElement;
+        };
+        lineWithMeta.data = { id: element.id, type: 'line' };
+        lineWithMeta.elementId = element.id;
+        lineWithMeta.elementType = 'line';
+        lineWithMeta.lineElement = element;
+
+        // Override render to draw decorations
+        const originalRender = line._render.bind(line);
+        line._render = (ctx: CanvasRenderingContext2D) => {
+            // Draw the main line first
+            originalRender(ctx);
+
+            // Draw decorations at endpoints
+            // IMPORTANT: Read from lineWithMeta.lineElement for dynamic updates when using context toolbar
+            const currentLineElement = lineWithMeta.lineElement || element;
+            const strokeWidth = line.strokeWidth ?? element.strokeWidth;
+            const color = (line.stroke as string) ?? element.strokeColor;
+            const currentLineStyle = currentLineElement.lineStyle || { startCap: 'none', endCap: 'none', capFill: 'outline' };
+            const isFilled = currentLineStyle.capFill === 'filled';
+
+            // In fabric.Line._render, context is centered on line's bounding box
+            // Line endpoints in local space are at:
+            // x1,y1 relative to center and x2,y2 relative to center
+            const lineX1 = line.x1 ?? 0;
+            const lineY1 = line.y1 ?? 0;
+            const lineX2 = line.x2 ?? 0;
+            const lineY2 = line.y2 ?? 0;
+
+            // Calculate center of the line
+            const centerX = (lineX1 + lineX2) / 2;
+            const centerY = (lineY1 + lineY2) / 2;
+
+            // Local coordinates relative to center
+            const x1 = lineX1 - centerX;
+            const y1 = lineY1 - centerY;
+            const x2 = lineX2 - centerX;
+            const y2 = lineY2 - centerY;
+
+            // Calculate angle for arrows
+            const dx = x2 - x1;
+            const dy = y2 - y1;
+            const angle = Math.atan2(dy, dx);
+
+            // Draw start cap
+            this.drawLineCap(ctx, currentLineStyle.startCap || 'none', x1, y1, angle + Math.PI, strokeWidth, color, isFilled);
+
+            // Draw end cap
+            this.drawLineCap(ctx, currentLineStyle.endCap || 'none', x2, y2, angle, strokeWidth, color, isFilled);
+        };
+
+        // Setup custom endpoint-only controls (removes default bounding box)
+        this.setupLineControls(line, element);
+
+        this.canvas.add(line);
+        this.objectIdMap.set(element.id, line);
+
+        return line;
+    }
+
+    /**
+     * Draw a line cap decoration using Canvas 2D context
+     */
+    private drawLineCap(
+        ctx: CanvasRenderingContext2D,
+        capType: string,
+        x: number,
+        y: number,
+        angle: number,
+        strokeWidth: number,
+        color: string,
+        isFilled: boolean
+    ): void {
+        if (capType === 'none') return;
+
+        const size = strokeWidth * 3;
+        ctx.save();
+        ctx.translate(x, y);
+        ctx.rotate(angle);
+
+        ctx.fillStyle = isFilled ? color : 'transparent';
+        ctx.strokeStyle = color;
+        ctx.lineWidth = strokeWidth;
+
+        switch (capType) {
+            case 'arrow':
+                // Triangle arrow pointing right
+                ctx.beginPath();
+                ctx.moveTo(size, 0);
+                ctx.lineTo(-size * 0.5, -size * 0.6);
+                ctx.lineTo(-size * 0.5, size * 0.6);
+                ctx.closePath();
+                if (isFilled) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+                break;
+
+            case 'bar':
+                // Perpendicular bar
+                ctx.beginPath();
+                ctx.moveTo(0, -size);
+                ctx.lineTo(0, size);
+                ctx.stroke();
+                break;
+
+            case 'circle':
+                ctx.beginPath();
+                ctx.arc(0, 0, size, 0, Math.PI * 2);
+                if (isFilled) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+                break;
+
+            case 'square':
+                ctx.beginPath();
+                ctx.rect(-size, -size, size * 2, size * 2);
+                if (isFilled) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+                break;
+
+            case 'diamond':
+                ctx.beginPath();
+                ctx.moveTo(0, -size);
+                ctx.lineTo(size, 0);
+                ctx.lineTo(0, size);
+                ctx.lineTo(-size, 0);
+                ctx.closePath();
+                if (isFilled) {
+                    ctx.fill();
+                } else {
+                    ctx.stroke();
+                }
+                break;
+        }
+
+        ctx.restore();
+    }
+
+    /**
+     * Create line endpoint decoration (arrow, bar, circle, square, diamond)
+     */
+    private createLineDecoration(
+        capType: string,
+        x: number,
+        y: number,
+        angle: number,
+        strokeWidth: number,
+        color: string,
+        capFill: string
+    ): fabric.Object | null {
+        const size = strokeWidth * 3;
+        const isFilled = capFill === 'filled';
+
+        switch (capType) {
+            case 'arrow':
+                // Triangle arrow
+                return new fabric.Triangle({
+                    width: size * 2,
+                    height: size * 2.5,
+                    left: x,
+                    top: y,
+                    fill: color,
+                    angle: angle + 90,
+                    originX: 'center',
+                    originY: 'center',
+                });
+
+            case 'bar':
+                // Vertical bar
+                return new fabric.Rect({
+                    width: strokeWidth,
+                    height: size * 2,
+                    left: x,
+                    top: y,
+                    fill: color,
+                    angle: angle,
+                    originX: 'center',
+                    originY: 'center',
+                });
+
+            case 'circle':
+                return new fabric.Circle({
+                    radius: size,
+                    left: x,
+                    top: y,
+                    fill: isFilled ? color : 'transparent',
+                    stroke: color,
+                    strokeWidth: isFilled ? 0 : strokeWidth,
+                    originX: 'center',
+                    originY: 'center',
+                });
+
+            case 'square':
+                return new fabric.Rect({
+                    width: size * 2,
+                    height: size * 2,
+                    left: x,
+                    top: y,
+                    fill: isFilled ? color : 'transparent',
+                    stroke: color,
+                    strokeWidth: isFilled ? 0 : strokeWidth,
+                    originX: 'center',
+                    originY: 'center',
+                });
+
+            case 'diamond':
+                return new fabric.Rect({
+                    width: size * 1.5,
+                    height: size * 1.5,
+                    left: x,
+                    top: y,
+                    fill: isFilled ? color : 'transparent',
+                    stroke: color,
+                    strokeWidth: isFilled ? 0 : strokeWidth,
+                    angle: 45,
+                    originX: 'center',
+                    originY: 'center',
+                });
+
+            case 'none':
+            default:
+                return null;
+        }
+    }
+
+    /**
+     * Setup custom endpoint-only controls for line objects (Canva-style)
+     */
+    private setupLineControls(line: fabric.Line, _element?: LineElement): void {
+        // Remove all default controls
+        line.controls = {};
+
+        // Custom circular control renderer
+        const renderCircleControl = (
+            ctx: CanvasRenderingContext2D,
+            left: number,
+            top: number,
+            _styleOverride: unknown,
+            _fabricObject: fabric.Object
+        ) => {
+            const size = 14;
+            ctx.save();
+            ctx.translate(left, top);
+
+            // Outer circle (white fill with blue border)
+            ctx.beginPath();
+            ctx.arc(0, 0, size / 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = '#0d99ff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.restore();
+        };
+
+        // P1 (start point) control
+        line.controls.p1 = new fabric.Control({
+            x: -0.5,
+            y: 0,
+            cursorStyle: 'crosshair',
+            positionHandler: function (_dim, _finalMatrix, fabricObject) {
+                const l = fabricObject as fabric.Line;
+                // Calculate local position relative to line center
+                const x1 = l.x1 ?? 0;
+                const y1 = l.y1 ?? 0;
+                const x2 = l.x2 ?? 0;
+                const y2 = l.y2 ?? 0;
+                const centerX = (x1 + x2) / 2;
+                const centerY = (y1 + y2) / 2;
+                const localX = x1 - centerX;
+                const localY = y1 - centerY;
+                // Transform to canvas coordinates
+                return fabric.util.transformPoint(
+                    new fabric.Point(localX, localY),
+                    fabricObject.calcTransformMatrix()
+                );
+            },
+            actionHandler: function (_eventData, transform, x, y) {
+                const l = transform.target as fabric.Line;
+                // Convert canvas point to local coordinates
+                const inverseMatrix = fabric.util.invertTransform(l.calcTransformMatrix());
+                const localPoint = fabric.util.transformPoint(new fabric.Point(x, y), inverseMatrix);
+
+                // Calculate current center
+                const x1 = l.x1 ?? 0;
+                const y1 = l.y1 ?? 0;
+                const x2 = l.x2 ?? 0;
+                const y2 = l.y2 ?? 0;
+                const centerX = (x1 + x2) / 2;
+                const centerY = (y1 + y2) / 2;
+
+                // Update x1, y1 based on local point + center
+                l.set({
+                    x1: localPoint.x + centerX,
+                    y1: localPoint.y + centerY
+                });
+                l.setCoords();
+                return true;
+            },
+            render: renderCircleControl,
+            actionName: 'modifyLine',
+        });
+
+        // P2 (end point) control
+        line.controls.p2 = new fabric.Control({
+            x: 0.5,
+            y: 0,
+            cursorStyle: 'crosshair',
+            positionHandler: function (_dim, _finalMatrix, fabricObject) {
+                const l = fabricObject as fabric.Line;
+                // Calculate local position relative to line center
+                const x1 = l.x1 ?? 0;
+                const y1 = l.y1 ?? 0;
+                const x2 = l.x2 ?? 0;
+                const y2 = l.y2 ?? 0;
+                const centerX = (x1 + x2) / 2;
+                const centerY = (y1 + y2) / 2;
+                const localX = x2 - centerX;
+                const localY = y2 - centerY;
+                // Transform to canvas coordinates
+                return fabric.util.transformPoint(
+                    new fabric.Point(localX, localY),
+                    fabricObject.calcTransformMatrix()
+                );
+            },
+            actionHandler: function (_eventData, transform, x, y) {
+                const l = transform.target as fabric.Line;
+                // Convert canvas point to local coordinates
+                const inverseMatrix = fabric.util.invertTransform(l.calcTransformMatrix());
+                const localPoint = fabric.util.transformPoint(new fabric.Point(x, y), inverseMatrix);
+
+                // Calculate current center
+                const x1 = l.x1 ?? 0;
+                const y1 = l.y1 ?? 0;
+                const x2 = l.x2 ?? 0;
+                const y2 = l.y2 ?? 0;
+                const centerX = (x1 + x2) / 2;
+                const centerY = (y1 + y2) / 2;
+
+                // Update x2, y2 based on local point + center
+                l.set({
+                    x2: localPoint.x + centerX,
+                    y2: localPoint.y + centerY
+                });
+                l.setCoords();
+                return true;
+            },
+            render: renderCircleControl,
+            actionName: 'modifyLine',
+        });
+
+        // Disable bounding box, rotation, and scaling
+        line.lockRotation = true;
+        line.lockScalingX = true;
+        line.lockScalingY = true;
+        line.hasBorders = false;
     }
 
     /**
@@ -1003,6 +1527,8 @@ export class FabricCanvas {
                 return await this.addImage(element as ImageElement);
             case 'shape':
                 return this.addShape(element as ShapeElement);
+            case 'line':
+                return this.addLine(element as LineElement);
             // TODO: Add more element types
             default:
                 console.warn(`Unknown element type: ${element.type}`);

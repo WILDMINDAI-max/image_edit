@@ -1,16 +1,93 @@
 // Canvas Element Type Definitions
 // Core types for all canvas elements in the design editor
 
-export type ElementType = 'text' | 'image' | 'shape' | 'svg' | 'group' | 'chart' | 'video';
+export type ElementType = 'text' | 'image' | 'shape' | 'line' | 'svg' | 'group' | 'chart' | 'video';
 
 export type ShapeType =
-    | 'rectangle'
+    // Lines (14 shapes)
+    | 'solid-line'
+    | 'dashed-line'
+    | 'dotted-line'
+    | 'line-arrow-right'
+    | 'line-arrow-right-long'
+    | 'dotted-arrow-right'
+    | 'line-bar-arrow'
+    | 'line-double-arrow'
+    | 'dotted-double-arrow'
+    | 'line-square-filled'
+    | 'line-circle-filled'
+    | 'line-diamond-filled'
+    | 'line-square-outline'
+    | 'line-circle-outline'
+    // Basic shapes (22 Canva shapes)
+    | 'square'
+    | 'rounded-square'
     | 'circle'
+    | 'triangle-up'
+    | 'triangle-down'
+    | 'diamond'
+    | 'plus'
+    | 'hexagon'
+    | 'ticket'
+    | 'parallelogram-left'
+    | 'parallelogram-right'
+    | 'trapezoid'
+    | 'inverted-trapezoid'
+    | 'u-shape'
+    | 'arch'
+    | 'rounded-bottom'
+    | 'stadium'
+    | 'right-triangle'
+    | 'half-circle'
+    | 'quarter-circle'
+    | 'quarter-ring'
+    | 'semi-ring'
+    // Legacy/compatibility
+    | 'rectangle'
+    | 'rounded-rectangle'
     | 'triangle'
     | 'polygon'
     | 'line'
     | 'arrow'
-    | 'star';
+    | 'star'
+    // Polygons
+    | 'pentagon'
+    | 'heptagon'
+    | 'octagon'
+    | 'nonagon'
+    | 'decagon'
+    // Stars
+    | 'star-4'
+    | 'star-5'
+    | 'star-6'
+    | 'star-8'
+    | 'star-12'
+    | 'burst'
+    // Arrows
+    | 'arrow-right'
+    | 'arrow-left'
+    | 'arrow-up'
+    | 'arrow-down'
+    | 'double-arrow-h'
+    | 'double-arrow-v'
+    | 'chevron-right'
+    | 'chevron-left'
+    // Callouts
+    | 'speech-bubble-rect'
+    | 'speech-bubble-round'
+    | 'thought-bubble'
+    | 'callout-box'
+    // Symbols
+    | 'heart'
+    | 'cloud'
+    | 'teardrop'
+    | 'cross'
+    | 'minus'
+    | 'lightning'
+    | 'moon'
+    | 'sun'
+    // Custom
+    | 'custom-path';
 
 // Transform properties for positioning and scaling
 export interface Transform {
@@ -200,7 +277,30 @@ export interface ShapeElement extends BaseElement {
     type: 'shape';
     shapeType: ShapeType;
     points?: number; // for polygons and stars
-    innerRadius?: number; // for stars
+    innerRadius?: number; // for stars (0-1 ratio)
+    svgPath?: string; // for custom SVG path shapes
+}
+
+// Line style for line elements
+export interface LineStyle {
+    dashPattern: 'solid' | 'dashed' | 'dotted';
+    startCap: 'none' | 'arrow' | 'bar' | 'circle' | 'square' | 'diamond';
+    endCap: 'none' | 'arrow' | 'bar' | 'circle' | 'square' | 'diamond';
+    capFill: 'filled' | 'outline';
+}
+
+// Line element with endpoint coordinates (Canva-style)
+export interface LineElement extends BaseElement {
+    type: 'line';
+    // Endpoint coordinates (in canvas space)
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    // Line styling
+    lineStyle: LineStyle;
+    strokeWidth: number;
+    strokeColor: string;
 }
 
 // SVG element specific properties
@@ -230,6 +330,7 @@ export type CanvasElement =
     | TextElement
     | ImageElement
     | ShapeElement
+    | LineElement
     | SVGElement
     | GroupElement
     | ChartElement;

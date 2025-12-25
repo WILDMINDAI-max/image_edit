@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { TemplatesPanel } from './TemplatesPanel';
 import { ElementsPanel } from './ElementsPanel';
+import { AssetsPanel } from './AssetsPanel';
 import { TextPanel } from './TextPanel';
 import { UploadPanel } from './UploadPanel';
 import { PhotosPanel } from './PhotosPanel';
@@ -53,7 +54,7 @@ export function SidebarContainer() {
             case 'templates':
                 return <TemplatesPanel />;
             case 'assets':
-                return <ElementsPanel />;
+                return <AssetsPanel />;
             case 'text':
                 return <TextPanel />;
             case 'photos':

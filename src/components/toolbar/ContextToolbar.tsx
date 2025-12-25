@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { SolidBackground } from '@/types/project';
-import { CanvasElement, ImageElement, TextElement } from '@/types/canvas';
+import { CanvasElement, ImageElement, TextElement, LineElement } from '@/types/canvas';
 import { COLOR_PALETTE, applyColorReplacement } from '@/utils/colorReplace';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { fabric } from 'fabric';
@@ -69,6 +69,16 @@ export function ContextToolbar() {
     const [showAlignPopup, setShowAlignPopup] = useState(false);
     const alignPopupRef = useRef<HTMLDivElement>(null);
 
+    // Line style popup state
+    const [showLinePopup, setShowLinePopup] = useState(false);
+    const linePopupRef = useRef<HTMLDivElement>(null);
+
+    // Line start cap and end cap popup state
+    const [showStartCapPopup, setShowStartCapPopup] = useState(false);
+    const [showEndCapPopup, setShowEndCapPopup] = useState(false);
+    const startCapRef = useRef<HTMLDivElement>(null);
+    const endCapRef = useRef<HTMLDivElement>(null);
+
     // Close popup when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -77,14 +87,36 @@ export function ContextToolbar() {
             }
         };
 
-        if (showAlignPopup) {
-            document.addEventListener('mousedown', handleClickOutside);
-        }
+        const handleClickOutsideLine = (event: MouseEvent) => {
+            if (linePopupRef.current && !linePopupRef.current.contains(event.target as Node)) {
+                setShowLinePopup(false);
+            }
+        };
+
+        const handleClickOutsideStartCap = (event: MouseEvent) => {
+            if (startCapRef.current && !startCapRef.current.contains(event.target as Node)) {
+                setShowStartCapPopup(false);
+            }
+        };
+
+        const handleClickOutsideEndCap = (event: MouseEvent) => {
+            if (endCapRef.current && !endCapRef.current.contains(event.target as Node)) {
+                setShowEndCapPopup(false);
+            }
+        };
+
+        if (showAlignPopup) document.addEventListener('mousedown', handleClickOutside);
+        if (showLinePopup) document.addEventListener('mousedown', handleClickOutsideLine);
+        if (showStartCapPopup) document.addEventListener('mousedown', handleClickOutsideStartCap);
+        if (showEndCapPopup) document.addEventListener('mousedown', handleClickOutsideEndCap);
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('mousedown', handleClickOutsideLine);
+            document.removeEventListener('mousedown', handleClickOutsideStartCap);
+            document.removeEventListener('mousedown', handleClickOutsideEndCap);
         };
-    }, [showAlignPopup]);
+    }, [showAlignPopup, showLinePopup, showStartCapPopup, showEndCapPopup]);
 
     // Get current background color
     const currentBgColor = useMemo(() => {
@@ -221,7 +253,27 @@ export function ContextToolbar() {
     const canGroup = selectedElements.length > 1;
     const isImage = element?.type === 'image';
     const isText = element?.type === 'text';
+    const isLine = element?.type === 'line';
     const textElement = isText ? (element as TextElement) : null;
+    // Ensure lineElement has a valid lineStyle with defaults
+    const lineElement = isLine ? (element as LineElement) : null;
+    const lineStyleSafe = lineElement?.lineStyle || { dashPattern: 'solid', startCap: 'none', endCap: 'none', capFill: 'outline' };
+
+    // Helper to update line decorations - updates both store AND fabric object
+    const updateLineDecoration = (newLineStyle: Partial<typeof lineStyleSafe>) => {
+        if (!lineElement) return;
+        const updatedStyle = { ...lineStyleSafe, ...newLineStyle };
+        updateElement(lineElement.id, {
+            lineStyle: updatedStyle
+        } as Partial<LineElement>);
+        // Also update the fabric object's lineElement so _render can read the new values
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(lineElement.id) as any;
+        if (fabricObj && fabricObj.lineElement) {
+            fabricObj.lineElement = { ...fabricObj.lineElement, lineStyle: updatedStyle };
+        }
+        fabricCanvas.getCanvas()?.renderAll();
+    };
 
     // Text formatting handlers
     const handleFontSizeChange = (delta: number) => {
@@ -743,7 +795,7 @@ export function ContextToolbar() {
 
                         {/* Alignment Popup */}
                         {showAlignPopup && (
-                            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50">
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50">
                                 <div className="grid grid-cols-6 gap-1 min-w-[200px]">
                                     <button
                                         onClick={handlePositionAlignLeft}
@@ -846,6 +898,496 @@ export function ContextToolbar() {
                         <Sparkles size={14} />
                         <span className="text-[11px] font-medium">Effects</span>
                     </button>
+                </>
+            )}
+
+            {/* Line Formatting Options - Icon button with popup */}
+            {isLine && lineElement && (
+                <>
+                    <div className="relative" ref={linePopupRef}>
+                        {/* Line Style Icon Button */}
+                        <button
+                            onClick={() => setShowLinePopup(!showLinePopup)}
+                            className={`p-1.5 rounded transition-all ${showLinePopup
+                                ? 'text-purple-600 bg-purple-50'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Line style"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor">
+                                <rect x="1" y="2" width="14" height="2" rx="1" />
+                                <rect x="1" y="7" width="14" height="2" rx="1" />
+                                <rect x="1" y="12" width="14" height="2" rx="1" />
+                            </svg>
+                        </button>
+
+                        {/* Line Style Popup - positioned below the entire context bar */}
+                        {showLinePopup && (
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-50">
+                                {/* Line Style Options - 4 types */}
+                                <div className="flex items-center gap-2 mb-4">
+                                    {/* Solid */}
+                                    <button
+                                        onClick={() => {
+                                            updateElement(lineElement.id, {
+                                                lineStyle: { ...lineElement.lineStyle, dashPattern: 'solid' }
+                                            } as Partial<LineElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                            if (fabricObj) {
+                                                (fabricObj as any).set({ strokeDashArray: null });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'solid'
+                                            ? 'bg-blue-500 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Solid"
+                                    >
+                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
+                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" />
+                                        </svg>
+                                    </button>
+                                    {/* Short Dashed */}
+                                    <button
+                                        onClick={() => {
+                                            updateElement(lineElement.id, {
+                                                lineStyle: { ...lineElement.lineStyle, dashPattern: 'dashed' }
+                                            } as Partial<LineElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                            if (fabricObj) {
+                                                const sw = lineElement.strokeWidth || 4;
+                                                (fabricObj as any).set({ strokeDashArray: [sw * 2, sw] });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'dashed'
+                                            ? 'bg-blue-500 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Dashed"
+                                    >
+                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
+                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="8,4" />
+                                        </svg>
+                                    </button>
+                                    {/* Long Dashed */}
+                                    <button
+                                        onClick={() => {
+                                            updateElement(lineElement.id, {
+                                                lineStyle: { ...lineElement.lineStyle, dashPattern: 'long-dashed' as any }
+                                            } as Partial<LineElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                            if (fabricObj) {
+                                                const sw = lineElement.strokeWidth || 4;
+                                                (fabricObj as any).set({ strokeDashArray: [sw * 4, sw * 2] });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`flex-1 p-2.5 rounded-lg transition-all ${(lineStyleSafe.dashPattern as any) === 'long-dashed'
+                                            ? 'bg-blue-500 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Long dashed"
+                                    >
+                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
+                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="12,6" />
+                                        </svg>
+                                    </button>
+                                    {/* Dotted */}
+                                    <button
+                                        onClick={() => {
+                                            updateElement(lineElement.id, {
+                                                lineStyle: { ...lineElement.lineStyle, dashPattern: 'dotted' }
+                                            } as Partial<LineElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                            if (fabricObj) {
+                                                const sw = lineElement.strokeWidth || 4;
+                                                (fabricObj as any).set({ strokeDashArray: [sw, sw * 2], strokeLineCap: 'round' });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'dotted'
+                                            ? 'bg-blue-500 text-white shadow-sm'
+                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Dotted"
+                                    >
+                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
+                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="2,5" strokeLinecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {/* Stroke weight */}
+                                <div className="pt-2 border-t border-gray-100">
+                                    <span className="text-sm text-gray-700 font-medium">Stroke weight</span>
+                                    <div className="flex items-center gap-3 mt-2">
+                                        <input
+                                            type="range"
+                                            min="1"
+                                            max="32"
+                                            value={lineElement.strokeWidth || 4}
+                                            onChange={(e) => {
+                                                const newWidth = parseInt(e.target.value);
+                                                updateElement(lineElement.id, {
+                                                    strokeWidth: newWidth
+                                                } as Partial<LineElement>);
+                                                const fabricCanvas = getFabricCanvas();
+                                                const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                                if (fabricObj) {
+                                                    (fabricObj as any).set({ strokeWidth: newWidth });
+                                                    const pattern = lineStyleSafe.dashPattern;
+                                                    if (pattern === 'dashed') {
+                                                        (fabricObj as any).set({ strokeDashArray: [newWidth * 2, newWidth] });
+                                                    } else if ((pattern as any) === 'long-dashed') {
+                                                        (fabricObj as any).set({ strokeDashArray: [newWidth * 4, newWidth * 2] });
+                                                    } else if (pattern === 'dotted') {
+                                                        (fabricObj as any).set({ strokeDashArray: [newWidth, newWidth * 2] });
+                                                    }
+                                                    fabricCanvas.getCanvas()?.renderAll();
+                                                }
+                                            }}
+                                            className="flex-1 h-2 bg-gradient-to-r from-blue-500 to-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:cursor-pointer"
+                                        />
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max="32"
+                                            value={lineElement.strokeWidth || 4}
+                                            onChange={(e) => {
+                                                const newWidth = Math.max(1, Math.min(32, parseInt(e.target.value) || 1));
+                                                updateElement(lineElement.id, {
+                                                    strokeWidth: newWidth
+                                                } as Partial<LineElement>);
+                                                const fabricCanvas = getFabricCanvas();
+                                                const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                                if (fabricObj) {
+                                                    (fabricObj as any).set({ strokeWidth: newWidth });
+                                                    fabricCanvas.getCanvas()?.renderAll();
+                                                }
+                                            }}
+                                            className="w-14 h-9 border border-gray-200 rounded-lg text-center text-sm font-semibold text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Start Cap (Left Arrow) Button */}
+                    <div className="relative" ref={startCapRef}>
+                        <button
+                            onClick={() => {
+                                setShowStartCapPopup(!showStartCapPopup);
+                                setShowEndCapPopup(false);
+                            }}
+                            className={`p-1.5 rounded transition-all ${showStartCapPopup
+                                ? 'text-purple-600 bg-purple-50'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Start cap"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="6" y1="8" x2="14" y2="8" />
+                                <polyline points="9,5 6,8 9,11" fill="none" />
+                            </svg>
+                        </button>
+
+                        {showStartCapPopup && (
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-50">
+                                <div className="grid grid-cols-5 gap-2">
+                                    {/* Row 1: None + Outline variants */}
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'none' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'none' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="None"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16"><circle cx="12" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="1.5" /><line x1="8" y1="4" x2="16" y2="12" stroke="currentColor" strokeWidth="1.5" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'arrow', capFill: 'outline' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'arrow' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Arrow outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><polyline points="14,4 10,8 14,12" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'circle', capFill: 'outline' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'circle' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Circle outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><circle cx="6" cy="8" r="4" fill="none" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'square', capFill: 'outline' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'square' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Square outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><rect x="2" y="4" width="8" height="8" fill="none" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'diamond', capFill: 'outline' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'diamond' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Diamond outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><polygon points="6,2 10,8 6,14 2,8" fill="none" /></svg>
+                                    </button>
+
+                                    {/* Row 2: Bar + Filled variants */}
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'bar' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'bar' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Bar"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="6" y1="8" x2="22" y2="8" /><line x1="4" y1="3" x2="4" y2="13" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'arrow', capFill: 'filled' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'arrow' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Arrow filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><polygon points="10,8 14,4 14,12" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'circle', capFill: 'filled' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'circle' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Circle filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><circle cx="6" cy="8" r="4" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'square', capFill: 'filled' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'square' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Square filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><rect x="2" y="4" width="8" height="8" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ startCap: 'diamond', capFill: 'filled' });
+                                            setShowStartCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.startCap === 'diamond' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Diamond filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="10" y1="8" x2="22" y2="8" /><polygon points="6,2 10,8 6,14 2,8" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* End Cap (Right Arrow) Button */}
+                    <div className="relative" ref={endCapRef}>
+                        <button
+                            onClick={() => {
+                                setShowEndCapPopup(!showEndCapPopup);
+                                setShowStartCapPopup(false);
+                            }}
+                            className={`p-1.5 rounded transition-all ${showEndCapPopup
+                                ? 'text-purple-600 bg-purple-50'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="End cap"
+                        >
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
+                                <line x1="2" y1="8" x2="10" y2="8" />
+                                <polyline points="7,5 10,8 7,11" fill="none" />
+                            </svg>
+                        </button>
+
+                        {showEndCapPopup && (
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-50">
+                                <div className="grid grid-cols-5 gap-2">
+                                    {/* Row 1: None + Outline variants */}
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'none' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'none' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="None"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16"><circle cx="12" cy="8" r="6" fill="none" stroke="currentColor" strokeWidth="1.5" /><line x1="8" y1="4" x2="16" y2="12" stroke="currentColor" strokeWidth="1.5" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'arrow', capFill: 'outline' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'arrow' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Arrow outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><polyline points="10,4 14,8 10,12" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'circle', capFill: 'outline' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'circle' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Circle outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><circle cx="18" cy="8" r="4" fill="none" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'square', capFill: 'outline' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'square' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Square outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><rect x="14" y="4" width="8" height="8" fill="none" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'diamond', capFill: 'outline' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'diamond' && lineStyleSafe.capFill !== 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Diamond outline"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><polygon points="18,2 22,8 18,14 14,8" fill="none" /></svg>
+                                    </button>
+
+                                    {/* Row 2: Bar + Filled variants */}
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'bar' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'bar' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Bar"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="none" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="18" y2="8" /><line x1="20" y1="3" x2="20" y2="13" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'arrow', capFill: 'filled' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'arrow' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Arrow filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><polygon points="14,8 10,4 10,12" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'circle', capFill: 'filled' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'circle' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Circle filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><circle cx="18" cy="8" r="4" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'square', capFill: 'filled' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'square' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Square filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><rect x="14" y="4" width="8" height="8" /></svg>
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            updateLineDecoration({ endCap: 'diamond', capFill: 'filled' });
+                                            setShowEndCapPopup(false);
+                                        }}
+                                        className={`p-2.5 rounded-lg transition-all ${lineStyleSafe.endCap === 'diamond' && lineStyleSafe.capFill === 'filled' ? 'bg-blue-500 text-white shadow-sm' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                            }`}
+                                        title="Diamond filled"
+                                    >
+                                        <svg width="24" height="16" viewBox="0 0 24 16" fill="currentColor" stroke="currentColor" strokeWidth="1.5"><line x1="2" y1="8" x2="14" y2="8" /><polygon points="18,2 22,8 18,14 14,8" /></svg>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Line Color */}
+                    <div className="relative">
+                        <input
+                            type="color"
+                            value={lineElement.strokeColor || '#1a1a1a'}
+                            onChange={(e) => {
+                                updateElement(lineElement.id, {
+                                    strokeColor: e.target.value
+                                } as Partial<LineElement>);
+                                const fabricCanvas = getFabricCanvas();
+                                const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                if (fabricObj) {
+                                    (fabricObj as any).set({ stroke: e.target.value });
+                                    fabricCanvas.getCanvas()?.renderAll();
+                                }
+                            }}
+                            className="absolute inset-0 opacity-0 w-8 h-8 cursor-pointer z-10"
+                            title="Line color"
+                        />
+                        <div
+                            className="w-7 h-7 rounded-lg border-2 border-gray-200 cursor-pointer hover:border-gray-400 transition-all"
+                            style={{ backgroundColor: lineElement.strokeColor || '#1a1a1a' }}
+                            title="Line color"
+                        />
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
                 </>
             )}
 
