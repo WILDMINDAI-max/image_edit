@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { Search, ArrowLeft, ChevronRight } from 'lucide-react';
 import { ElementsPanel } from './ElementsPanel';
+import { IconsPanel } from './IconsPanel';
 
-type AssetCategory = 'main' | 'shapes' | 'graphics' | 'stickers';
+type AssetCategory = 'main' | 'shapes' | 'graphics' | 'stickers' | 'icons';
 
 // Category card data
 const CATEGORIES = [
@@ -65,30 +66,56 @@ const CATEGORIES = [
             </svg>
         ),
     },
+    {
+        id: 'icons' as const,
+        name: 'Icons',
+        description: 'UI icons, symbols & pictograms',
+        bgColor: 'bg-violet-100',
+        iconBg: 'bg-violet-200',
+        preview: (
+            <svg viewBox="0 0 80 80" className="w-16 h-16">
+                {/* Home icon */}
+                <path d="M40 12 L70 38 L70 68 L50 68 L50 48 L30 48 L30 68 L10 68 L10 38 Z" fill="#7C3AED" />
+                {/* Heart icon overlaid */}
+                <path d="M55 30 C55 22 65 22 65 30 C65 38 55 46 55 46 C55 46 45 38 45 30 C45 22 55 22 55 30 Z" fill="#EC4899" />
+                {/* Star accent */}
+                <polygon points="22,18 24,24 30,24 25,28 27,34 22,30 17,34 19,28 14,24 20,24" fill="#FCD34D" />
+            </svg>
+        ),
+    },
 ];
 
 export function AssetsPanel() {
     const [activeCategory, setActiveCategory] = useState<AssetCategory>('main');
     const [searchQuery, setSearchQuery] = useState('');
 
-    // When shapes category is selected, show ElementsPanel content
     if (activeCategory === 'shapes') {
         return (
             <div className="h-full flex flex-col bg-white">
-                {/* Back header */}
+                {/* Header with back arrow */}
                 <div className="p-4 border-b border-gray-100">
                     <button
                         onClick={() => setActiveCategory('main')}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-3"
+                        className="flex items-center gap-2 text-gray-800 hover:text-gray-900 transition-colors"
                     >
                         <ArrowLeft size={18} />
-                        <span className="text-sm font-medium">Back to Assets</span>
+                        <h2 className="font-semibold text-lg">Shapes</h2>
                     </button>
-                    <h2 className="text-gray-800 font-semibold text-lg">Shapes</h2>
+                    {/* Search bar */}
+                    <div className="mt-3 relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search shapes..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                        />
+                    </div>
                 </div>
                 {/* Shapes content from ElementsPanel */}
                 <div className="flex-1 overflow-hidden">
-                    <ElementsPanel />
+                    <ElementsPanel searchQuery={searchQuery} />
                 </div>
             </div>
         );
@@ -150,19 +177,51 @@ export function AssetsPanel() {
         );
     }
 
+    // Icons category - full panel like Shapes
+    if (activeCategory === 'icons') {
+        return (
+            <div className="h-full flex flex-col bg-white">
+                {/* Header with back arrow */}
+                <div className="p-4 border-b border-gray-100">
+                    <button
+                        onClick={() => setActiveCategory('main')}
+                        className="flex items-center gap-2 text-gray-800 hover:text-gray-900 transition-colors"
+                    >
+                        <ArrowLeft size={18} />
+                        <h2 className="font-semibold text-lg">Icons</h2>
+                    </button>
+                    {/* Search bar */}
+                    <div className="mt-3 relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search icons..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                        />
+                    </div>
+                </div>
+                {/* Icons content */}
+                <div className="flex-1 overflow-hidden">
+                    <IconsPanel searchQuery={searchQuery} />
+                </div>
+            </div>
+        );
+    }
+
     // Main assets view with browse categories
     return (
         <div className="h-full flex flex-col bg-white">
             {/* Header */}
-            <div className="p-4 border-b border-gray-100">
-                <h2 className="text-gray-800 font-semibold text-lg">Assets</h2>
+            <div className="p-4 pb-2">
+                <h2 className="text-lg font-semibold text-gray-800">Assets</h2>
             </div>
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                {/* Elements Section - Like Canva */}
+                {/* Categories Grid */}
                 <div className="mb-6">
-                    <h3 className="text-gray-800 font-semibold text-sm mb-4">Elements</h3>
                     <div className="grid grid-cols-3 gap-3">
                         {CATEGORIES.map((cat) => (
                             <button

@@ -14,6 +14,7 @@ import { PreviewMode } from './PreviewMode';
 import { ColorsPanel } from '@/components/sidebar/ColorsPanel';
 import { ImageEditPanel } from '@/components/sidebar/ImageEditPanel';
 import { TextEditPanel } from '@/components/sidebar/TextEditPanel';
+import { ShapeEditPanel } from '@/components/sidebar/ShapeEditPanel';
 import { TextEffectsPanel } from '@/components/sidebar/TextEffectsPanel';
 import { FontsPanel } from '@/components/sidebar/FontsPanel';
 import { FilterPanel } from '@/components/sidebar/FilterPanel';
@@ -317,6 +318,8 @@ export function EditorShell() {
                             <FontsPanel onClose={() => setRightPanel(null)} />
                         ) : selectedElementType === 'text' ? (
                             <TextEditPanel />
+                        ) : (selectedElementType === 'shape' || selectedElementType === 'line') ? (
+                            <ShapeEditPanel />
                         ) : (
                             <ImageEditPanel />
                         )}

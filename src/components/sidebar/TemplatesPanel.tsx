@@ -465,6 +465,290 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
+    // Doctor Profile Template (converted from Elementor)
+    {
+        id: 'doctor-profile-1',
+        name: 'Doctor Profile',
+        category: 'Medical',
+        width: 1080,
+        height: 1920,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // === HEADER SECTION ===
+            // Hospital Background Image Placeholder
+            {
+                type: 'shape',
+                name: 'Hospital BG',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 200, width: 1080, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E8F4F8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Logo Placeholder
+            {
+                type: 'shape',
+                name: 'Logo Area',
+                shapeType: 'circle',
+                transform: { x: 100, y: 80, width: 60, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            // Search Bar Background
+            {
+                type: 'shape',
+                name: 'Search Bar BG',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 80, width: 500, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F5F5F5', stroke: '#CCCCCC', strokeWidth: 1, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Search Placeholder Text
+            {
+                type: 'text',
+                name: 'Search Text',
+                content: 'Search here...',
+                transform: { x: 540, y: 80, width: 480, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#999999', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 6,
+            } as Partial<TextElement>,
+
+            // === DOCTOR PROFILE SECTION ===
+            // Doctor Profile Picture (Circle)
+            {
+                type: 'shape',
+                name: 'Doctor Photo BG',
+                shapeType: 'circle',
+                transform: { x: 200, y: 450, width: 280, height: 280, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2CA8D2', stroke: '#000000', strokeWidth: 2, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Profile Stats Section
+            {
+                type: 'text',
+                name: 'Followers Label',
+                content: 'Followers',
+                transform: { x: 450, y: 420, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#02BAF1', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Followers Count',
+                content: '60k',
+                transform: { x: 450, y: 450, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#333333', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Following Label',
+                content: 'Following',
+                transform: { x: 560, y: 420, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#02BAF1', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Following Count',
+                content: '10k',
+                transform: { x: 560, y: 450, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#333333', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 14,
+            } as Partial<TextElement>,
+
+            // === ACTION BUTTONS ===
+            // Chat Now Button BG
+            {
+                type: 'shape',
+                name: 'Chat Now BG',
+                shapeType: 'rectangle',
+                transform: { x: 720, y: 435, width: 140, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 15,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Chat Now Text',
+                content: 'Chat Now',
+                transform: { x: 720, y: 435, width: 120, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+            // Follow Button BG
+            {
+                type: 'shape',
+                name: 'Follow BG',
+                shapeType: 'rectangle',
+                transform: { x: 880, y: 435, width: 120, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 17,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Follow Text',
+                content: 'Follow',
+                transform: { x: 880, y: 435, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 18,
+            } as Partial<TextElement>,
+
+            // === DOCTOR INFO SECTION ===
+            // Doctor Name
+            {
+                type: 'text',
+                name: 'Doctor Name',
+                content: 'Dr. Cape Fernand',
+                transform: { x: 300, y: 650, width: 400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1A1A1A', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 36, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            // Specialty Tag 1
+            {
+                type: 'shape',
+                name: 'Tag 1 BG',
+                shapeType: 'rectangle',
+                transform: { x: 180, y: 710, width: 140, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#EC0D64', strokeWidth: 1, opacity: 1 },
+                zIndex: 21,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Tag 1 Text',
+                content: 'Arthroscopy',
+                transform: { x: 180, y: 710, width: 120, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1A1A1A', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 22,
+            } as Partial<TextElement>,
+            // Specialty Tag 2
+            {
+                type: 'shape',
+                name: 'Tag 2 BG',
+                shapeType: 'rectangle',
+                transform: { x: 350, y: 710, width: 150, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#EC0D64', strokeWidth: 1, opacity: 1 },
+                zIndex: 23,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Tag 2 Text',
+                content: 'Spine Surgery',
+                transform: { x: 350, y: 710, width: 130, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1A1A1A', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 24,
+            } as Partial<TextElement>,
+            // Bio Description
+            {
+                type: 'text',
+                name: 'Bio Text',
+                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
+                transform: { x: 300, y: 790, width: 500, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#666666', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 25,
+            } as Partial<TextElement>,
+
+            // === SERVICES SECTION ===
+            // Services Header
+            {
+                type: 'text',
+                name: 'Services Header',
+                content: 'Services',
+                transform: { x: 780, y: 650, width: 200, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1A1A1A', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 30,
+            } as Partial<TextElement>,
+            // Services List BG
+            {
+                type: 'shape',
+                name: 'Services List BG',
+                shapeType: 'rectangle',
+                transform: { x: 780, y: 760, width: 400, height: 160, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F8F8F8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 31,
+            } as Partial<ShapeElement>,
+            // Services List Items
+            {
+                type: 'text',
+                name: 'Services List',
+                content: '• Joint Replacement\n• Arthroscopy\n• Fracture Care\n• Pediatric Orthopedics\n• Sports Medicine',
+                transform: { x: 780, y: 760, width: 380, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#333333', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 32,
+            } as Partial<TextElement>,
+
+            // === CTA SECTION ===
+            // Online Consultation Button BG
+            {
+                type: 'shape',
+                name: 'CTA BG',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 950, width: 350, height: 55, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 40,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'CTA Text',
+                content: 'Click for Online Consultation',
+                transform: { x: 540, y: 950, width: 320, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 41,
+            } as Partial<TextElement>,
+
+            // === MAP SECTION ===
+            // Map Placeholder
+            {
+                type: 'shape',
+                name: 'Map Placeholder',
+                shapeType: 'rectangle',
+                transform: { x: 780, y: 1100, width: 400, height: 250, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E0E0E0', stroke: '#CCCCCC', strokeWidth: 1, opacity: 1 },
+                zIndex: 45,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Map Label',
+                content: '📍 London, United Kingdom',
+                transform: { x: 780, y: 1100, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#666666', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 46,
+            } as Partial<TextElement>,
+
+            // === LIKES & REVIEWS SECTION ===
+            {
+                type: 'text',
+                name: 'Likes Label',
+                content: '❤️ Likes',
+                transform: { x: 980, y: 500, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#333333', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 50,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Reviews Label',
+                content: '⭐ Reviews',
+                transform: { x: 980, y: 540, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#333333', opacity: 1 },
+                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 51,
+            } as Partial<TextElement>,
+        ],
+    },
 ];
 
 export function TemplatesPanel() {
@@ -717,6 +1001,67 @@ export function TemplatesPanel() {
                                                     </div>
                                                     <div className="bg-[#FF6B6B] py-0.5 mx-1 mb-1 rounded">
                                                         <p className="text-white text-[3px] font-medium text-center">Choose</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'doctor-profile-1' ? (
+                                            // Doctor Profile Preview - Full Layout
+                                            <div className="flex-1 flex flex-col overflow-hidden text-[3px]">
+                                                {/* Header Section */}
+                                                <div className="w-full h-[20%] bg-[#E8F4F8] relative flex items-start px-1 pt-1">
+                                                    <div className="w-3 h-3 rounded-full bg-[#EC0D64] flex-shrink-0"></div>
+                                                    <div className="flex-1 h-2 bg-gray-100 rounded mx-1 border border-gray-200"></div>
+                                                    <div className="flex gap-0.5">
+                                                        <div className="w-2 h-2 rounded-full bg-[#EC0D64] opacity-60"></div>
+                                                        <div className="w-2 h-2 rounded-full bg-[#EC0D64] opacity-60"></div>
+                                                    </div>
+                                                </div>
+                                                {/* Profile Row */}
+                                                <div className="flex px-1 py-0.5 bg-white border-b border-gray-100">
+                                                    <div className="w-8 h-8 rounded-full bg-[#2CA8D2] border border-black flex-shrink-0 -mt-3"></div>
+                                                    <div className="flex-1 ml-1">
+                                                        <div className="flex gap-1 text-[3px]">
+                                                            <div><span className="text-[#02BAF1] font-bold">Followers</span> 60k</div>
+                                                            <div><span className="text-[#02BAF1] font-bold">Following</span> 10k</div>
+                                                        </div>
+                                                        <div className="flex gap-0.5 mt-0.5">
+                                                            <div className="bg-[#EC0D64] text-white px-1 py-0.5 rounded text-[2px]">Chat Now</div>
+                                                            <div className="bg-[#EC0D64] text-white px-1 py-0.5 rounded text-[2px]">Follow</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="text-right text-[2px]">
+                                                        <p>❤️ Likes</p>
+                                                        <p>⭐ Reviews</p>
+                                                    </div>
+                                                </div>
+                                                {/* Doctor Info */}
+                                                <div className="flex px-1 py-0.5 bg-white">
+                                                    <div className="flex-1">
+                                                        <p className="font-bold text-[4px] text-gray-800">Dr. Cape Fernand</p>
+                                                        <div className="flex gap-0.5 mt-0.5">
+                                                            <span className="border border-[#EC0D64] px-0.5 rounded text-[2px]">Arthroscopy</span>
+                                                            <span className="border border-[#EC0D64] px-0.5 rounded text-[2px]">Spine Surgery</span>
+                                                        </div>
+                                                        <p className="text-gray-500 text-[2px] mt-0.5 leading-tight">Lorem ipsum dolor sit amet...</p>
+                                                    </div>
+                                                    <div className="w-[40%] ml-1">
+                                                        <p className="font-bold text-[3px] text-center">Services</p>
+                                                        <div className="bg-gray-100 p-0.5 rounded text-[2px]">
+                                                            <p>• Joint Replacement</p>
+                                                            <p>• Arthroscopy</p>
+                                                            <p>• Fracture Care</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* CTA & Map */}
+                                                <div className="flex px-1 py-0.5 gap-1 bg-white flex-1">
+                                                    <div className="flex-1 flex flex-col justify-center">
+                                                        <div className="bg-[#EC0D64] py-0.5 rounded">
+                                                            <p className="text-white text-[2px] text-center font-medium">Online Consultation</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="w-[45%] bg-gray-200 rounded flex items-center justify-center border border-gray-300">
+                                                        <p className="text-[2px] text-gray-500">📍 London, UK</p>
                                                     </div>
                                                 </div>
                                             </div>

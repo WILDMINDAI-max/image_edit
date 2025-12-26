@@ -46,8 +46,8 @@ export function TextPanel() {
     return (
         <div className="h-full flex flex-col bg-white">
             {/* Header */}
-            <div className="px-4 py-2.5 border-b border-gray-100">
-                <h2 className="text-gray-800 font-semibold text-sm">Text</h2>
+            <div className="p-4 pb-2">
+                <h2 className="text-lg font-semibold text-gray-800">Text</h2>
             </div>
 
             {/* Content */}

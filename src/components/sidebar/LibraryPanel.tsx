@@ -178,16 +178,16 @@ export function LibraryPanel() {
     return (
         <div className="h-full flex flex-col">
             {/* Header */}
-            <div className="p-4 border-b border-gray-200">
-                <h2 className="text-gray-800 font-semibold mb-3">Library</h2>
+            <div className="p-4 pb-2">
+                <h2 className="text-lg font-semibold text-gray-800">Library</h2>
 
                 {/* Tabs */}
                 <div className="flex gap-1 mb-3 bg-gray-100 p-1 rounded-lg">
                     <button
                         onClick={() => setActiveTab('generations')}
                         className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeTab === 'generations'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900'
                             }`}
                     >
                         Generations
@@ -195,8 +195,8 @@ export function LibraryPanel() {
                     <button
                         onClick={() => setActiveTab('uploads')}
                         className={`flex-1 px-3 py-1.5 text-xs font-medium rounded-md transition-all ${activeTab === 'uploads'
-                                ? 'bg-white text-gray-900 shadow-sm'
-                                : 'text-gray-600 hover:text-gray-900'
+                            ? 'bg-white text-gray-900 shadow-sm'
+                            : 'text-gray-600 hover:text-gray-900'
                             }`}
                     >
                         Uploads

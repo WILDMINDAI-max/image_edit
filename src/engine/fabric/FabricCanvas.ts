@@ -860,6 +860,56 @@ export class FabricCanvas {
                 );
                 break;
 
+            // New star shapes
+            case 'star-12-sharp':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(12, Math.min(width, height) / 2, Math.min(width, height) * 0.35),
+                    {}
+                );
+                break;
+
+            case 'starburst-12':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(12, Math.min(width, height) / 2, Math.min(width, height) * 0.25),
+                    {}
+                );
+                break;
+
+            case 'starburst-16':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(16, Math.min(width, height) / 2, Math.min(width, height) * 0.4),
+                    {}
+                );
+                break;
+
+            case 'starburst-24':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(24, Math.min(width, height) / 2, Math.min(width, height) * 0.425),
+                    {}
+                );
+                break;
+
+            case 'star-9-sharp':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(9, Math.min(width, height) / 2, Math.min(width, height) * 0.2),
+                    {}
+                );
+                break;
+
+            case 'star-10-thin':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(10, Math.min(width, height) / 2, Math.min(width, height) * 0.15),
+                    {}
+                );
+                break;
+
+            case 'seal-24':
+                shape = new fabric.Polygon(
+                    this.generateStarPoints(24, Math.min(width, height) / 2, Math.min(width, height) * 0.45),
+                    {}
+                );
+                break;
+
             case 'line':
                 shape = new fabric.Line([0, 0, width, 0], {
                     strokeWidth: element.style.strokeWidth || 2,
@@ -1324,11 +1374,25 @@ export class FabricCanvas {
             actionName: 'modifyLine',
         });
 
-        // Disable bounding box, rotation, and scaling
-        line.lockRotation = true;
+        // Disable bounding box and scaling, but allow rotation
+        line.lockRotation = false;
         line.lockScalingX = true;
         line.lockScalingY = true;
         line.hasBorders = false;
+
+        // Add rotation control
+        if (fabric.Object.prototype.controls.mtr) {
+            line.controls.mtr = new fabric.Control({
+                x: 0,
+                y: -0.5,
+                offsetY: -40,
+                actionHandler: fabric.controlsUtils.rotationWithSnapping,
+                cursorStyle: 'url("data:image/svg+xml,%3Csvg height=\'18\' width=\'18\' viewBox=\'0 0 32 32\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M16,0 L16,0 C7.163,0 0,7.163 0,16 C0,24.837 7.163,32 16,32 C24.837,32 32,24.837 32,16 C32,7.163 24.837,0 16,0 Z M16,28 C9.373,28 4,22.627 4,16 C4,9.373 9.373,4 16,4 C22.627,4 28,9.373 28,16 C28,22.627 22.627,28 16,28 Z M24,14 L24,14 C24,12.895 23.105,12 22,12 L18,12 L18,8 C18,6.895 17.105,6 16,6 C14.895,6 14,6.895 14,8 L14,12 L10,12 C8.895,12 8,12.895 8,14 C8,15.105 8.895,16 10,16 L14,16 L14,20 C14,21.105 14.895,22 16,22 C17.105,22 18,21.105 18,20 L18,16 L22,16 C23.105,16 24,15.105 24,14 Z\' fill=\'%23000\' fill-rule=\'evenodd\'/%3E%3C/svg%3E") 12 12, crosshair',
+                actionName: 'rotate',
+                render: fabric.Object.prototype.controls.mtr.render, // Use the same custom rotation renderer
+                withConnection: true // Show connection line since borders are hidden
+            });
+        }
     }
 
     /**

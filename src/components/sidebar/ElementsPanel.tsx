@@ -1,10 +1,35 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore } from '@/store/editorStore';
 import { Search, ChevronDown, ChevronRight } from 'lucide-react';
 import { SHAPE_CATALOG, getShapeCategories, CATEGORY_LABELS, ShapeDefinition, ShapeCategory } from '@/types/shapes';
+
+/**
+ * Generate star polygon points string using the same algorithm as FabricCanvas.generateStarPoints
+ * This ensures sidebar icons match the canvas rendering exactly.
+ * 
+ * @param numPoints - Number of star points
+ * @param innerRadiusRatio - Inner radius as ratio of outer radius (0-1)
+ * @param size - Total size of the viewBox (default 100)
+ */
+function generateStarPointsString(numPoints: number, innerRadiusRatio: number, size: number = 100): string {
+    const center = size / 2;
+    const outerRadius = (size / 2) - 5; // Leave small margin
+    const innerRadius = outerRadius * innerRadiusRatio;
+    const angle = Math.PI / numPoints;
+
+    const points: string[] = [];
+    for (let i = 0; i < 2 * numPoints; i++) {
+        const radius = i % 2 === 0 ? outerRadius : innerRadius;
+        const x = center + radius * Math.cos(i * angle - Math.PI / 2);
+        const y = center + radius * Math.sin(i * angle - Math.PI / 2);
+        points.push(`${Math.round(x)},${Math.round(y)}`);
+    }
+
+    return points.join(' ');
+}
 
 // SVG preview component for shapes
 function ShapePreview({ shape }: { shape: ShapeDefinition }) {
@@ -82,7 +107,7 @@ function ShapePreview({ shape }: { shape: ShapeDefinition }) {
         };
 
         return (
-            <svg viewBox="0 0 100 100" className="w-8 h-8">
+            <svg viewBox="0 0 100 100" className="w-16 h-16">
                 {/* Main line */}
                 <line
                     x1="20" y1="50" x2="80" y2="50"
@@ -118,26 +143,51 @@ function ShapePreview({ shape }: { shape: ShapeDefinition }) {
                 return <polygon points="50,15 90,40 75,85 25,85 10,40" fill="currentColor" />;
             case 'hexagon':
                 return <polygon points="50,10 90,30 90,70 50,90 10,70 10,30" fill="currentColor" />;
+            case 'hexagon-horizontal':
+                return <polygon points="5,50 25,10 75,10 95,50 75,90 25,90" fill="currentColor" />;
             case 'heptagon':
                 return <polygon points="50,10 85,25 95,60 75,90 25,90 5,60 15,25" fill="currentColor" />;
             case 'octagon':
                 return <polygon points="35,10 65,10 90,35 90,65 65,90 35,90 10,65 10,35" fill="currentColor" />;
+            case 'octagon-chamfered':
+                return <polygon points="25,5 75,5 95,25 95,75 75,95 25,95 5,75 5,25" fill="currentColor" />;
             case 'nonagon':
+                // 9-sided polygon
+                return <polygon points="50,10 76,19 89,43 85,70 64,88 36,88 15,70 11,43 24,19" fill="currentColor" />;
             case 'decagon':
-                return <circle cx="50" cy="50" r="35" fill="currentColor" />;
+                // 10-sided polygon
+                return <polygon points="50,10 74,18 88,38 88,62 74,82 50,90 26,82 12,62 12,38 26,18" fill="currentColor" />;
             case 'diamond':
                 return <polygon points="50,10 90,50 50,90 10,50" fill="currentColor" />;
+            // STARS - Using dynamic generation to match canvas exactly
+            // The ratios match FabricCanvas.addShape: star-5=0.4, star-4=0.4, star-6=0.5, star-8=0.5, star-12=0.6, burst=0.7
             case 'star':
             case 'star-5':
-                return <polygon points="50,5 61,40 98,40 68,62 79,97 50,75 21,97 32,62 2,40 39,40" fill="currentColor" />;
+                return <polygon points={generateStarPointsString(5, 0.4)} fill="currentColor" />;
             case 'star-4':
-                return <polygon points="50,5 60,40 95,50 60,60 50,95 40,60 5,50 40,40" fill="currentColor" />;
+                return <polygon points={generateStarPointsString(4, 0.4)} fill="currentColor" />;
             case 'star-6':
-                return <polygon points="50,5 65,30 95,30 75,50 95,70 65,70 50,95 35,70 5,70 25,50 5,30 35,30" fill="currentColor" />;
+                return <polygon points={generateStarPointsString(6, 0.5)} fill="currentColor" />;
             case 'star-8':
+                return <polygon points={generateStarPointsString(8, 0.5)} fill="currentColor" />;
             case 'star-12':
+                return <polygon points={generateStarPointsString(12, 0.6)} fill="currentColor" />;
             case 'burst':
-                return <polygon points="50,5 58,35 85,15 70,42 100,50 70,58 85,85 58,65 50,95 42,65 15,85 30,58 0,50 30,42 15,15 42,35" fill="currentColor" />;
+                return <polygon points={generateStarPointsString(16, 0.7)} fill="currentColor" />;
+            case 'star-12-sharp':
+                return <polygon points={generateStarPointsString(12, 0.7)} fill="currentColor" />;
+            case 'starburst-12':
+                return <polygon points={generateStarPointsString(12, 0.5)} fill="currentColor" />;
+            case 'starburst-16':
+                return <polygon points={generateStarPointsString(16, 0.8)} fill="currentColor" />;
+            case 'starburst-24':
+                return <polygon points={generateStarPointsString(24, 0.85)} fill="currentColor" />;
+            case 'star-9-sharp':
+                return <polygon points={generateStarPointsString(9, 0.4)} fill="currentColor" />;
+            case 'star-10-thin':
+                return <polygon points={generateStarPointsString(10, 0.3)} fill="currentColor" />;
+            case 'seal-24':
+                return <polygon points={generateStarPointsString(24, 0.9)} fill="currentColor" />;
             case 'line':
                 return <line x1="15" y1="50" x2="85" y2="50" stroke="currentColor" strokeWidth="4" />;
             default:
@@ -146,7 +196,7 @@ function ShapePreview({ shape }: { shape: ShapeDefinition }) {
     };
 
     return (
-        <svg viewBox="0 0 100 100" className="w-8 h-8">
+        <svg viewBox="0 0 100 100" className="w-16 h-16">
             {shape.type === 'svg' && shape.svgPath ? (
                 <path d={shape.svgPath} fill="currentColor" />
             ) : (
@@ -156,13 +206,107 @@ function ShapePreview({ shape }: { shape: ShapeDefinition }) {
     );
 }
 
-export function ElementsPanel() {
+// Category row component with horizontal scroll
+function CategoryRow({
+    category,
+    shapes,
+    isExpanded,
+    onToggle,
+    onAddShape
+}: {
+    category: ShapeCategory;
+    shapes: ShapeDefinition[];
+    isExpanded: boolean;
+    onToggle: () => void;
+    onAddShape: (shapeId: string, svgPath?: string) => void;
+}) {
+    const scrollContainerRef = useRef<HTMLDivElement>(null);
+
+    const scrollRight = () => {
+        if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollBy({ left: 200, behavior: 'smooth' });
+        }
+    };
+
+    return (
+        <div className="mb-4">
+            {/* Category Header */}
+            <div className="flex items-center justify-between mb-2">
+                <button
+                    onClick={onToggle}
+                    className="flex items-center gap-2 text-gray-700 hover:text-gray-900"
+                >
+                    {isExpanded ? (
+                        <ChevronDown size={14} />
+                    ) : (
+                        <ChevronRight size={14} />
+                    )}
+                    <h3 className="text-sm font-semibold">
+                        {CATEGORY_LABELS[category]} ({shapes.length})
+                    </h3>
+                </button>
+                {/* Right scroll arrow - only show when collapsed and has more than 4 shapes */}
+                {!isExpanded && shapes.length > 4 && (
+                    <button
+                        onClick={scrollRight}
+                        className="p-1 text-gray-500 hover:text-gray-800 transition-colors"
+                        title="Scroll right"
+                    >
+                        <ChevronRight size={18} />
+                    </button>
+                )}
+            </div>
+
+            {/* Collapsed: Horizontal Scrollable Row */}
+            {!isExpanded && (
+                <div
+                    ref={scrollContainerRef}
+                    className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                >
+                    {shapes.map((shape) => (
+                        <button
+                            key={shape.id}
+                            onClick={() => onAddShape(shape.id, shape.svgPath)}
+                            className="flex-shrink-0 w-16 h-16 rounded-lg hover:bg-blue-50 cursor-pointer transition-all duration-200 flex items-center justify-center text-gray-700 hover:text-blue-600"
+                            title={shape.name}
+                        >
+                            <ShapePreview shape={shape} />
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            {/* Expanded: Full Grid */}
+            {isExpanded && (
+                <div className="grid grid-cols-4 gap-2">
+                    {shapes.map((shape) => (
+                        <button
+                            key={shape.id}
+                            onClick={() => onAddShape(shape.id, shape.svgPath)}
+                            className="w-16 h-16 rounded-lg hover:bg-blue-50 cursor-pointer transition-all duration-200 flex items-center justify-center text-gray-700 hover:text-blue-600"
+                            title={shape.name}
+                        >
+                            <ShapePreview shape={shape} />
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}
+
+export function ElementsPanel({ searchQuery: externalSearchQuery }: { searchQuery?: string } = {}) {
     const addShapeElement = useCanvasStore((state) => state.addShapeElement);
     const addLineElement = useCanvasStore((state) => state.addLineElement);
-    const [searchQuery, setSearchQuery] = useState('');
+    const [internalSearchQuery, setInternalSearchQuery] = useState('');
     const [expandedCategories, setExpandedCategories] = useState<Set<ShapeCategory>>(
-        new Set(['lines', 'basic', 'polygons', 'stars', 'arrows', 'callouts', 'symbols'])
+        new Set()
     );
+
+    // Use external search query if provided, otherwise use internal
+    const searchQuery = externalSearchQuery ?? internalSearchQuery;
+    const showHeader = externalSearchQuery === undefined;
 
     const handleAddShape = (shapeId: string, svgPath?: string) => {
         // Get canvas dimensions to center the shape
@@ -241,57 +385,34 @@ export function ElementsPanel() {
 
     return (
         <div className="h-full flex flex-col bg-white">
-            {/* Header */}
-            <div className="p-4 border-b border-gray-100">
-                <h2 className="text-gray-800 font-semibold text-lg">Elements</h2>
-                <div className="mt-3 relative">
-                    <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                    <input
-                        type="text"
-                        placeholder="Search shapes..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
-                    />
+            {/* Header - only show when not embedded in AssetsPanel */}
+            {showHeader && (
+                <div className="p-4 border-b border-gray-100">
+                    <h2 className="text-gray-800 font-semibold text-lg">Shapes</h2>
+                    <div className="mt-3 relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search shapes..."
+                            value={internalSearchQuery}
+                            onChange={(e) => setInternalSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {shapesByCategory.map(({ category, shapes }) => (
-                    <div key={category} className="mb-4">
-                        {/* Category Header */}
-                        <button
-                            onClick={() => toggleCategory(category)}
-                            className="w-full flex items-center gap-2 text-gray-500 hover:text-gray-700 mb-2"
-                        >
-                            {expandedCategories.has(category) ? (
-                                <ChevronDown size={14} />
-                            ) : (
-                                <ChevronRight size={14} />
-                            )}
-                            <h3 className="text-xs font-semibold uppercase tracking-wider">
-                                {CATEGORY_LABELS[category]}
-                            </h3>
-                            <span className="text-[10px] text-gray-400">({shapes.length})</span>
-                        </button>
-
-                        {/* Shape Grid */}
-                        {expandedCategories.has(category) && (
-                            <div className="grid grid-cols-4 gap-1.5">
-                                {shapes.map((shape) => (
-                                    <button
-                                        key={shape.id}
-                                        onClick={() => handleAddShape(shape.id, shape.svgPath)}
-                                        className="aspect-square rounded-lg hover:bg-blue-50 cursor-pointer transition-all duration-200 flex items-center justify-center text-gray-700 hover:text-blue-600 group p-2"
-                                        title={shape.name}
-                                    >
-                                        <ShapePreview shape={shape} />
-                                    </button>
-                                ))}
-                            </div>
-                        )}
-                    </div>
+                    <CategoryRow
+                        key={category}
+                        category={category}
+                        shapes={shapes}
+                        isExpanded={expandedCategories.has(category)}
+                        onToggle={() => toggleCategory(category)}
+                        onAddShape={handleAddShape}
+                    />
                 ))}
 
                 {/* Empty state */}

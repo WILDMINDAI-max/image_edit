@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { SolidBackground } from '@/types/project';
-import { CanvasElement, ImageElement, TextElement, LineElement } from '@/types/canvas';
+import { CanvasElement, ImageElement, TextElement, LineElement, ShapeElement } from '@/types/canvas';
 import { COLOR_PALETTE, applyColorReplacement } from '@/utils/colorReplace';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { fabric } from 'fabric';
@@ -79,6 +79,10 @@ export function ContextToolbar() {
     const startCapRef = useRef<HTMLDivElement>(null);
     const endCapRef = useRef<HTMLDivElement>(null);
 
+    // Shape stroke popup state
+    const [showStrokePopup, setShowStrokePopup] = useState(false);
+    const strokePopupRef = useRef<HTMLDivElement>(null);
+
     // Close popup when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -105,18 +109,26 @@ export function ContextToolbar() {
             }
         };
 
+        const handleClickOutsideStroke = (event: MouseEvent) => {
+            if (strokePopupRef.current && !strokePopupRef.current.contains(event.target as Node)) {
+                setShowStrokePopup(false);
+            }
+        };
+
         if (showAlignPopup) document.addEventListener('mousedown', handleClickOutside);
         if (showLinePopup) document.addEventListener('mousedown', handleClickOutsideLine);
         if (showStartCapPopup) document.addEventListener('mousedown', handleClickOutsideStartCap);
         if (showEndCapPopup) document.addEventListener('mousedown', handleClickOutsideEndCap);
+        if (showStrokePopup) document.addEventListener('mousedown', handleClickOutsideStroke);
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('mousedown', handleClickOutsideLine);
             document.removeEventListener('mousedown', handleClickOutsideStartCap);
             document.removeEventListener('mousedown', handleClickOutsideEndCap);
+            document.removeEventListener('mousedown', handleClickOutsideStroke);
         };
-    }, [showAlignPopup, showLinePopup, showStartCapPopup, showEndCapPopup]);
+    }, [showAlignPopup, showLinePopup, showStartCapPopup, showEndCapPopup, showStrokePopup]);
 
     // Get current background color
     const currentBgColor = useMemo(() => {
@@ -254,7 +266,9 @@ export function ContextToolbar() {
     const isImage = element?.type === 'image';
     const isText = element?.type === 'text';
     const isLine = element?.type === 'line';
+    const isShape = element?.type === 'shape';
     const textElement = isText ? (element as TextElement) : null;
+    const shapeElement = isShape ? (element as ShapeElement) : null;
     // Ensure lineElement has a valid lineStyle with defaults
     const lineElement = isLine ? (element as LineElement) : null;
     const lineStyleSafe = lineElement?.lineStyle || { dashPattern: 'solid', startCap: 'none', endCap: 'none', capFill: 'outline' };
@@ -273,6 +287,98 @@ export function ContextToolbar() {
             fabricObj.lineElement = { ...fabricObj.lineElement, lineStyle: updatedStyle };
         }
         fabricCanvas.getCanvas()?.renderAll();
+    };
+
+    // Shape fill color change handler
+    const handleShapeFillChange = (color: string) => {
+        if (!shapeElement) return;
+        updateElement(shapeElement.id, {
+            style: { ...shapeElement.style, fill: color }
+        } as Partial<ShapeElement>);
+        // Sync to Fabric.js
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+        if (fabricObj) {
+            (fabricObj as any).set({ fill: color });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
+    };
+
+    // Shape stroke color change handler
+    const handleShapeStrokeColorChange = (color: string) => {
+        if (!shapeElement) return;
+        // Also ensure stroke width is set if currently 0
+        const currentStrokeWidth = shapeElement.style.strokeWidth || 0;
+        const newStrokeWidth = currentStrokeWidth === 0 ? 2 : currentStrokeWidth;
+        updateElement(shapeElement.id, {
+            style: { ...shapeElement.style, stroke: color, strokeWidth: newStrokeWidth }
+        } as Partial<ShapeElement>);
+        // Sync to Fabric.js
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+        if (fabricObj) {
+            (fabricObj as any).set({ stroke: color, strokeWidth: newStrokeWidth });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
+    };
+
+    // Shape stroke width change handler
+    const handleShapeStrokeWidthChange = (width: number) => {
+        if (!shapeElement) return;
+        updateElement(shapeElement.id, {
+            style: { ...shapeElement.style, strokeWidth: width }
+        } as Partial<ShapeElement>);
+        // Sync to Fabric.js
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+        if (fabricObj) {
+            (fabricObj as any).set({ strokeWidth: width });
+            fabricCanvas.getCanvas()?.renderAll();
+        }
+    };
+
+    // Shape stroke style types
+    type StrokeStyleType = 'none' | 'solid' | 'dashed' | 'dotted';
+
+    // Handle shape stroke style change
+    const handleShapeStrokeStyleChange = (style: StrokeStyleType) => {
+        if (!shapeElement) return;
+        const fabricCanvas = getFabricCanvas();
+        const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+
+        if (style === 'none') {
+            updateElement(shapeElement.id, {
+                style: { ...shapeElement.style, stroke: null, strokeWidth: 0 }
+            } as Partial<ShapeElement>);
+            if (fabricObj) {
+                (fabricObj as any).set({ stroke: null, strokeWidth: 0, strokeDashArray: null });
+                fabricCanvas.getCanvas()?.renderAll();
+            }
+        } else {
+            const currentStroke = shapeElement.style.stroke || '#000000';
+            const currentWidth = shapeElement.style.strokeWidth || 2;
+            let dashArray: number[] | null = null;
+
+            if (style === 'dashed') {
+                dashArray = [10, 5];
+            } else if (style === 'dotted') {
+                dashArray = [2, 4];
+            }
+
+            updateElement(shapeElement.id, {
+                style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth }
+            } as Partial<ShapeElement>);
+
+            if (fabricObj) {
+                (fabricObj as any).set({
+                    stroke: currentStroke,
+                    strokeWidth: currentWidth,
+                    strokeDashArray: dashArray
+                });
+                fabricCanvas.getCanvas()?.renderAll();
+            }
+        }
+        setShowStrokePopup(false);
     };
 
     // Text formatting handlers
@@ -506,9 +612,9 @@ export function ContextToolbar() {
 
     // Get element bounds for positioning (actual visual size, not bounding rect)
     const getElementBounds = () => {
-        if (!textElement) return { width: 0, height: 0 };
+        if (!element) return { width: 0, height: 0 };
         const fabricCanvas = getFabricCanvas();
-        const fabricObject = fabricCanvas.getObjectById(textElement.id);
+        const fabricObject = fabricCanvas.getObjectById(element.id);
         if (fabricObject) {
             // Use actual scaled dimensions, not bounding rect which includes control padding
             const scaleX = fabricObject.scaleX || 1;
@@ -517,49 +623,49 @@ export function ContextToolbar() {
             const objHeight = (fabricObject.height || 0) * scaleY;
             return { width: objWidth, height: objHeight };
         }
-        const width = textElement.transform.width * Math.abs(textElement.transform.scaleX);
-        const height = textElement.transform.height * Math.abs(textElement.transform.scaleY);
+        const width = element.transform.width * Math.abs(element.transform.scaleX);
+        const height = element.transform.height * Math.abs(element.transform.scaleY);
         return { width, height };
     };
 
     // Position alignment handlers (like sidebar)
     const handlePositionAlignLeft = () => {
-        if (!textElement) return;
+        if (!element) return;
         const { width } = getElementBounds();
-        updateTransform(textElement.id, { x: width / 2 });
+        updateTransform(element.id, { x: width / 2 });
         setShowAlignPopup(false);
     };
 
     const handlePositionAlignCenter = () => {
-        if (!textElement) return;
-        updateTransform(textElement.id, { x: canvasWidth / 2 });
+        if (!element) return;
+        updateTransform(element.id, { x: canvasWidth / 2 });
         setShowAlignPopup(false);
     };
 
     const handlePositionAlignRight = () => {
-        if (!textElement) return;
+        if (!element) return;
         const { width } = getElementBounds();
-        updateTransform(textElement.id, { x: canvasWidth - width / 2 });
+        updateTransform(element.id, { x: canvasWidth - width / 2 });
         setShowAlignPopup(false);
     };
 
     const handlePositionAlignTop = () => {
-        if (!textElement) return;
+        if (!element) return;
         const { height } = getElementBounds();
-        updateTransform(textElement.id, { y: height / 2 });
+        updateTransform(element.id, { y: height / 2 });
         setShowAlignPopup(false);
     };
 
     const handlePositionAlignMiddle = () => {
-        if (!textElement) return;
-        updateTransform(textElement.id, { y: canvasHeight / 2 });
+        if (!element) return;
+        updateTransform(element.id, { y: canvasHeight / 2 });
         setShowAlignPopup(false);
     };
 
     const handlePositionAlignBottom = () => {
-        if (!textElement) return;
+        if (!element) return;
         const { height } = getElementBounds();
-        updateTransform(textElement.id, { y: canvasHeight - height / 2 });
+        updateTransform(element.id, { y: canvasHeight - height / 2 });
         setShowAlignPopup(false);
     };
 
@@ -614,6 +720,78 @@ export function ContextToolbar() {
                         <SlidersHorizontal size={16} />
                         <span className="text-xs font-medium">Filters</span>
                     </button>
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Alignment - Button with popup for all options */}
+                    <div className="relative" ref={alignPopupRef}>
+                        <button
+                            onClick={() => setShowAlignPopup(!showAlignPopup)}
+                            className={`p-1 rounded transition-all flex items-center gap-0.5 ${showAlignPopup
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align element"
+                        >
+                            <AlignHorizontalJustifyCenter size={14} />
+                            <ChevronDown size={12} />
+                        </button>
+
+                        {/* Alignment Popup */}
+                        {showAlignPopup && (
+                            <div className="fixed top-[90px] left-[50%] -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 p-1.5 z-50">
+                                <div className="grid grid-cols-6 gap-0.5">
+                                    <button
+                                        onClick={handlePositionAlignLeft}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Left"
+                                    >
+                                        <AlignHorizontalJustifyStart size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Left</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignCenter}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Center"
+                                    >
+                                        <AlignHorizontalJustifyCenter size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Center</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignRight}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Right"
+                                    >
+                                        <AlignHorizontalJustifyEnd size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Right</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignTop}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Top"
+                                    >
+                                        <AlignVerticalJustifyStart size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Top</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignMiddle}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Middle"
+                                    >
+                                        <AlignVerticalJustifyCenter size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Mid</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignBottom}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Bottom"
+                                    >
+                                        <AlignVerticalJustifyEnd size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Bot</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
                     <div className="w-px h-6 bg-gray-200" />
                 </>
             )}
@@ -795,55 +973,55 @@ export function ContextToolbar() {
 
                         {/* Alignment Popup */}
                         {showAlignPopup && (
-                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 p-2 z-50">
-                                <div className="grid grid-cols-6 gap-1 min-w-[200px]">
+                            <div className="fixed top-[90px] left-[50%] -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 p-1.5 z-50">
+                                <div className="grid grid-cols-6 gap-0.5">
                                     <button
                                         onClick={handlePositionAlignLeft}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Left"
                                     >
                                         <AlignHorizontalJustifyStart size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Left</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Left</span>
                                     </button>
                                     <button
                                         onClick={handlePositionAlignCenter}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Center"
                                     >
                                         <AlignHorizontalJustifyCenter size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Center</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Center</span>
                                     </button>
                                     <button
                                         onClick={handlePositionAlignRight}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Right"
                                     >
                                         <AlignHorizontalJustifyEnd size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Right</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Right</span>
                                     </button>
                                     <button
                                         onClick={handlePositionAlignTop}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Top"
                                     >
                                         <AlignVerticalJustifyStart size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Top</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Top</span>
                                     </button>
                                     <button
                                         onClick={handlePositionAlignMiddle}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Middle"
                                     >
                                         <AlignVerticalJustifyCenter size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Middle</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Mid</span>
                                     </button>
                                     <button
                                         onClick={handlePositionAlignBottom}
-                                        className="flex flex-col items-center justify-center p-2 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all"
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
                                         title="Align Bottom"
                                     >
                                         <AlignVerticalJustifyEnd size={14} />
-                                        <span className="text-[9px] mt-1 font-medium">Bottom</span>
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Bot</span>
                                     </button>
                                 </div>
                             </div>
@@ -901,6 +1079,313 @@ export function ContextToolbar() {
                 </>
             )}
 
+            {/* Shape Formatting Options */}
+            {isShape && shapeElement && (
+                <>
+                    {/* Fill Color */}
+                    <div className="relative">
+                        <input
+                            type="color"
+                            value={typeof shapeElement.style.fill === 'string' ? shapeElement.style.fill : '#000000'}
+                            onChange={(e) => handleShapeFillChange(e.target.value)}
+                            className="absolute inset-0 opacity-0 w-6 h-6 cursor-pointer z-10"
+                            title="Fill color"
+                        />
+                        <div
+                            className="w-6 h-6 rounded-full border-2 border-gray-200 hover:border-blue-400 hover:scale-110 transition-all cursor-pointer shadow-sm"
+                            style={{ backgroundColor: typeof shapeElement.style.fill === 'string' ? shapeElement.style.fill : '#000000' }}
+                            title="Fill color"
+                        />
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Stroke Style Button with Popup */}
+                    <div className="relative" ref={strokePopupRef}>
+                        <button
+                            onClick={() => setShowStrokePopup(!showStrokePopup)}
+                            className={`p-1 rounded transition-all flex items-center gap-0.5 ${showStrokePopup
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Stroke style"
+                        >
+                            {/* Stroke style icon - dashed rectangle */}
+                            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                <rect x="2" y="2" width="12" height="12" rx="2" strokeDasharray="3,2" />
+                            </svg>
+                            <ChevronDown size={10} />
+                        </button>
+
+                        {/* Stroke Popup - positioned below the entire context bar */}
+                        {showStrokePopup && (
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-2xl shadow-lg border border-gray-100 px-3 py-3 z-50">
+                                {/* Stroke Style Options - 5 compact buttons */}
+                                <div className="flex items-center gap-1.5 mb-3">
+                                    {/* No Stroke */}
+                                    <button
+                                        onClick={() => {
+                                            if (!shapeElement) return;
+                                            updateElement(shapeElement.id, {
+                                                style: { ...shapeElement.style, stroke: null, strokeWidth: 0 }
+                                            } as Partial<ShapeElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+                                            if (fabricObj) {
+                                                (fabricObj as any).set({ stroke: null, strokeWidth: 0, strokeDashArray: null });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${!shapeElement.style.stroke || shapeElement.style.strokeWidth === 0
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
+                                            }`}
+                                        title="No stroke"
+                                    >
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-gray-500">
+                                            <circle cx="8" cy="8" r="5" />
+                                            <line x1="4" y1="12" x2="12" y2="4" />
+                                        </svg>
+                                    </button>
+                                    {/* Solid */}
+                                    <button
+                                        onClick={() => {
+                                            if (!shapeElement) return;
+                                            const currentStroke = shapeElement.style.stroke || '#000000';
+                                            const currentWidth = shapeElement.style.strokeWidth || 2;
+                                            updateElement(shapeElement.id, {
+                                                style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth > 0 ? currentWidth : 2 }
+                                            } as Partial<ShapeElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+                                            if (fabricObj) {
+                                                (fabricObj as any).set({
+                                                    stroke: currentStroke,
+                                                    strokeWidth: currentWidth > 0 ? currentWidth : 2,
+                                                    strokeDashArray: null
+                                                });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${shapeElement.style.stroke && shapeElement.style.strokeWidth > 0
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
+                                            }`}
+                                        title="Solid"
+                                    >
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" />
+                                        </svg>
+                                    </button>
+                                    {/* Short Dashed */}
+                                    <button
+                                        onClick={() => {
+                                            if (!shapeElement) return;
+                                            const currentStroke = shapeElement.style.stroke || '#000000';
+                                            const currentWidth = shapeElement.style.strokeWidth || 2;
+                                            updateElement(shapeElement.id, {
+                                                style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth > 0 ? currentWidth : 2 }
+                                            } as Partial<ShapeElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+                                            if (fabricObj) {
+                                                const sw = currentWidth > 0 ? currentWidth : 2;
+                                                (fabricObj as any).set({
+                                                    stroke: currentStroke,
+                                                    strokeWidth: sw,
+                                                    strokeDashArray: [sw * 2, sw]
+                                                });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className="w-10 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
+                                        title="Short dashed"
+                                    >
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="3,2" />
+                                        </svg>
+                                    </button>
+                                    {/* Long Dashed */}
+                                    <button
+                                        onClick={() => {
+                                            if (!shapeElement) return;
+                                            const currentStroke = shapeElement.style.stroke || '#000000';
+                                            const currentWidth = shapeElement.style.strokeWidth || 2;
+                                            updateElement(shapeElement.id, {
+                                                style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth > 0 ? currentWidth : 2 }
+                                            } as Partial<ShapeElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+                                            if (fabricObj) {
+                                                const sw = currentWidth > 0 ? currentWidth : 2;
+                                                (fabricObj as any).set({
+                                                    stroke: currentStroke,
+                                                    strokeWidth: sw,
+                                                    strokeDashArray: [sw * 4, sw * 2]
+                                                });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className="w-10 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
+                                        title="Long dashed"
+                                    >
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="5,3" />
+                                        </svg>
+                                    </button>
+                                    {/* Dotted */}
+                                    <button
+                                        onClick={() => {
+                                            if (!shapeElement) return;
+                                            const currentStroke = shapeElement.style.stroke || '#000000';
+                                            const currentWidth = shapeElement.style.strokeWidth || 2;
+                                            updateElement(shapeElement.id, {
+                                                style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth > 0 ? currentWidth : 2 }
+                                            } as Partial<ShapeElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
+                                            if (fabricObj) {
+                                                const sw = currentWidth > 0 ? currentWidth : 2;
+                                                (fabricObj as any).set({
+                                                    stroke: currentStroke,
+                                                    strokeWidth: sw,
+                                                    strokeDashArray: [sw, sw * 2],
+                                                    strokeLineCap: 'round'
+                                                });
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className="w-10 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-all"
+                                        title="Dotted"
+                                    >
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="2" y1="1.5" x2="18" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="1,3" strokeLinecap="round" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                {/* Stroke Width */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm text-gray-800 font-medium">Stroke Width</span>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            max="20"
+                                            value={shapeElement.style.strokeWidth || 0}
+                                            onChange={(e) => handleShapeStrokeWidthChange(Number(e.target.value))}
+                                            className="w-12 px-2 py-1 text-sm text-center text-gray-700 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400"
+                                        />
+                                    </div>
+                                    <input
+                                        type="range"
+                                        min="0"
+                                        max="20"
+                                        value={shapeElement.style.strokeWidth || 0}
+                                        onChange={(e) => handleShapeStrokeWidthChange(Number(e.target.value))}
+                                        className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:cursor-pointer"
+                                    />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Stroke Color */}
+                    <div className="relative">
+                        <input
+                            type="color"
+                            value={typeof shapeElement.style.stroke === 'string' ? shapeElement.style.stroke : '#000000'}
+                            onChange={(e) => handleShapeStrokeColorChange(e.target.value)}
+                            className="absolute inset-0 opacity-0 w-6 h-6 cursor-pointer z-10"
+                            title="Stroke color"
+                        />
+                        <div
+                            className="w-6 h-6 rounded transition-all cursor-pointer flex items-center justify-center hover:scale-110"
+                            title="Stroke color"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                                <rect x="2" y="2" width="12" height="12" rx="2" stroke={typeof shapeElement.style.stroke === 'string' ? shapeElement.style.stroke : '#000000'} strokeWidth="2.5" />
+                            </svg>
+                        </div>
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Alignment - Button with popup for all options */}
+                    <div className="relative" ref={alignPopupRef}>
+                        <button
+                            onClick={() => setShowAlignPopup(!showAlignPopup)}
+                            className={`p-1 rounded transition-all flex items-center gap-0.5 ${showAlignPopup
+                                ? 'bg-blue-100 text-blue-600'
+                                : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                                }`}
+                            title="Align element"
+                        >
+                            <AlignHorizontalJustifyCenter size={14} />
+                            <ChevronDown size={12} />
+                        </button>
+
+                        {/* Alignment Popup */}
+                        {showAlignPopup && (
+                            <div className="fixed top-[90px] left-[50%] -translate-x-1/2 bg-white rounded-lg shadow-lg border border-gray-200 p-1.5 z-50">
+                                <div className="grid grid-cols-6 gap-0.5">
+                                    <button
+                                        onClick={handlePositionAlignLeft}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Left"
+                                    >
+                                        <AlignHorizontalJustifyStart size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Left</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignCenter}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Center"
+                                    >
+                                        <AlignHorizontalJustifyCenter size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Center</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignRight}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Right"
+                                    >
+                                        <AlignHorizontalJustifyEnd size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Right</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignTop}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Top"
+                                    >
+                                        <AlignVerticalJustifyStart size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Top</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignMiddle}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Middle"
+                                    >
+                                        <AlignVerticalJustifyCenter size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Mid</span>
+                                    </button>
+                                    <button
+                                        onClick={handlePositionAlignBottom}
+                                        className="flex flex-col items-center justify-center p-1 rounded hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-all w-10"
+                                        title="Align Bottom"
+                                    >
+                                        <AlignVerticalJustifyEnd size={14} />
+                                        <span className="text-[8px] mt-0.5 font-medium leading-none">Bot</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </>
+            )}
+
             {/* Line Formatting Options - Icon button with popup */}
             {isLine && lineElement && (
                 <>
@@ -923,9 +1408,9 @@ export function ContextToolbar() {
 
                         {/* Line Style Popup - positioned below the entire context bar */}
                         {showLinePopup && (
-                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-xl shadow-xl border border-gray-100 p-3 z-50">
-                                {/* Line Style Options - 4 types */}
-                                <div className="flex items-center gap-2 mb-4">
+                            <div className="fixed top-[48px] left-[50%] -translate-x-1/2 bg-white rounded-2xl shadow-lg border border-gray-100 px-3 py-3 z-50">
+                                {/* Line Style Options - 4 compact buttons */}
+                                <div className="flex items-center gap-1.5 mb-3">
                                     {/* Solid */}
                                     <button
                                         onClick={() => {
@@ -939,14 +1424,14 @@ export function ContextToolbar() {
                                                 fabricCanvas.getCanvas()?.renderAll();
                                             }
                                         }}
-                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'solid'
-                                            ? 'bg-blue-500 text-white shadow-sm'
-                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${lineStyleSafe.dashPattern === 'solid'
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
                                             }`}
                                         title="Solid"
                                     >
-                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
-                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" />
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" />
                                         </svg>
                                     </button>
                                     {/* Short Dashed */}
@@ -963,14 +1448,14 @@ export function ContextToolbar() {
                                                 fabricCanvas.getCanvas()?.renderAll();
                                             }
                                         }}
-                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'dashed'
-                                            ? 'bg-blue-500 text-white shadow-sm'
-                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${lineStyleSafe.dashPattern === 'dashed'
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
                                             }`}
                                         title="Dashed"
                                     >
-                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
-                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="8,4" />
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="3,2" />
                                         </svg>
                                     </button>
                                     {/* Long Dashed */}
@@ -987,14 +1472,14 @@ export function ContextToolbar() {
                                                 fabricCanvas.getCanvas()?.renderAll();
                                             }
                                         }}
-                                        className={`flex-1 p-2.5 rounded-lg transition-all ${(lineStyleSafe.dashPattern as any) === 'long-dashed'
-                                            ? 'bg-blue-500 text-white shadow-sm'
-                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${(lineStyleSafe.dashPattern as any) === 'long-dashed'
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
                                             }`}
                                         title="Long dashed"
                                     >
-                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
-                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="12,6" />
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="0" y1="1.5" x2="20" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="5,3" />
                                         </svg>
                                     </button>
                                     {/* Dotted */}
@@ -1011,56 +1496,29 @@ export function ContextToolbar() {
                                                 fabricCanvas.getCanvas()?.renderAll();
                                             }
                                         }}
-                                        className={`flex-1 p-2.5 rounded-lg transition-all ${lineStyleSafe.dashPattern === 'dotted'
-                                            ? 'bg-blue-500 text-white shadow-sm'
-                                            : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
+                                        className={`w-10 h-9 rounded-lg flex items-center justify-center transition-all ${lineStyleSafe.dashPattern === 'dotted'
+                                            ? 'border-2 border-blue-500 bg-blue-50'
+                                            : 'bg-gray-100 hover:bg-gray-200'
                                             }`}
                                         title="Dotted"
                                     >
-                                        <svg width="100%" height="4" viewBox="0 0 50 4" preserveAspectRatio="none">
-                                            <line x1="2" y1="2" x2="48" y2="2" stroke="currentColor" strokeWidth="3" strokeDasharray="2,5" strokeLinecap="round" />
+                                        <svg width="20" height="3" viewBox="0 0 20 3" className="text-gray-600">
+                                            <line x1="2" y1="1.5" x2="18" y2="1.5" stroke="currentColor" strokeWidth="2" strokeDasharray="1,3" strokeLinecap="round" />
                                         </svg>
                                     </button>
                                 </div>
 
-                                {/* Stroke weight */}
-                                <div className="pt-2 border-t border-gray-100">
-                                    <span className="text-sm text-gray-700 font-medium">Stroke weight</span>
-                                    <div className="flex items-center gap-3 mt-2">
-                                        <input
-                                            type="range"
-                                            min="1"
-                                            max="32"
-                                            value={lineElement.strokeWidth || 4}
-                                            onChange={(e) => {
-                                                const newWidth = parseInt(e.target.value);
-                                                updateElement(lineElement.id, {
-                                                    strokeWidth: newWidth
-                                                } as Partial<LineElement>);
-                                                const fabricCanvas = getFabricCanvas();
-                                                const fabricObj = fabricCanvas.getObjectById(lineElement.id);
-                                                if (fabricObj) {
-                                                    (fabricObj as any).set({ strokeWidth: newWidth });
-                                                    const pattern = lineStyleSafe.dashPattern;
-                                                    if (pattern === 'dashed') {
-                                                        (fabricObj as any).set({ strokeDashArray: [newWidth * 2, newWidth] });
-                                                    } else if ((pattern as any) === 'long-dashed') {
-                                                        (fabricObj as any).set({ strokeDashArray: [newWidth * 4, newWidth * 2] });
-                                                    } else if (pattern === 'dotted') {
-                                                        (fabricObj as any).set({ strokeDashArray: [newWidth, newWidth * 2] });
-                                                    }
-                                                    fabricCanvas.getCanvas()?.renderAll();
-                                                }
-                                            }}
-                                            className="flex-1 h-2 bg-gradient-to-r from-blue-500 to-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-blue-500 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:shadow [&::-webkit-slider-thumb]:cursor-pointer"
-                                        />
+                                {/* Stroke Width */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-2">
+                                        <span className="text-sm text-gray-800 font-medium">Stroke Width</span>
                                         <input
                                             type="number"
                                             min="1"
-                                            max="32"
+                                            max="20"
                                             value={lineElement.strokeWidth || 4}
                                             onChange={(e) => {
-                                                const newWidth = Math.max(1, Math.min(32, parseInt(e.target.value) || 1));
+                                                const newWidth = Math.max(1, Math.min(20, parseInt(e.target.value) || 1));
                                                 updateElement(lineElement.id, {
                                                     strokeWidth: newWidth
                                                 } as Partial<LineElement>);
@@ -1071,9 +1529,36 @@ export function ContextToolbar() {
                                                     fabricCanvas.getCanvas()?.renderAll();
                                                 }
                                             }}
-                                            className="w-14 h-9 border border-gray-200 rounded-lg text-center text-sm font-semibold text-gray-700 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 focus:outline-none transition-all"
+                                            className="w-12 px-2 py-1 text-sm text-center text-gray-700 bg-gray-100 border-0 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-400"
                                         />
                                     </div>
+                                    <input
+                                        type="range"
+                                        min="1"
+                                        max="20"
+                                        value={lineElement.strokeWidth || 4}
+                                        onChange={(e) => {
+                                            const newWidth = parseInt(e.target.value);
+                                            updateElement(lineElement.id, {
+                                                strokeWidth: newWidth
+                                            } as Partial<LineElement>);
+                                            const fabricCanvas = getFabricCanvas();
+                                            const fabricObj = fabricCanvas.getObjectById(lineElement.id);
+                                            if (fabricObj) {
+                                                (fabricObj as any).set({ strokeWidth: newWidth });
+                                                const pattern = lineStyleSafe.dashPattern;
+                                                if (pattern === 'dashed') {
+                                                    (fabricObj as any).set({ strokeDashArray: [newWidth * 2, newWidth] });
+                                                } else if ((pattern as any) === 'long-dashed') {
+                                                    (fabricObj as any).set({ strokeDashArray: [newWidth * 4, newWidth * 2] });
+                                                } else if (pattern === 'dotted') {
+                                                    (fabricObj as any).set({ strokeDashArray: [newWidth, newWidth * 2] });
+                                                }
+                                                fabricCanvas.getCanvas()?.renderAll();
+                                            }
+                                        }}
+                                        className="w-full h-1 bg-gray-200 rounded-full appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3 [&::-webkit-slider-thumb]:h-3 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-blue-500 [&::-webkit-slider-thumb]:cursor-pointer"
+                                    />
                                 </div>
                             </div>
                         )}
@@ -1377,11 +1862,11 @@ export function ContextToolbar() {
                                     fabricCanvas.getCanvas()?.renderAll();
                                 }
                             }}
-                            className="absolute inset-0 opacity-0 w-8 h-8 cursor-pointer z-10"
+                            className="absolute inset-0 opacity-0 w-6 h-6 cursor-pointer z-10"
                             title="Line color"
                         />
                         <div
-                            className="w-7 h-7 rounded-lg border-2 border-gray-200 cursor-pointer hover:border-gray-400 transition-all"
+                            className="w-6 h-6 rounded-full border-2 border-gray-200 cursor-pointer hover:border-blue-400 hover:scale-110 transition-all shadow-sm"
                             style={{ backgroundColor: lineElement.strokeColor || '#1a1a1a' }}
                             title="Line color"
                         />

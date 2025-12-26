@@ -54,6 +54,9 @@ function getOverlappingElements(elements: CanvasElement[]): CanvasElement[] {
 
 export function LayersPanel() {
     const [activeTab, setActiveTab] = useState<TabType>('all');
+    const [editingId, setEditingId] = useState<string | null>(null);
+    const [editingName, setEditingName] = useState('');
+    const updateElement = useCanvasStore((state) => state.updateElement);
 
     const activePage = useActivePage();
     const selectedIds = useCanvasStore((state) => state.selectedIds);
@@ -64,6 +67,8 @@ export function LayersPanel() {
     const bringForward = useCanvasStore((state) => state.bringForward);
     const sendBackward = useCanvasStore((state) => state.sendBackward);
     const removeElement = useCanvasStore((state) => state.removeElement);
+
+    // ... (keep existing filtering/sorting logic items 68-87)
 
     const elements = activePage?.elements || [];
 
@@ -88,7 +93,7 @@ export function LayersPanel() {
     // Select which elements to display based on active tab
     const displayElements = activeTab === 'all' ? sortedElements : sortedOverlappingElements;
 
-    // Get background preview style
+    // ... (keep getBackgroundStyle and renderBackgroundLayer items 91-198)
     const getBackgroundStyle = (bg: PageBackground): React.CSSProperties => {
         if (bg.type === 'solid') {
             return { backgroundColor: bg.color };
@@ -145,17 +150,16 @@ export function LayersPanel() {
                     transition-all duration-150 border bg-gray-50 border-gray-200
                 "
             >
-                {/* Background indicator - diagonal stripes */}
-                <div className="w-6 h-6 rounded-lg flex items-center justify-center bg-gray-200">
-                    <Palette size={12} className="text-gray-500" />
+                {/* Background indicator */}
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-gray-200">
+                    <Palette size={14} className="text-gray-500" />
                 </div>
 
-                {/* Thumbnail - showing actual background */}
+                {/* Thumbnail */}
                 <div
-                    className="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200 flex-shrink-0 shadow-sm"
+                    className="relative w-8 h-8 rounded-md overflow-hidden border border-gray-200 flex-shrink-0 shadow-sm"
                     style={bgStyle}
                 >
-                    {/* Diagonal stripes overlay for white/transparent backgrounds */}
                     {!hasBackgroundImage && bg.type === 'solid' && bg.color.toLowerCase() === '#ffffff' && (
                         <div
                             className="absolute inset-0 opacity-30"
@@ -168,77 +172,72 @@ export function LayersPanel() {
 
                 {/* Info */}
                 <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm text-gray-700 truncate font-medium">
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-gray-700 truncate font-medium">
                             Background
                         </span>
-                        <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${hasBackgroundImage
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${hasBackgroundImage
                             ? 'bg-emerald-100 text-emerald-600'
                             : 'bg-gray-100 text-gray-500'
                             }`}>
                             {typeLabel}
                         </span>
                     </div>
-                    <div className="text-xs text-gray-400 truncate">
-                        {description}
-                    </div>
-                </div>
-
-                {/* Decorative diagonal stripes on the right */}
-                <div className="flex items-center">
-                    <svg width="20" height="20" viewBox="0 0 20 20" className="text-gray-300">
-                        <pattern id="diagonalHatch" patternUnits="userSpaceOnUse" width="4" height="4">
-                            <path d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2" stroke="currentColor" strokeWidth="1" />
-                        </pattern>
-                        <rect width="20" height="20" fill="url(#diagonalHatch)" />
-                    </svg>
                 </div>
             </div>
         );
     };
 
-    // Get element type badge
+    // ... (keep getTypeBadge)
     const getTypeBadge = (type: string) => {
         const badges: Record<string, { label: string; color: string }> = {
             image: { label: 'IMG', color: 'bg-emerald-100 text-emerald-600' },
             text: { label: 'TXT', color: 'bg-blue-100 text-blue-600' },
             shape: { label: 'SHP', color: 'bg-orange-100 text-orange-600' },
             svg: { label: 'SVG', color: 'bg-pink-100 text-pink-600' },
+            line: { label: 'LINE', color: 'bg-slate-100 text-slate-600' },
         };
         const badge = badges[type] || { label: 'ELM', color: 'bg-gray-100 text-gray-600' };
         return (
-            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${badge.color}`}>
+            <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${badge.color}`}>
                 {badge.label}
             </span>
         );
     };
 
+    // Handle renaming
+    const startEditing = (element: CanvasElement) => {
+        setEditingId(element.id);
+        setEditingName(element.name || `Layer ${sortedElements.findIndex(e => e.id === element.id) + 1}`);
+    };
+
+    const saveName = () => {
+        if (editingId && editingName.trim()) {
+            updateElement(editingId, { name: editingName.trim() });
+        }
+        setEditingId(null);
+        setEditingName('');
+    };
+
     // Render a single layer item
     const renderLayerItem = (element: CanvasElement, index: number) => {
         const isSelected = selectedIds.includes(element.id);
+        const isEditing = editingId === element.id;
 
         return (
             <div
                 key={element.id}
-                onClick={() => select(element.id)}
+                onClick={() => !isEditing && select(element.id)}
                 className={`
-                    group relative flex items-center gap-3 p-3 rounded-xl cursor-pointer
+                    group relative flex items-center gap-3 p-2.5 rounded-xl cursor-pointer
                     transition-all duration-150 border
                     ${isSelected
-                        ? 'bg-gradient-to-r from-violet-50 to-blue-50 border-violet-300 shadow-sm'
-                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100 hover:border-gray-300'}
+                        ? 'bg-blue-50 border-blue-200 shadow-sm'
+                        : 'bg-white border-transparent hover:bg-gray-50 hover:border-gray-200'}
                 `}
             >
-                {/* Layer Number */}
-                <div className={`
-                    w-6 h-6 rounded-lg flex items-center justify-center text-xs font-semibold
-                    ${isSelected ? 'bg-violet-200 text-violet-700' : 'bg-gray-200 text-gray-500'}
-                `}>
-                    {sortedElements.length - index}
-                </div>
-
                 {/* Thumbnail */}
-                <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-white border border-gray-200 flex-shrink-0 shadow-sm">
+                <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-50 border border-gray-100 flex-shrink-0 flex items-center justify-center">
                     {element.type === 'image' ? (
                         <img
                             src={element.src}
@@ -246,194 +245,199 @@ export function LayersPanel() {
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-                            {element.type === 'text' && (
-                                <span className="text-xl font-bold text-gray-400">Aa</span>
-                            )}
-                            {element.type === 'shape' && (
-                                <div className="w-6 h-6 bg-gradient-to-br from-gray-300 to-gray-400 rounded-sm" />
-                            )}
-                            {element.type === 'svg' && (
-                                <Layers size={20} className="text-gray-400" />
-                            )}
+                        <div className="flex items-center justify-center text-gray-400">
+                            {element.type === 'text' && <span className="text-lg font-bold">Aa</span>}
+                            {element.type === 'shape' && <div className="w-5 h-5 bg-gray-300 rounded-sm" />}
+                            {element.type === 'svg' && <Layers size={18} />}
+                            {element.type === 'line' && <div className="w-6 h-0.5 bg-gray-300 transform -rotate-45" />}
                         </div>
                     )}
+
+                    {/* Status Icons Overlay */}
+                    <div className="absolute bottom-0 right-0 flex p-0.5 gap-0.5">
+                        {!element.visible && (
+                            <div className="bg-gray-800/75 rounded p-0.5 text-white">
+                                <EyeOff size={8} />
+                            </div>
+                        )}
+                        {element.locked && (
+                            <div className="bg-amber-500/90 rounded p-0.5 text-white">
+                                <Lock size={8} />
+                            </div>
+                        )}
+                    </div>
                 </div>
 
                 {/* Info */}
-                <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm text-gray-700 truncate font-medium">
-                            {element.name || `Layer ${sortedElements.length - index}`}
-                        </span>
+                <div className="flex-1 min-w-0 flex flex-col justify-center h-10">
+                    <div className="flex items-center gap-2">
+                        {isEditing ? (
+                            <input
+                                type="text"
+                                value={editingName}
+                                onChange={(e) => setEditingName(e.target.value)}
+                                onBlur={saveName}
+                                onKeyDown={(e) => e.key === 'Enter' && saveName()}
+                                autoFocus
+                                onClick={(e) => e.stopPropagation()}
+                                className="flex-1 bg-white border border-blue-300 rounded px-1.5 py-0.5 text-xs text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                            />
+                        ) : (
+                            <span
+                                className="text-sm text-gray-700 truncate font-medium select-none"
+                                onDoubleClick={(e) => {
+                                    e.stopPropagation();
+                                    startEditing(element);
+                                }}
+                            >
+                                {element.name || `Layer ${sortedElements.length - index}`}
+                            </span>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-2 mt-0.5">
                         {getTypeBadge(element.type)}
-                    </div>
-                    <div className="text-xs text-gray-400 font-mono">
-                        {Math.round(element.transform.width)} × {Math.round(element.transform.height)}
+                        <span className="text-[10px] text-gray-400 font-mono">
+                            {Math.round(element.transform.width)}×{Math.round(element.transform.height)}
+                        </span>
                     </div>
                 </div>
 
-                {/* Quick Actions */}
-                <div className="flex items-center gap-0.5 opacity-60 group-hover:opacity-100 transition-opacity">
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            toggleVisibility(element.id);
-                        }}
-                        className={`
-                            p-1.5 rounded-lg transition-colors
-                            ${element.visible
-                                ? 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'
-                                : 'text-gray-300 hover:text-gray-500 hover:bg-gray-100'}
-                        `}
-                        title={element.visible ? 'Hide' : 'Show'}
-                    >
-                        {element.visible ? <Eye size={14} /> : <EyeOff size={14} />}
-                    </button>
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            element.locked ? unlockElement(element.id) : lockElement(element.id);
-                        }}
-                        className={`
-                            p-1.5 rounded-lg transition-colors
-                            ${element.locked
-                                ? 'text-amber-500 hover:text-amber-600 hover:bg-amber-50'
-                                : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200'}
-                        `}
-                        title={element.locked ? 'Unlock' : 'Lock'}
-                    >
-                        {element.locked ? <Lock size={14} /> : <Unlock size={14} />}
-                    </button>
-                </div>
-
-                {/* Selection indicator */}
+                {/* Selected Indicator - Blue Dot */}
                 {isSelected && (
-                    <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-gradient-to-b from-violet-400 to-blue-400 rounded-r-full" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-200" />
                 )}
             </div>
         );
     };
 
     return (
-        <div className="h-full flex flex-col bg-white">
+        <div className="h-full flex flex-col bg-slate-50/50">
             {/* Header */}
-            <div className="p-4 pb-2">
-                <h2 className="text-lg font-semibold text-gray-800">Layers</h2>
-                <p className="text-xs text-gray-500 mt-0.5">
-                    {displayElements.length} {displayElements.length === 1 ? 'layer' : 'layers'}
-                </p>
+            <div className="p-4 pb-2 bg-white border-b border-gray-100">
+                <div className="flex items-center justify-between mb-1">
+                    <h2 className="text-lg font-semibold text-gray-800">Layers</h2>
+                    <span className="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full font-medium">
+                        {displayElements.length}
+                    </span>
+                </div>
             </div>
 
-            {/* Tab Switcher */}
-            <div className="px-4 pb-3">
-                <div className="flex gap-1.5 overflow-x-auto pb-1">
+            {/* Tab Switcher - Cleaner Look */}
+            <div className="px-4 py-3 bg-white border-b border-gray-100 shadow-sm z-10">
+                <div className="flex p-0.5 bg-gray-100 rounded-lg">
                     <button
                         onClick={() => setActiveTab('all')}
                         className={`
-                            flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                            transition-colors whitespace-nowrap
+                            flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all
                             ${activeTab === 'all'
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                                ? 'bg-white text-gray-800 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'}
                         `}
                     >
                         <LayoutGrid size={12} />
-                        All
+                        All Layers
                     </button>
                     <button
                         onClick={() => setActiveTab('overlapping')}
                         className={`
-                            flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium
-                            transition-colors whitespace-nowrap
+                            flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-md text-xs font-medium transition-all
                             ${activeTab === 'overlapping'
-                                ? 'bg-blue-500 text-white'
-                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}
+                                ? 'bg-white text-gray-800 shadow-sm'
+                                : 'text-gray-500 hover:text-gray-700'}
                         `}
                     >
                         <Layers size={12} />
                         Stacked
-                        {overlappingElements.length > 0 && activeTab !== 'overlapping' && (
-                            <span className="flex items-center justify-center w-4 h-4 text-[10px] bg-violet-500 text-white rounded-full ml-0.5">
-                                {overlappingElements.length}
-                            </span>
-                        )}
                     </button>
                 </div>
             </div>
 
             {/* Layers List */}
-            <div className="flex-1 overflow-y-auto px-4 pb-4 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto px-3 py-3 custom-scrollbar space-y-2">
                 {displayElements.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-8 text-gray-400">
-                        <div className="w-12 h-12 rounded-xl bg-gray-100 flex items-center justify-center mb-3">
-                            <Layers size={24} className="text-gray-300" />
-                        </div>
-                        <p className="text-sm font-medium text-gray-500">
-                            {activeTab === 'all' ? 'No layers yet' : 'No stacked layers'}
-                        </p>
-                        <p className="text-xs text-gray-400 mt-1">
-                            {activeTab === 'all'
-                                ? 'Add elements to your canvas'
-                                : 'Move elements to overlap'}
-                        </p>
+                    <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                        <Layers size={32} className="text-gray-300 mb-3" />
+                        <p className="text-sm font-medium text-gray-500">No layers found</p>
                     </div>
                 ) : (
-                    <div className="space-y-2">
-                        {displayElements.map((element, index) => renderLayerItem(element, index))}
-                    </div>
+                    displayElements.map((element, index) => renderLayerItem(element, index))
                 )}
 
-                {/* Background Layer - Always shown at bottom in 'all' tab */}
+                {/* Background Layer */}
                 {activeTab === 'all' && activePage && (
-                    <div className="mt-3 pt-3 border-t border-gray-200">
+                    <div className="pt-2">
                         {renderBackgroundLayer()}
                     </div>
                 )}
             </div>
 
-            {/* Footer Actions */}
+            {/* Footer Actions - Expanded */}
             {selectedIds.length > 0 && (() => {
-                // Find the selected element's position in sorted elements
                 const selectedElement = sortedElements.find(el => el.id === selectedIds[0]);
-                const selectedIndex = sortedElements.findIndex(el => el.id === selectedIds[0]);
+                if (!selectedElement) return null;
 
-                // Disable up if at top (index 0), disable down if at bottom (last index)
+                const selectedIndex = sortedElements.findIndex(el => el.id === selectedIds[0]);
                 const isAtTop = selectedIndex === 0;
                 const isAtBottom = selectedIndex === sortedElements.length - 1;
 
                 return (
-                    <div className="p-4 border-t border-gray-100 bg-gray-50">
-                        <div className="flex items-center justify-center gap-2">
-                            <button
-                                onClick={() => bringForward(selectedIds[0])}
-                                disabled={isAtTop}
-                                className={`flex items-center justify-center py-2 px-4 border rounded-lg transition-colors ${isAtTop
-                                    ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
-                                    : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
-                                    }`}
-                                title="Bring Forward"
-                            >
-                                <ChevronUp size={16} />
-                            </button>
-                            <button
-                                onClick={() => sendBackward(selectedIds[0])}
-                                disabled={isAtBottom}
-                                className={`flex items-center justify-center py-2 px-4 border rounded-lg transition-colors ${isAtBottom
-                                    ? 'bg-gray-100 border-gray-200 text-gray-300 cursor-not-allowed'
-                                    : 'bg-white hover:bg-gray-100 border-gray-200 text-gray-600'
-                                    }`}
-                                title="Send Backward"
-                            >
-                                <ChevronDown size={16} />
-                            </button>
-                            <button
-                                onClick={() => removeElement(selectedIds)}
-                                className="flex items-center justify-center py-2 px-4 bg-red-50 hover:bg-red-100 border border-red-200 rounded-lg text-red-500 transition-colors"
-                                title="Delete Layer"
-                            >
-                                <Trash2 size={16} />
-                            </button>
+                    <div className="p-3 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
+                        <div className="flex items-center justify-between gap-2">
+                            {/* Visibility & Lock Group */}
+                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                                <button
+                                    onClick={() => toggleVisibility(selectedElement.id)}
+                                    className={`p-2 rounded-md transition-all ${!selectedElement.visible
+                                        ? 'bg-gray-200 text-gray-600'
+                                        : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-400'}`}
+                                    title={selectedElement.visible ? "Hide Layer" : "Show Layer"}
+                                >
+                                    {selectedElement.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                </button>
+                                <div className="w-px h-4 bg-gray-200 mx-0.5" />
+                                <button
+                                    onClick={() => selectedElement.locked ? unlockElement(selectedElement.id) : lockElement(selectedElement.id)}
+                                    className={`p-2 rounded-md transition-all ${selectedElement.locked
+                                        ? 'bg-amber-100 text-amber-600'
+                                        : 'hover:bg-white hover:text-amber-600 hover:shadow-sm text-gray-400'}`}
+                                    title={selectedElement.locked ? "Unlock Layer" : "Lock Layer"}
+                                >
+                                    {selectedElement.locked ? <Lock size={16} /> : <Unlock size={16} />}
+                                </button>
+                            </div>
+
+                            {/* Reorder & Delete Group */}
+                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                                <button
+                                    onClick={() => bringForward(selectedElement.id)}
+                                    disabled={isAtTop}
+                                    className={`p-2 rounded-md transition-all ${isAtTop
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-500'}`}
+                                    title="Bring Forward"
+                                >
+                                    <ChevronUp size={16} />
+                                </button>
+                                <button
+                                    onClick={() => sendBackward(selectedElement.id)}
+                                    disabled={isAtBottom}
+                                    className={`p-2 rounded-md transition-all ${isAtBottom
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-500'}`}
+                                    title="Send Backward"
+                                >
+                                    <ChevronDown size={16} />
+                                </button>
+                                <div className="w-px h-4 bg-gray-200 mx-0.5" />
+                                <button
+                                    onClick={() => removeElement([selectedElement.id])}
+                                    className="p-2 rounded-md hover:bg-red-50 hover:text-red-600 hover:shadow-sm text-gray-400 transition-all"
+                                    title="Delete Layer"
+                                >
+                                    <Trash2 size={16} />
+                                </button>
+                            </div>
                         </div>
                     </div>
                 );
