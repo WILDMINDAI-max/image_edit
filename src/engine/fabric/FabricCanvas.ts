@@ -2,7 +2,7 @@
 // Core Fabric.js wrapper and initialization
 
 import { fabric } from 'fabric';
-import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement } from '@/types/canvas';
+import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement, StickerElement } from '@/types/canvas';
 import { Page, PageBackground } from '@/types/project';
 import { CustomText } from './CustomText';
 import { SHAPE_CATALOG } from '@/types/shapes';
@@ -1386,7 +1386,7 @@ export class FabricCanvas {
                 x: 0,
                 y: -0.5,
                 offsetY: -40,
-                actionHandler: fabric.controlsUtils.rotationWithSnapping,
+                actionHandler: (fabric as any).controlsUtils?.rotationWithSnapping || fabric.Object.prototype.controls.mtr.actionHandler,
                 cursorStyle: 'url("data:image/svg+xml,%3Csvg height=\'18\' width=\'18\' viewBox=\'0 0 32 32\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M16,0 L16,0 C7.163,0 0,7.163 0,16 C0,24.837 7.163,32 16,32 C24.837,32 32,24.837 32,16 C32,7.163 24.837,0 16,0 Z M16,28 C9.373,28 4,22.627 4,16 C4,9.373 9.373,4 16,4 C22.627,4 28,9.373 28,16 C28,22.627 22.627,28 16,28 Z M24,14 L24,14 C24,12.895 23.105,12 22,12 L18,12 L18,8 C18,6.895 17.105,6 16,6 C14.895,6 14,6.895 14,8 L14,12 L10,12 C8.895,12 8,12.895 8,14 C8,15.105 8.895,16 10,16 L14,16 L14,20 C14,21.105 14.895,22 16,22 C17.105,22 18,21.105 18,20 L18,16 L22,16 C23.105,16 24,15.105 24,14 Z\' fill=\'%23000\' fill-rule=\'evenodd\'/%3E%3C/svg%3E") 12 12, crosshair',
                 actionName: 'rotate',
                 render: fabric.Object.prototype.controls.mtr.render, // Use the same custom rotation renderer
@@ -1593,6 +1593,8 @@ export class FabricCanvas {
                 return this.addShape(element as ShapeElement);
             case 'line':
                 return this.addLine(element as LineElement);
+            case 'sticker':
+                return await this.addSticker(element as StickerElement);
             // TODO: Add more element types
             default:
                 console.warn(`Unknown element type: ${element.type}`);
@@ -1670,6 +1672,93 @@ export class FabricCanvas {
         if (!this.canvas) return;
         this.canvas.setViewportTransform([1, 0, 0, 1, 0, 0]);
         this.canvas.renderAll();
+    }
+
+    /**
+     * Add a sticker element (SVG with editable colors)
+     */
+    public async addSticker(element: StickerElement): Promise<fabric.Object> {
+        if (!this.canvas) throw new Error('Canvas not initialized');
+
+        return new Promise((resolve, reject) => {
+            // Parse SVG string to fabric objects
+            fabric.loadSVGFromString(element.svgContent, (objects, options) => {
+                if (!this.canvas) {
+                    reject(new Error('Canvas not initialized'));
+                    return;
+                }
+
+                // Create a group from the SVG objects
+                const group = fabric.util.groupSVGElements(objects, options);
+
+                // Set position and properties
+                group.set({
+                    left: element.transform.x,
+                    top: element.transform.y,
+                    scaleX: element.transform.scaleX * (element.transform.width / (group.width || 100)),
+                    scaleY: element.transform.scaleY * (element.transform.height / (group.height || 100)),
+                    angle: element.transform.rotation,
+                    originX: element.transform.originX,
+                    originY: element.transform.originY,
+                    opacity: element.style.opacity,
+                    selectable: element.selectable,
+                    lockMovementX: element.locked,
+                    lockMovementY: element.locked,
+                    visible: element.visible,
+                    data: { id: element.id, type: 'sticker' },
+                });
+
+                this.canvas!.add(group);
+                this.objectIdMap.set(element.id, group);
+
+                resolve(group);
+            });
+        });
+    }
+
+    /**
+     * Update sticker SVG content (when colors change)
+     */
+    public updateStickerSvg(id: string, newSvgContent: string): void {
+        if (!this.canvas) return;
+
+        const existingObj = this.objectIdMap.get(id);
+        if (!existingObj) return;
+
+        // Store current transform properties
+        const currentProps = {
+            left: existingObj.left,
+            top: existingObj.top,
+            scaleX: existingObj.scaleX,
+            scaleY: existingObj.scaleY,
+            angle: existingObj.angle,
+            originX: existingObj.originX,
+            originY: existingObj.originY,
+            opacity: existingObj.opacity,
+            selectable: existingObj.selectable,
+            lockMovementX: existingObj.lockMovementX,
+            lockMovementY: existingObj.lockMovementY,
+            visible: existingObj.visible,
+            data: (existingObj as any).data,
+        };
+
+        // Remove old object
+        this.canvas.remove(existingObj);
+
+        // Parse new SVG and create replacement object
+        fabric.loadSVGFromString(newSvgContent, (objects, options) => {
+            if (!this.canvas) return;
+
+            const group = fabric.util.groupSVGElements(objects, options);
+
+            // Restore transform properties
+            group.set(currentProps);
+
+            this.canvas.add(group);
+            this.objectIdMap.set(id, group);
+
+            this.canvas.requestRenderAll();
+        });
     }
 }
 

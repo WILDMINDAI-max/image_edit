@@ -11,6 +11,7 @@ import {
     ShapeElement,
     LineElement,
     LineStyle,
+    StickerElement,
     createDefaultTransform,
     createDefaultStyle,
     createDefaultTextStyle,
@@ -65,6 +66,8 @@ interface CanvasActions {
     addImageElement: (src: string, options?: Partial<ImageElement>) => string;
     addShapeElement: (shapeType: string, options?: Partial<ShapeElement>) => string;
     addLineElement: (lineStyle: LineStyle, options?: { x1?: number; y1?: number; x2?: number; y2?: number; strokeColor?: string; strokeWidth?: number }) => string;
+    addStickerElement: (stickerId: string, options?: Partial<StickerElement>) => string;
+    updateStickerColor: (elementId: string, originalColor: string, newColor: string) => void;
     updateElement: (id: string, updates: Partial<CanvasElement>) => void;
     removeElement: (id: string | string[]) => void;
     duplicateElements: (ids?: string[]) => string[];
@@ -373,6 +376,68 @@ export const useCanvasStore = create<CanvasStore>()(
 
             get().addElement(lineElement);
             return id;
+        },
+
+        addStickerElement: (stickerId: string, options?: Partial<StickerElement>) => {
+            const id = crypto.randomUUID();
+            const elements = getActivePageElements();
+            const maxZIndex = elements.length > 0
+                ? Math.max(...elements.map(e => e.zIndex))
+                : 0;
+
+            const stickerElement: StickerElement = {
+                id,
+                type: 'sticker',
+                name: options?.name ?? `Sticker`,
+                stickerId,
+                svgContent: options?.svgContent ?? '',
+                originalSvgContent: options?.originalSvgContent ?? options?.svgContent ?? '',
+                colorMap: options?.colorMap ?? {},
+                category: options?.category ?? 'objects',
+                transform: { ...createDefaultTransform(), ...options?.transform },
+                style: { ...createDefaultStyle(), fill: null, ...options?.style },
+                locked: false,
+                visible: true,
+                selectable: true,
+                zIndex: maxZIndex + 1,
+                ...options,
+            };
+
+            get().addElement(stickerElement);
+            return id;
+        },
+
+        updateStickerColor: (elementId: string, originalColor: string, newColor: string) => {
+            const elements = getActivePageElements();
+            const element = elements.find(el => el.id === elementId);
+
+            if (!element || element.type !== 'sticker') return;
+
+            const stickerElement = element as StickerElement;
+
+            // Update the color map
+            const newColorMap = { ...stickerElement.colorMap };
+            newColorMap[originalColor.toLowerCase()] = newColor;
+
+            // Apply all color replacements to get updated SVG content
+            let newSvgContent = stickerElement.originalSvgContent;
+            Object.entries(newColorMap).forEach(([origColor, replacementColor]) => {
+                // Create case-insensitive regex for the color
+                const escapedColor = origColor.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                const regex = new RegExp(escapedColor, 'gi');
+                newSvgContent = newSvgContent.replace(regex, replacementColor);
+            });
+
+            get().updateElement(elementId, {
+                colorMap: newColorMap,
+                svgContent: newSvgContent,
+            });
+
+            // Sync to Fabric.js canvas - update the SVG object
+            const fabricCanvas = getFabricCanvas();
+            fabricCanvas.updateStickerSvg(elementId, newSvgContent);
+
+            pushHistory('Update sticker color');
         },
 
         updateElement: (id: string, updates: Partial<CanvasElement>) => {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Search, ArrowLeft, ChevronRight } from 'lucide-react';
 import { ElementsPanel } from './ElementsPanel';
 import { IconsPanel } from './IconsPanel';
+import { StickersPanel } from './StickersPanel';
 
 type AssetCategory = 'main' | 'shapes' | 'graphics' | 'stickers' | 'icons';
 
@@ -150,28 +151,34 @@ export function AssetsPanel() {
         );
     }
 
-    // Stickers category - coming soon
+    // Stickers category - full panel
     if (activeCategory === 'stickers') {
         return (
             <div className="h-full flex flex-col bg-white">
+                {/* Header with back arrow */}
                 <div className="p-4 border-b border-gray-100">
                     <button
                         onClick={() => setActiveCategory('main')}
-                        className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-3"
+                        className="flex items-center gap-2 text-gray-800 hover:text-gray-900 transition-colors"
                     >
                         <ArrowLeft size={18} />
-                        <span className="text-sm font-medium">Back to Assets</span>
+                        <h2 className="font-semibold text-lg">Stickers</h2>
                     </button>
-                    <h2 className="text-gray-800 font-semibold text-lg">Stickers</h2>
-                </div>
-                <div className="flex-1 flex items-center justify-center p-8">
-                    <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-green-100 rounded-full flex items-center justify-center">
-                            <span className="text-3xl">😊</span>
-                        </div>
-                        <h3 className="text-gray-700 font-semibold mb-2">Coming Soon</h3>
-                        <p className="text-gray-500 text-sm">Sticker library will be available soon</p>
+                    {/* Search bar */}
+                    <div className="mt-3 relative">
+                        <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                        <input
+                            type="text"
+                            placeholder="Search stickers..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 transition-colors"
+                        />
                     </div>
+                </div>
+                {/* Stickers content */}
+                <div className="flex-1 overflow-hidden">
+                    <StickersPanel searchQuery={searchQuery} />
                 </div>
             </div>
         );

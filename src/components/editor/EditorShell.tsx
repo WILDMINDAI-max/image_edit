@@ -15,6 +15,7 @@ import { ColorsPanel } from '@/components/sidebar/ColorsPanel';
 import { ImageEditPanel } from '@/components/sidebar/ImageEditPanel';
 import { TextEditPanel } from '@/components/sidebar/TextEditPanel';
 import { ShapeEditPanel } from '@/components/sidebar/ShapeEditPanel';
+import { StickerEditPanel } from '@/components/sidebar/StickerEditPanel';
 import { TextEffectsPanel } from '@/components/sidebar/TextEffectsPanel';
 import { FontsPanel } from '@/components/sidebar/FontsPanel';
 import { FilterPanel } from '@/components/sidebar/FilterPanel';
@@ -320,6 +321,8 @@ export function EditorShell() {
                             <TextEditPanel />
                         ) : (selectedElementType === 'shape' || selectedElementType === 'line') ? (
                             <ShapeEditPanel />
+                        ) : selectedElementType === 'sticker' ? (
+                            <StickerEditPanel />
                         ) : (
                             <ImageEditPanel />
                         )}

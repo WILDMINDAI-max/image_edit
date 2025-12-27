@@ -1,7 +1,7 @@
 // Canvas Element Type Definitions
 // Core types for all canvas elements in the design editor
 
-export type ElementType = 'text' | 'image' | 'shape' | 'line' | 'svg' | 'group' | 'chart' | 'video';
+export type ElementType = 'text' | 'image' | 'shape' | 'line' | 'svg' | 'group' | 'chart' | 'video' | 'sticker';
 
 export type ShapeType =
     // Lines (14 shapes)
@@ -388,6 +388,16 @@ export interface ChartElement extends BaseElement {
     options: unknown; // Chart.js options
 }
 
+// Sticker element with editable colors
+export interface StickerElement extends BaseElement {
+    type: 'sticker';
+    stickerId: string;                    // Reference to sticker definition
+    svgContent: string;                   // Current SVG with applied colors
+    originalSvgContent: string;           // Original SVG template
+    colorMap: Record<string, string>;     // Maps original colors to current colors
+    category: string;                     // Sticker category
+}
+
 // Union type for all canvas elements
 export type CanvasElement =
     | TextElement
@@ -396,7 +406,8 @@ export type CanvasElement =
     | LineElement
     | SVGElement
     | GroupElement
-    | ChartElement;
+    | ChartElement
+    | StickerElement;
 
 // Default values factory
 export const createDefaultTransform = (): Transform => ({
