@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { fabric } from 'fabric';
 import { getFabricCanvas, resetFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { useCanvasStore } from '@/store/canvasStore';
@@ -208,25 +209,59 @@ export function CanvasStage({ className }: CanvasStageProps) {
                     const newWidth = fabricObject.width ?? el.transform.width;
                     const newHeight = fabricObject.height ?? el.transform.height;
 
-                    return {
+                    // Calculate absolute transform values (handle grouping/ActiveSelection)
+                    let x = fabricObject.left ?? el.transform.x;
+                    let y = fabricObject.top ?? el.transform.y;
+                    let scaleX = fabricObject.scaleX ?? el.transform.scaleX;
+                    let scaleY = fabricObject.scaleY ?? el.transform.scaleY;
+                    let rotation = fabricObject.angle ?? el.transform.rotation;
+
+                    // If object is in a group (ActiveSelection), calculate absolute coordinates
+                    if (fabricObject.group) {
+                        const matrix = fabricObject.calcTransformMatrix();
+                        const options = fabric.util.qrDecompose(matrix);
+                        x = options.translateX;
+                        y = options.translateY;
+                        scaleX = options.scaleX;
+                        scaleY = options.scaleY;
+                        rotation = options.angle;
+                    }
+
+                    // Base update for all element types
+                    const baseUpdate = {
                         ...el,
                         transform: {
                             ...el.transform,
-                            x: fabricObject.left ?? el.transform.x,
-                            y: fabricObject.top ?? el.transform.y,
+                            x,
+                            y,
                             width: newWidth,
                             height: newHeight,
-                            scaleX: fabricObject.scaleX ?? el.transform.scaleX,
-                            scaleY: fabricObject.scaleY ?? el.transform.scaleY,
-                            rotation: fabricObject.angle ?? el.transform.rotation,
+                            scaleX,
+                            scaleY,
+                            rotation,
                         }
                     };
+
+                    // Special handling for line elements - sync endpoint coordinates
+                    if (el.type === 'line') {
+                        const line = fabricObject as fabric.Line;
+                        return {
+                            ...baseUpdate,
+                            x1: line.x1 ?? (el as any).x1,
+                            y1: line.y1 ?? (el as any).y1,
+                            x2: line.x2 ?? (el as any).x2,
+                            y2: line.y2 ?? (el as any).y2,
+                        };
+                    }
+
+                    return baseUpdate;
                 }
                 return el;
             });
 
             state.updatePage(activePageId, { elements: updatedElements });
         };
+
 
         fabricCanvas.onObjectModified = updateStoreFromFabric;
         fabricCanvas.onObjectUpdating = updateStoreFromFabric;
@@ -284,6 +319,50 @@ export function CanvasStage({ className }: CanvasStageProps) {
         fabricCanvas.setBackground(activePage.background);
         fabricCanvas.render();
     }, [activePage?.background, isInitialized]);
+
+    // Sync element properties (visibility, locked) from store to Fabric
+    // This allows sidebar toggles to update the canvas
+    useEffect(() => {
+        if (!isInitialized || !activePage) return;
+
+        const fabricCanvas = getFabricCanvas();
+        let needsRender = false;
+
+        activePage.elements.forEach(element => {
+            const fabricObject = fabricCanvas.getObjectById(element.id);
+            if (fabricObject) {
+                // Sync visibility
+                if (fabricObject.visible !== element.visible) {
+                    fabricObject.visible = element.visible;
+                    needsRender = true;
+                }
+
+                // Sync locked status
+                const isLocked = element.locked;
+                // Check if lock state matches (checking just one property is enough to detect change)
+                if (fabricObject.lockMovementX !== isLocked) {
+                    fabricObject.lockMovementX = isLocked;
+                    fabricObject.lockMovementY = isLocked;
+                    fabricObject.lockRotation = isLocked;
+                    fabricObject.lockScalingX = isLocked;
+                    fabricObject.lockScalingY = isLocked;
+
+                    // Also update visually if needed (e.g. selection handles)
+                    if (isLocked) {
+                        fabricObject.hasControls = false;
+                    } else {
+                        // Restore controls only if it's selected (Fabric handles this logic mostly, but good to be safe)
+                        fabricObject.hasControls = true;
+                    }
+                    needsRender = true;
+                }
+            }
+        });
+
+        if (needsRender) {
+            fabricCanvas.render();
+        }
+    }, [activePage?.elements, isInitialized]);
 
     // Note: Visual zoom is handled by CSS transform on the wrapper div
     // Fabric.js setZoom would cause double-scaling, so we don't use it

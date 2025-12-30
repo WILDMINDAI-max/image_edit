@@ -5,8 +5,9 @@ import { Search, Layout } from 'lucide-react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore } from '@/store/editorStore';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
-import { CanvasElement, TextElement, ShapeElement } from '@/types/canvas';
+import { CanvasElement, TextElement, ShapeElement, ImageElement } from '@/types/canvas';
 import { PageBackground } from '@/types/project';
+import { loadGoogleFont, GOOGLE_FONTS } from '@/services/googleFonts';
 
 // Template interface
 interface TemplateData {
@@ -749,6 +750,161 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
+    // Food Blog Template (exported from editor)
+    {
+        id: 'food-blog-1',
+        name: 'Food Blog',
+        category: 'Blog',
+        width: 1280,
+        height: 720,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // Food Background Image
+            {
+                type: 'image',
+                name: 'Food Background',
+                src: 'https://images.unsplash.com/photo-1541809354-0f0cfe132960?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTY5OTZ8MHwxfHNlYXJjaHw0MHx8Zm9vZCUyMGZsYXQlMjBsYXl8ZW58MHx8fHwxNjM1MDUzNjA3&ixlib=rb-1.2.1&q=80&w=1080',
+                transform: { x: 640, y: 360, width: 1080, height: 810, scaleX: 1.185, scaleY: 1.185, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: null, strokeWidth: 0, opacity: 1 },
+                filters: { brightness: 0, contrast: 0, saturation: 0, blur: 0, grayscale: false, sepia: false, invert: false },
+                isBackground: true,
+                zIndex: 0,
+            } as Partial<ImageElement>,
+            // Overlay Rectangle
+            {
+                type: 'shape',
+                name: 'Overlay Rect',
+                shapeType: 'rectangle',
+                transform: { x: 628, y: 314, width: 1351, height: 304, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#9CF3DF', stroke: null, strokeWidth: 0, opacity: 0.5 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Welcome Text
+            {
+                type: 'text',
+                name: 'Welcome Text',
+                content: 'Welcome',
+                transform: { x: 630, y: 271, width: 862, height: 195, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#000000', strokeWidth: 7, opacity: 1 },
+                textStyle: { fontFamily: 'Zhi Mang Xing', fontSize: 173, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                effect: { type: 'none' },
+                zIndex: 3,
+            } as Partial<TextElement>,
+            // Blog Title
+            {
+                type: 'text',
+                name: 'Blog Title',
+                content: 'OUR FOOD BLOG',
+                transform: { x: 650, y: 407, width: 850, height: 116, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 1 },
+                textStyle: { fontFamily: 'Caveat Brush', fontSize: 103, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                effect: { type: 'none' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+        ],
+    },
+    // Cardio Fitness Template (exported from editor)
+    {
+        id: 'cardio-fitness-1',
+        name: 'Cardio Fitness',
+        category: 'Fitness',
+        width: 1280,
+        height: 720,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // Workout Background Image
+            {
+                type: 'image',
+                name: 'Workout Background',
+                src: 'https://images.unsplash.com/photo-1614928228253-dc09cbc3b11c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTY5OTZ8MHwxfHNlYXJjaHwxMTV8fHdvcmtvdXR8ZW58MHx8fHwxNjM2NDYxNjA5&ixlib=rb-1.2.1&q=80&w=1080',
+                transform: { x: 758, y: 359, width: 1080, height: 720, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: null, strokeWidth: 0, opacity: 1 },
+                filters: { brightness: 0, contrast: 0, saturation: 0, blur: 0, grayscale: false, sepia: false, invert: false },
+                isBackground: true,
+                zIndex: 1,
+            } as Partial<ImageElement>,
+            // Hexagon BG 1 (golden pointed hexagon)
+            {
+                type: 'shape',
+                name: 'Hexagon BG 1',
+                shapeType: 'pointed-hexagon',
+                transform: { x: 161, y: 365, width: 90, height: 90, scaleX: 6.02, scaleY: 10.42, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#C4AD1E', stroke: null, strokeWidth: 0, opacity: 0.94 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Hexagon BG 2 (semi-transparent golden)
+            {
+                type: 'shape',
+                name: 'Hexagon BG 2',
+                shapeType: 'pointed-hexagon',
+                transform: { x: 111, y: 367, width: 90, height: 90, scaleX: 10.89, scaleY: 10.89, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#C4AD1E', stroke: null, strokeWidth: 0, opacity: 0.55 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Title Bar BG (white rectangle)
+            {
+                type: 'shape',
+                name: 'Title Bar BG',
+                shapeType: 'rectangle',
+                transform: { x: 321.1132072755644, y: 230.8113252211165, width: 388, height: 77, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            // 10 Minutes Text
+            {
+                type: 'text',
+                name: '10 Minutes Text',
+                content: '10 minutes fitness',
+                transform: { x: 351.1132072755644, y: 233.81132522111645, width: 450, height: 63.28, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 1 },
+                textStyle: { fontFamily: 'Bebas Neue', fontSize: 56, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                effect: { type: 'none' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+            // CARDIO Text (large)
+            {
+                type: 'text',
+                name: 'Cardio Text',
+                content: 'CARDIO',
+                transform: { x: 460.3494532079619, y: 360, width: 886.2303963476114, height: 226, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                textStyle: { fontFamily: 'Bebas Neue', fontSize: 200, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                effect: { type: 'none' },
+                zIndex: 5,
+            } as Partial<TextElement>,
+            // Beginner Text
+            {
+                type: 'text',
+                name: 'Beginner Text',
+                content: 'exercise for beginner',
+                transform: { x: 298.2264145511288, y: 459.8679257354369, width: 358, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', stroke: null, strokeWidth: 0, opacity: 1 },
+                textStyle: { fontFamily: 'Bebas Neue', fontSize: 41, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                effect: { type: 'none' },
+                zIndex: 6,
+            } as Partial<TextElement>,
+            // Subscribe BG (golden rectangle)
+            {
+                type: 'shape',
+                name: 'Subscribe BG',
+                shapeType: 'rectangle',
+                transform: { x: 1057, y: 600, width: 296, height: 57, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#C4AD1E', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 7,
+            } as Partial<ShapeElement>,
+            // Subscribe Text
+            {
+                type: 'text',
+                name: 'Subscribe Text',
+                content: 'watch & subscribe',
+                transform: { x: 1091, y: 602, width: 327, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                textStyle: { fontFamily: 'Bebas Neue', fontSize: 41, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                effect: { type: 'none' },
+                zIndex: 8,
+            } as Partial<TextElement>,
+        ],
+    },
 ];
 
 export function TemplatesPanel() {
@@ -828,6 +984,42 @@ export function TemplatesPanel() {
             } as ShapeElement;
         }
 
+        if (partial.type === 'image') {
+            const imagePartial = partial as Partial<ImageElement>;
+            return {
+                ...baseElement,
+                type: 'image',
+                src: imagePartial.src || '',
+                originalSrc: imagePartial.originalSrc || imagePartial.src || '',
+                filters: {
+                    brightness: 0,
+                    contrast: 0,
+                    saturation: 0,
+                    blur: 0,
+                    temperature: 0,
+                    tint: 0,
+                    highlights: 0,
+                    shadows: 0,
+                    whites: 0,
+                    blacks: 0,
+                    vibrance: 0,
+                    clarity: 0,
+                    sharpness: 0,
+                    vignette: 0,
+                    grayscale: false,
+                    sepia: false,
+                    invert: false,
+                    filterPreset: null,
+                    ...imagePartial.filters,
+                },
+                crop: imagePartial.crop || null,
+                colorReplace: imagePartial.colorReplace || null,
+                crossOrigin: 'anonymous',
+                isBackground: imagePartial.isBackground || false,
+                blendMode: 'normal',
+            } as ImageElement;
+        }
+
         // Default fallback
         return {
             ...baseElement,
@@ -836,15 +1028,61 @@ export function TemplatesPanel() {
     };
 
     // Load template onto canvas
-    const loadTemplate = (template: TemplateData) => {
+    const loadTemplate = async (template: TemplateData) => {
         if (!project) return;
 
-        // Create complete elements from template
-        const completeElements = template.elements.map((el, idx) =>
-            createCompleteElement(el, idx)
-        );
+        // Load any Google Fonts used in the template
+        const fontLoadPromises: Promise<void>[] = [];
+        const usedFonts = new Set<string>();
 
-        // Update page with dimensions, background, and elements
+        template.elements.forEach(el => {
+            if (el.type === 'text' && (el as Partial<TextElement>).textStyle?.fontFamily) {
+                const style = (el as Partial<TextElement>).textStyle!;
+                const family = style.fontFamily;
+
+                // Create a unique key for font+weight to avoid duplicate requests
+                const weight = style.fontWeight || 'normal';
+                const weightStr = typeof weight === 'number' ? String(weight) : (weight === 'bold' ? '700' : '400');
+                const key = `${family}:${weightStr}`;
+
+                if (!usedFonts.has(key)) {
+                    usedFonts.add(key);
+                    const fontDef = GOOGLE_FONTS.find(f => f.family === family);
+                    if (fontDef) {
+                        // Check if exact variant exists, otherwise default to closest or all? 
+                        // For simplicity/robustness, let's load the specific requested weight if available, or just regular.
+                        // loadGoogleFont handles caching internally too.
+                        const variantToLoad = fontDef.variants.includes(weightStr) ? weightStr : '400';
+                        fontLoadPromises.push(loadGoogleFont(family, [variantToLoad]));
+                    }
+                }
+            }
+        });
+
+        if (fontLoadPromises.length > 0) {
+            console.log(`[TemplatesPanel] Loading ${fontLoadPromises.length} fonts for template...`);
+            await Promise.all(fontLoadPromises);
+        }
+
+        // Create complete elements from template - sort by zIndex
+        const completeElements = template.elements
+            .map((el, idx) => createCompleteElement(el, idx))
+            .sort((a, b) => a.zIndex - b.zIndex);
+
+        // Build a proper Page object for loadPage
+        const templatePage = {
+            id: project.activePageId,
+            name: template.name,
+            width: template.width,
+            height: template.height,
+            dpi: 72,
+            background: template.background,
+            elements: completeElements,
+            createdAt: Date.now(),
+            updatedAt: Date.now(),
+        };
+
+        // Update page in store with dimensions, background, and elements
         updatePage(project.activePageId, {
             width: template.width,
             height: template.height,
@@ -852,15 +1090,11 @@ export function TemplatesPanel() {
             elements: completeElements,
         });
 
-        // Force canvas to reload by triggering a re-render
-        setTimeout(() => {
-            // Trigger a state change to force canvas refresh
+        // Use the proper loadPage method which handles z-index sorting and async image loading
+        setTimeout(async () => {
             const fabricCanvas = getFabricCanvas();
-            fabricCanvas.clear();
-            completeElements.forEach(element => {
-                fabricCanvas.addElement(element);
-            });
-        }, 150);
+            await fabricCanvas.loadPage(templatePage);
+        }, 100);
     };
 
     // Filter templates
@@ -1063,6 +1297,49 @@ export function TemplatesPanel() {
                                                     <div className="w-[45%] bg-gray-200 rounded flex items-center justify-center border border-gray-300">
                                                         <p className="text-[2px] text-gray-500">📍 London, UK</p>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'food-blog-1' ? (
+                                            // Food Blog Preview
+                                            <div className="flex-1 relative overflow-hidden">
+                                                {/* Food background image */}
+                                                <div
+                                                    className="absolute inset-0 bg-cover bg-center"
+                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1541809354-0f0cfe132960?w=200&q=60)' }}
+                                                />
+                                                {/* Overlay */}
+                                                <div className="absolute inset-x-0 top-1/4 h-[40%] bg-[#9CF3DF]/50" />
+                                                {/* Text Content */}
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                                    <p className="text-white text-[12px] font-normal" style={{ fontFamily: 'cursive', textShadow: '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000' }}>Welcome</p>
+                                                    <p className="text-black text-[8px] font-bold mt-0.5" style={{ fontFamily: 'cursive' }}>OUR FOOD BLOG</p>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'cardio-fitness-1' ? (
+                                            // Cardio Fitness Preview
+                                            <div className="flex-1 relative overflow-hidden">
+                                                {/* Workout background image (grayscale) */}
+                                                <div
+                                                    className="absolute inset-0 bg-cover bg-center grayscale"
+                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1614928228253-dc09cbc3b11c?w=200&q=60)' }}
+                                                />
+                                                {/* Golden hexagon overlay */}
+                                                <div className="absolute left-0 top-0 bottom-0 w-[40%]">
+                                                    <svg viewBox="0 0 100 100" className="h-full w-full" preserveAspectRatio="none">
+                                                        <path d="M 0 0 L 70 0 L 100 50 L 70 100 L 0 100 L 20 50 Z" fill="#C4AD1E" opacity="0.9" />
+                                                    </svg>
+                                                </div>
+                                                {/* Text Content */}
+                                                <div className="absolute left-1 top-2 text-left">
+                                                    <div className="bg-white px-1 py-0.5 inline-block">
+                                                        <p className="text-black text-[4px] font-bold">10 MINUTES FITNESS</p>
+                                                    </div>
+                                                    <p className="text-white text-[14px] font-black mt-0.5 leading-none">CARDIO</p>
+                                                    <p className="text-white text-[4px] mt-0.5">EXERCISE FOR BEGINNER</p>
+                                                </div>
+                                                {/* Subscribe button */}
+                                                <div className="absolute right-1 bottom-1 bg-[#C4AD1E] px-1 py-0.5">
+                                                    <p className="text-white text-[3px]">WATCH & SUBSCRIBE</p>
                                                 </div>
                                             </div>
                                         ) : (

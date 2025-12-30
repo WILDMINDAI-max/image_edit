@@ -73,6 +73,12 @@ export type ShapeType =
     | 'octagon'
     | 'nonagon'
     | 'decagon'
+    | 'pointed-pentagon'
+    | 'pointed-pentagon-left'
+    | 'pointed-hexagon'
+    | 'pointed-hexagon-left'
+    | 'hexagon-horizontal'
+    | 'octagon-chamfered'
     // Stars
     | 'star-4'
     | 'star-5'
@@ -240,7 +246,7 @@ export interface BaseElement {
     visible: boolean;
     selectable: boolean;
     zIndex: number;
-    blendMode?: BlendMode;
+    blendMode: BlendMode; // Layer blending mode
     metadata?: Record<string, unknown>;
 }
 

@@ -554,6 +554,38 @@ export const SHAPE_CATALOG: ShapeDefinition[] = [
         fabricType: 'polygon',
         params: { sides: 10 },
     },
+    {
+        id: 'pointed-pentagon',
+        name: 'Pointed Pentagon',
+        category: 'polygons',
+        type: 'svg',
+        // Arrow pentagon - rectangle with a pointed right side (like a chevron arrow)
+        svgPath: 'M 5 5 L 70 5 L 95 50 L 70 95 L 5 95 Z',
+    },
+    {
+        id: 'pointed-pentagon-left',
+        name: 'Pointed Pentagon Left',
+        category: 'polygons',
+        type: 'svg',
+        // Arrow pentagon pointing left
+        svgPath: 'M 95 5 L 30 5 L 5 50 L 30 95 L 95 95 Z',
+    },
+    {
+        id: 'pointed-hexagon',
+        name: 'Pointed Hexagon',
+        category: 'polygons',
+        type: 'svg',
+        // Hexagon with pointed right side (chevron arrow shape)
+        svgPath: 'M 5 5 L 65 5 L 95 50 L 65 95 L 5 95 L 25 50 Z',
+    },
+    {
+        id: 'pointed-hexagon-left',
+        name: 'Pointed Hexagon Left',
+        category: 'polygons',
+        type: 'svg',
+        // Hexagon with pointed left side
+        svgPath: 'M 95 5 L 35 5 L 5 50 L 35 95 L 95 95 L 75 50 Z',
+    },
 
     // ==================
     // STARS

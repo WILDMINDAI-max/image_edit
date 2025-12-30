@@ -17,9 +17,10 @@ import {
     Image as ImageIcon,
     FileType,
     Loader2,
+    FileJson,
 } from 'lucide-react';
 
-type ExportFormat = 'png' | 'jpeg' | 'pdf';
+type ExportFormat = 'png' | 'jpeg' | 'pdf' | 'json';
 
 interface PageSelection {
     type: 'all' | 'current' | 'custom';
@@ -84,7 +85,7 @@ export function ExportModal() {
         console.log('[ExportModal] renderPageToBlob started for page:', page.id, page.name);
 
         // Determine actual format based on transparent checkbox
-        const actualFormat: 'png' | 'png-transparent' | 'jpeg' | 'pdf' = format === 'png' && transparentBackground ? 'png-transparent' : format;
+        const actualFormat: 'png' | 'png-transparent' | 'jpeg' | 'pdf' | 'json' = format === 'png' && transparentBackground ? 'png-transparent' : format;
 
         const fabricCanvas = getFabricCanvas();
         console.log('[ExportModal] Got fabric canvas instance');
@@ -372,11 +373,131 @@ export function ExportModal() {
             filename = filename.replace(/[^a-zA-Z0-9_-]/g, '_');
             console.log('[ExportModal] Export filename:', filename);
 
-            const fileExtension = format === 'jpeg' ? 'jpg' : format === 'pdf' ? 'pdf' : 'png';
+            const fileExtension = format === 'jpeg' ? 'jpg' : format === 'pdf' ? 'pdf' : format === 'json' ? 'json' : 'png';
             console.log('[ExportModal] File extension:', fileExtension);
 
+            // JSON Export handling - exports complete page data structure
+            if (format === 'json') {
+                console.log('[ExportModal] JSON export mode');
+                setExportMessage('Preparing JSON template...');
+                setExportProgress(20);
+
+                const fabricCanvas = getFabricCanvas();
+
+                // Sync text element properties from Fabric.js canvas to ensure all styles are captured
+                setExportMessage('Syncing element properties...');
+                setExportProgress(30);
+
+                // Create the export data structure with synced properties
+                const exportData = {
+                    exportVersion: '1.0.0',
+                    exportedAt: new Date().toISOString(),
+                    // Export all selected pages with complete data
+                    pages: pagesToExport.map(page => ({
+                        // Page metadata
+                        name: page.name,
+                        width: page.width,
+                        height: page.height,
+                        dpi: page.dpi,
+                        background: page.background,
+                        // Complete elements array with synced properties from Fabric.js
+                        elements: page.elements.map(el => {
+                            // Deep clone base element
+                            const clonedEl = JSON.parse(JSON.stringify(el));
+
+                            // For text elements, sync the latest properties from Fabric.js canvas
+                            if (el.type === 'text') {
+                                const fabricObj = fabricCanvas.getObjectById(el.id) as any;
+                                if (fabricObj) {
+                                    // Sync textStyle from Fabric.js object
+                                    clonedEl.textStyle = {
+                                        ...clonedEl.textStyle,
+                                        fontFamily: fabricObj.fontFamily || clonedEl.textStyle?.fontFamily || 'Poppins',
+                                        fontSize: fabricObj.fontSize || clonedEl.textStyle?.fontSize || 24,
+                                        fontWeight: fabricObj.fontWeight || clonedEl.textStyle?.fontWeight || 'normal',
+                                        fontStyle: fabricObj.fontStyle || clonedEl.textStyle?.fontStyle || 'normal',
+                                        textAlign: fabricObj.textAlign || clonedEl.textStyle?.textAlign || 'left',
+                                        lineHeight: fabricObj.lineHeight || clonedEl.textStyle?.lineHeight || 1.2,
+                                        letterSpacing: (fabricObj.charSpacing !== undefined ? fabricObj.charSpacing / 100 : clonedEl.textStyle?.letterSpacing) || 0,
+                                        textDecoration: fabricObj.underline ? 'underline' : (fabricObj.linethrough ? 'line-through' : 'none'),
+                                        textTransform: clonedEl.textStyle?.textTransform || 'none',
+                                    };
+                                    // Sync text content
+                                    clonedEl.content = fabricObj.text || clonedEl.content;
+                                    // Sync fill color
+                                    if (fabricObj.fill) {
+                                        clonedEl.style = {
+                                            ...clonedEl.style,
+                                            fill: fabricObj.fill,
+                                        };
+                                    }
+                                    // Sync transform including origin points for exact positioning
+                                    clonedEl.transform = {
+                                        ...clonedEl.transform,
+                                        x: fabricObj.left ?? clonedEl.transform.x,
+                                        y: fabricObj.top ?? clonedEl.transform.y,
+                                        width: fabricObj.width ?? clonedEl.transform.width,
+                                        height: fabricObj.height ?? clonedEl.transform.height,
+                                        scaleX: fabricObj.scaleX ?? clonedEl.transform.scaleX,
+                                        scaleY: fabricObj.scaleY ?? clonedEl.transform.scaleY,
+                                        rotation: fabricObj.angle ?? clonedEl.transform.rotation,
+                                        originX: fabricObj.originX ?? clonedEl.transform.originX ?? 'center',
+                                        originY: fabricObj.originY ?? clonedEl.transform.originY ?? 'center',
+                                    };
+                                    console.log(`[ExportModal] Synced text element ${el.id}: x=${clonedEl.transform.x}, y=${clonedEl.transform.y}, textStyle:`, clonedEl.textStyle);
+                                }
+                            }
+                            // For other elements, sync transform from Fabric.js
+                            else {
+                                const fabricObj = fabricCanvas.getObjectById(el.id);
+                                if (fabricObj) {
+                                    clonedEl.transform = {
+                                        ...clonedEl.transform,
+                                        x: fabricObj.left ?? clonedEl.transform.x,
+                                        y: fabricObj.top ?? clonedEl.transform.y,
+                                        width: fabricObj.width ?? clonedEl.transform.width,
+                                        height: fabricObj.height ?? clonedEl.transform.height,
+                                        scaleX: fabricObj.scaleX ?? clonedEl.transform.scaleX,
+                                        scaleY: fabricObj.scaleY ?? clonedEl.transform.scaleY,
+                                        rotation: fabricObj.angle ?? clonedEl.transform.rotation,
+                                        originX: fabricObj.originX ?? clonedEl.transform.originX ?? 'center',
+                                        originY: fabricObj.originY ?? clonedEl.transform.originY ?? 'center',
+                                    };
+                                }
+                            }
+
+                            return clonedEl;
+                        }),
+                    })),
+                    // Include project metadata if available
+                    projectMetadata: project?.metadata || null,
+                };
+
+                setExportProgress(60);
+                setExportMessage('Creating JSON file...');
+
+                // Convert to formatted JSON string
+                const jsonString = JSON.stringify(exportData, null, 2);
+                const jsonBlob = new Blob([jsonString], { type: 'application/json' });
+
+                console.log('[ExportModal] JSON export size:', jsonBlob.size, 'bytes');
+                setExportProgress(100);
+
+                // Download JSON
+                const url = URL.createObjectURL(jsonBlob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${filename}_template.json`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+
+                console.log('[ExportModal] JSON download triggered');
+                setExportMessage('Download complete!');
+            }
             // PDF Export handling
-            if (format === 'pdf') {
+            else if (format === 'pdf') {
                 console.log('[ExportModal] PDF export mode');
                 setExportMessage('Creating PDF document...');
 
@@ -583,6 +704,7 @@ export function ExportModal() {
         { id: 'png', name: 'PNG', description: 'High quality image with optional transparent background', icon: <ImageIcon size={16} className="text-blue-500" /> },
         { id: 'jpeg', name: 'JPEG', description: 'Ideal for digital sharing and space-saving', icon: <FileType size={16} className="text-green-500" /> },
         { id: 'pdf', name: 'PDF', description: 'Ideal for documents or printing', icon: <FileType size={16} className="text-red-500" /> },
+        { id: 'json', name: 'JSON Template', description: 'Export as template data for reuse (includes ALL features)', icon: <FileJson size={16} className="text-purple-500" /> },
     ];
 
     if (!isOpen) return null;

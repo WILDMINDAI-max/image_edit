@@ -114,8 +114,21 @@ export class FabricCanvas {
         // Object modification events (end of transform)
         this.canvas.on('object:modified', (e: fabric.IEvent<MouseEvent>) => {
             const obj = e.target as fabric.Object & { data?: { id: string } };
+
+            // Handle single object
             if (obj && obj.data?.id) {
                 this.onObjectModified?.(obj.data.id);
+            }
+            // Handle multi-selection group (ActiveSelection)
+            else if (obj && obj.type === 'activeSelection' && (obj as any)._objects) {
+                const group = obj as fabric.ActiveSelection;
+                // We need to trigger update for each object in the selection
+                // The delay is to ensure Fabric has fully calculated the new individual transforms
+                group.getObjects().forEach((innerObj: any) => {
+                    if (innerObj.data?.id) {
+                        this.onObjectModified?.(innerObj.data.id);
+                    }
+                });
             }
         });
 

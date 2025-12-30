@@ -305,6 +305,23 @@ export function LayersPanel() {
                     </div>
                 </div>
 
+                {/* Visibility Toggle */}
+                <button
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        toggleVisibility(element.id);
+                    }}
+                    className={`
+                        p-1.5 rounded-md transition-all flex-shrink-0
+                        ${element.visible
+                            ? 'text-gray-300 hover:text-gray-600 hover:bg-gray-100 opacity-0 group-hover:opacity-100'
+                            : 'text-gray-600 bg-gray-100 opacity-100'}
+                    `}
+                    title={element.visible ? "Hide Layer" : "Show Layer"}
+                >
+                    {element.visible ? <Eye size={14} /> : <EyeOff size={14} />}
+                </button>
+
                 {/* Selected Indicator - Blue Dot */}
                 {isSelected && (
                     <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-sm shadow-blue-200" />
