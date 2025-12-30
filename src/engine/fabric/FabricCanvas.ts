@@ -2,10 +2,12 @@
 // Core Fabric.js wrapper and initialization
 
 import { fabric } from 'fabric';
-import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement, StickerElement } from '@/types/canvas';
+import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement, StickerElement, BlendMode } from '@/types/canvas';
 import { Page, PageBackground } from '@/types/project';
 import { CustomText } from './CustomText';
 import { SHAPE_CATALOG } from '@/types/shapes';
+import { getCanvasBlendMode, isCustomBlendMode } from './BlendModes';
+import { applyCustomBlendModesToCanvas } from './CustomBlendRenderer';
 
 export interface FabricCanvasOptions {
     width: number;
@@ -20,6 +22,7 @@ export class FabricCanvas {
     private canvas: fabric.Canvas | null = null;
     private containerElement: HTMLCanvasElement | null = null;
     private objectIdMap: Map<string, fabric.Object> = new Map();
+    private elementBlendModes: Map<string, BlendMode> = new Map();
 
     // Event callbacks
     public onSelectionChange?: (selectedIds: string[]) => void;
@@ -31,6 +34,7 @@ export class FabricCanvas {
 
     constructor() {
         this.objectIdMap = new Map();
+        this.elementBlendModes = new Map();
     }
 
     /**
@@ -55,6 +59,14 @@ export class FabricCanvas {
         this.setupEventListeners();
         this.setupCustomControls();
 
+        // Add after:render hook for custom blend modes
+        // This applies pixel-level blending for modes not supported by Canvas 2D API
+        this.canvas.on('after:render', () => {
+            if (this.elementBlendModes.size > 0 && this.canvas) {
+                applyCustomBlendModesToCanvas(this.canvas, this.elementBlendModes);
+            }
+        });
+
         return this.canvas;
     }
 
@@ -67,6 +79,7 @@ export class FabricCanvas {
             this.canvas = null;
         }
         this.objectIdMap.clear();
+        this.elementBlendModes.clear();
         this.containerElement = null;
     }
 
@@ -590,6 +603,7 @@ export class FabricCanvas {
             customId: element.id,
             effect: element.effect,
             textStyle: element.textStyle,
+            globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
         });
 
         // Apply shadow if present
@@ -653,6 +667,7 @@ export class FabricCanvas {
                         lockMovementY: element.locked,
                         visible: element.visible,
                         data: { id: element.id, type: 'image' },
+                        globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
                     });
 
                     // Apply filters
@@ -965,6 +980,7 @@ export class FabricCanvas {
             lockMovementY: element.locked,
             visible: element.visible,
             data: { id: element.id, type: 'shape' },
+            globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
         });
 
         // Apply shadow if present
@@ -999,6 +1015,7 @@ export class FabricCanvas {
             evented: !element.locked,
             opacity: element.style.opacity,
             objectCaching: false,
+            globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
         });
 
         // Apply dash pattern based on lineStyle
@@ -1510,6 +1527,7 @@ export class FabricCanvas {
         if (!this.canvas) return;
         this.canvas.clear();
         this.objectIdMap.clear();
+        this.elementBlendModes.clear();
     }
 
     /**
@@ -1518,6 +1536,120 @@ export class FabricCanvas {
     public render(): void {
         if (!this.canvas) return;
         this.canvas.renderAll();
+    }
+
+    /**
+     * Render canvas with custom blend modes applied
+     * This method applies pixel-level blending for modes not supported by Canvas 2D API
+     * Used for export to ensure all blend modes render correctly
+     */
+    public renderWithCustomBlendModes(): HTMLCanvasElement {
+        if (!this.canvas) throw new Error('Canvas not initialized');
+
+        const width = this.canvas.getWidth();
+        const height = this.canvas.getHeight();
+
+        // Create output canvas
+        const outputCanvas = document.createElement('canvas');
+        outputCanvas.width = width;
+        outputCanvas.height = height;
+        const outputCtx = outputCanvas.getContext('2d')!;
+
+        // First, draw the background
+        const bgColor = this.canvas.backgroundColor;
+        if (bgColor && typeof bgColor === 'string') {
+            outputCtx.fillStyle = bgColor;
+            outputCtx.fillRect(0, 0, width, height);
+        }
+
+        // Get all objects sorted by z-index
+        const objects = this.canvas.getObjects().slice().sort((a, b) => {
+            const aIndex = this.canvas!.getObjects().indexOf(a);
+            const bIndex = this.canvas!.getObjects().indexOf(b);
+            return aIndex - bIndex;
+        });
+
+        // Import blend functions dynamically to avoid circular deps
+        const { blendPixels, isNativeBlendMode, getCanvasBlendMode } = require('./BlendModes');
+
+        for (const obj of objects) {
+            if (!obj.visible) continue;
+
+            const blendMode = (obj as any)._customBlendMode || obj.globalCompositeOperation || 'source-over';
+            const isNative = blendMode === 'source-over' || isNativeBlendMode(blendMode);
+
+            if (isNative) {
+                // For native modes, just draw normally
+                const nativeMode = getCanvasBlendMode(blendMode) || 'source-over';
+                outputCtx.globalCompositeOperation = nativeMode;
+                outputCtx.globalAlpha = obj.opacity || 1;
+
+                // Render object to temp canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d')!;
+                obj.render(tempCtx);
+
+                outputCtx.drawImage(tempCanvas, 0, 0);
+                outputCtx.globalCompositeOperation = 'source-over';
+                outputCtx.globalAlpha = 1;
+            } else {
+                // For custom modes, do pixel-level blending
+                const opacity = obj.opacity || 1;
+
+                // Render object to temp canvas
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d')!;
+                obj.render(tempCtx);
+
+                // Get image data
+                const bottomData = outputCtx.getImageData(0, 0, width, height);
+                const topData = tempCtx.getImageData(0, 0, width, height);
+                const resultData = outputCtx.createImageData(width, height);
+
+                // Blend each pixel
+                for (let i = 0; i < bottomData.data.length; i += 4) {
+                    const topR = topData.data[i];
+                    const topG = topData.data[i + 1];
+                    const topB = topData.data[i + 2];
+                    const topA = topData.data[i + 3] / 255;
+
+                    const bottomR = bottomData.data[i];
+                    const bottomG = bottomData.data[i + 1];
+                    const bottomB = bottomData.data[i + 2];
+                    const bottomA = bottomData.data[i + 3] / 255;
+
+                    if (topA === 0) {
+                        // Top pixel is transparent, keep bottom
+                        resultData.data[i] = bottomR;
+                        resultData.data[i + 1] = bottomG;
+                        resultData.data[i + 2] = bottomB;
+                        resultData.data[i + 3] = bottomData.data[i + 3];
+                    } else {
+                        // Apply blend mode
+                        const effectiveOpacity = topA * opacity;
+                        const [r, g, b] = blendPixels(
+                            topR, topG, topB,
+                            bottomR, bottomG, bottomB,
+                            effectiveOpacity,
+                            blendMode
+                        );
+
+                        resultData.data[i] = r;
+                        resultData.data[i + 1] = g;
+                        resultData.data[i + 2] = b;
+                        resultData.data[i + 3] = Math.round(Math.min(1, bottomA + effectiveOpacity) * 255);
+                    }
+                }
+
+                outputCtx.putImageData(resultData, 0, 0);
+            }
+        }
+
+        return outputCanvas;
     }
 
     /**
@@ -1636,6 +1768,39 @@ export class FabricCanvas {
     }
 
     /**
+     * Update element blend mode on the canvas
+     * Uses BlendModes utility for proper Canvas 2D API mapping
+     * Custom modes are tracked for real-time pixel-level blending
+     */
+    public updateElementBlendMode(id: string, blendMode: BlendMode): void {
+        const obj = this.objectIdMap.get(id);
+        if (!obj || !this.canvas) return;
+
+        // Get the Canvas 2D API blend mode (always returns valid value, may be approximation for custom modes)
+        const canvasBlendMode = getCanvasBlendMode(blendMode);
+
+        // Apply the blend mode for fallback/native rendering
+        obj.set('globalCompositeOperation', canvasBlendMode);
+
+        // Store the original blend mode for accurate export rendering
+        (obj as any)._blendMode = blendMode;
+
+        // Track custom blend modes for real-time pixel-level rendering
+        if (isCustomBlendMode(blendMode)) {
+            this.elementBlendModes.set(id, blendMode);
+        } else {
+            // Remove from tracking if switching to native mode
+            this.elementBlendModes.delete(id);
+        }
+
+        // Mark the object as dirty to force re-render
+        obj.dirty = true;
+
+        // Request a full canvas re-render (will trigger after:render hook for custom modes)
+        this.canvas.requestRenderAll();
+    }
+
+    /**
      * Get canvas JSON representation
      */
     public toJSON(): object {
@@ -1706,6 +1871,7 @@ export class FabricCanvas {
                     lockMovementY: element.locked,
                     visible: element.visible,
                     data: { id: element.id, type: 'sticker' },
+                    globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
                 });
 
                 this.canvas!.add(group);

@@ -4,8 +4,9 @@ import { useState, useMemo } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useActivePage } from '@/store/editorStore';
 import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Trash2, Layers, LayoutGrid, Palette } from 'lucide-react';
-import { CanvasElement } from '@/types/canvas';
+import { CanvasElement, BlendMode } from '@/types/canvas';
 import { PageBackground } from '@/types/project';
+import { BlendModeSelector } from './BlendModeSelector';
 
 type TabType = 'all' | 'overlapping';
 
@@ -67,6 +68,7 @@ export function LayersPanel() {
     const bringForward = useCanvasStore((state) => state.bringForward);
     const sendBackward = useCanvasStore((state) => state.sendBackward);
     const removeElement = useCanvasStore((state) => state.removeElement);
+    const updateBlendMode = useCanvasStore((state) => state.updateBlendMode);
 
     // ... (keep existing filtering/sorting logic items 68-87)
 
@@ -321,6 +323,24 @@ export function LayersPanel() {
                         {displayElements.length}
                     </span>
                 </div>
+
+                {/* Blend Mode Selector - shows when element is selected */}
+                {selectedIds.length > 0 && (() => {
+                    const selectedElement = sortedElements.find(el => el.id === selectedIds[0]);
+                    if (!selectedElement) return null;
+                    return (
+                        <div className="mt-2 pt-2 border-t border-gray-100">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs font-medium text-gray-500">Blend Mode</span>
+                                <BlendModeSelector
+                                    value={selectedElement.blendMode || 'normal'}
+                                    onChange={(mode: BlendMode) => updateBlendMode(selectedElement.id, mode)}
+                                    compact
+                                />
+                            </div>
+                        </div>
+                    );
+                })()}
             </div>
 
             {/* Tab Switcher - Cleaner Look */}

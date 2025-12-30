@@ -192,6 +192,43 @@ export interface GradientFill {
     r2?: number;
 }
 
+// Layer blending modes - ALL Photoshop/Photopea blend modes
+// Ordered exactly like Photoshop for UI consistency
+export type BlendMode =
+    // Normal Group
+    | 'normal'
+    | 'dissolve'
+    // Darken Group
+    | 'darken'
+    | 'multiply'
+    | 'color-burn'
+    | 'linear-burn'
+    | 'darker-color'
+    // Lighten Group
+    | 'lighten'
+    | 'screen'
+    | 'color-dodge'
+    | 'linear-dodge'
+    | 'lighter-color'
+    // Contrast Group
+    | 'overlay'
+    | 'soft-light'
+    | 'hard-light'
+    | 'vivid-light'
+    | 'linear-light'
+    | 'pin-light'
+    | 'hard-mix'
+    // Inversion Group
+    | 'difference'
+    | 'exclusion'
+    | 'subtract'
+    | 'divide'
+    // Color Group (HSL-based)
+    | 'hue'
+    | 'saturation'
+    | 'color'
+    | 'luminosity';
+
 // Base element interface - all elements extend this
 export interface BaseElement {
     id: string;
@@ -203,6 +240,7 @@ export interface BaseElement {
     visible: boolean;
     selectable: boolean;
     zIndex: number;
+    blendMode?: BlendMode;
     metadata?: Record<string, unknown>;
 }
 

@@ -12,6 +12,7 @@ import {
     LineElement,
     LineStyle,
     StickerElement,
+    BlendMode,
     createDefaultTransform,
     createDefaultStyle,
     createDefaultTextStyle,
@@ -90,6 +91,7 @@ interface CanvasActions {
     lockElement: (id: string) => void;
     unlockElement: (id: string) => void;
     toggleVisibility: (id: string) => void;
+    updateBlendMode: (id: string, blendMode: BlendMode) => void;
 
     // Clipboard operations
     copy: () => void;
@@ -271,6 +273,7 @@ export const useCanvasStore = create<CanvasStore>()(
                 selectable: options?.selectable ?? true,
                 editable: options?.editable ?? true,
                 zIndex: maxZIndex + 1,
+                blendMode: options?.blendMode ?? 'normal',
             };
 
             get().addElement(textElement);
@@ -300,6 +303,7 @@ export const useCanvasStore = create<CanvasStore>()(
                 visible: true,
                 selectable: true,
                 zIndex: maxZIndex + 1,
+                blendMode: 'normal',
                 ...options,
             };
 
@@ -325,6 +329,7 @@ export const useCanvasStore = create<CanvasStore>()(
                 visible: true,
                 selectable: true,
                 zIndex: maxZIndex + 1,
+                blendMode: 'normal',
                 ...options,
             };
 
@@ -372,6 +377,7 @@ export const useCanvasStore = create<CanvasStore>()(
                 visible: true,
                 selectable: true,
                 zIndex: maxZIndex + 1,
+                blendMode: 'normal',
             };
 
             get().addElement(lineElement);
@@ -400,6 +406,7 @@ export const useCanvasStore = create<CanvasStore>()(
                 visible: true,
                 selectable: true,
                 zIndex: maxZIndex + 1,
+                blendMode: 'normal',
                 ...options,
             };
 
@@ -692,6 +699,16 @@ export const useCanvasStore = create<CanvasStore>()(
             if (element) {
                 get().updateElement(id, { visible: !element.visible });
             }
+        },
+
+        updateBlendMode: (id: string, blendMode: BlendMode) => {
+            get().updateElement(id, { blendMode });
+
+            // Sync to Fabric.js canvas using dedicated blend mode method
+            const fabricCanvas = getFabricCanvas();
+            fabricCanvas.updateElementBlendMode(id, blendMode);
+
+            pushHistory('Change blend mode');
         },
 
         // Clipboard operations
