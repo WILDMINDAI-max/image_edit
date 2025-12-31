@@ -5,15 +5,18 @@ import { useCanvasStore } from '@/store/canvasStore';
 import { useActivePage, useEditorStore } from '@/store/editorStore';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { TextElement } from '@/types/canvas';
-import { X, Search, ChevronRight, Check, Loader2, Monitor, Plus, Trash2 } from 'lucide-react';
+import { X, Search, ChevronRight, ChevronDown, Check, Loader2, Monitor, Plus, Trash2, Palette } from 'lucide-react';
 import {
     GOOGLE_FONTS,
     FONT_CATEGORIES,
     FontCategory,
+    FontTheme,
+    FONT_THEME_GROUPS,
     loadGoogleFont,
     searchFonts,
     getFontVariants,
     getWeightName,
+    getFontsByTheme,
 } from '@/services/googleFonts';
 
 interface FontsPanelProps {
@@ -30,6 +33,9 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
 
     const [searchQuery, setSearchQuery] = useState('');
     const [activeCategory, setActiveCategory] = useState<FontCategory | null>(null);
+    const [activeTheme, setActiveTheme] = useState<FontTheme | null>(null);
+    const [showThemes, setShowThemes] = useState(false);
+    const [expandedThemeGroup, setExpandedThemeGroup] = useState<string | null>(null);
     const [expandedFont, setExpandedFont] = useState<string | null>(null);
     const [loadedFonts, setLoadedFonts] = useState<Set<string>>(new Set(globalLoadedFonts));
     const [loadingFonts, setLoadingFonts] = useState<Set<string>>(new Set());
@@ -53,7 +59,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
     const currentFontFamily = selectedElement?.textStyle?.fontFamily || 'Inter';
     const currentFontWeight = selectedElement?.textStyle?.fontWeight || 400;
 
-    // Filter fonts based on search and category
+    // Filter fonts based on search, category, and theme
     const filteredFonts = useMemo(() => {
         // If showing system fonts, filter system fonts instead
         if (showSystemFonts && systemFontsLoaded) {
@@ -65,6 +71,15 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
             return systemFonts.map(f => ({ family: f, variants: ['400'], category: 'system' as FontCategory }));
         }
 
+        // Theme-based filtering
+        if (activeTheme) {
+            const themeFonts = getFontsByTheme(activeTheme);
+            if (searchQuery) {
+                return themeFonts.filter(f => f.family.toLowerCase().includes(searchQuery.toLowerCase()));
+            }
+            return themeFonts;
+        }
+
         if (searchQuery) {
             return searchFonts(searchQuery, activeCategory || undefined);
         }
@@ -72,7 +87,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
             return GOOGLE_FONTS.filter(f => f.category === activeCategory);
         }
         return GOOGLE_FONTS;
-    }, [searchQuery, activeCategory, showSystemFonts, systemFontsLoaded, systemFonts]);
+    }, [searchQuery, activeCategory, activeTheme, showSystemFonts, systemFontsLoaded, systemFonts]);
 
     // Load a font
     const loadFont = useCallback(async (family: string) => {
@@ -366,6 +381,9 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                             } else {
                                 setShowSystemFonts(true);
                                 setActiveCategory(null);
+                                setActiveTheme(null);
+                                setShowThemes(false);
+                                setExpandedThemeGroup(null);
                             }
                         }}
                         disabled={loadingSystemFonts}
@@ -382,8 +400,8 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                         System
                     </button>
                     <button
-                        onClick={() => { setActiveCategory(null); setShowSystemFonts(false); }}
-                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === null && !showSystemFonts
+                        onClick={() => { setActiveCategory(null); setShowSystemFonts(false); setActiveTheme(null); setShowThemes(false); setExpandedThemeGroup(null); }}
+                        className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === null && !showSystemFonts && !activeTheme && !expandedThemeGroup
                             ? 'bg-gray-900 text-white'
                             : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                             }`}
@@ -393,7 +411,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                     {FONT_CATEGORIES.map((cat) => (
                         <button
                             key={cat.id}
-                            onClick={() => { setActiveCategory(cat.id); setShowSystemFonts(false); }}
+                            onClick={() => { setActiveCategory(cat.id); setShowSystemFonts(false); setActiveTheme(null); setShowThemes(false); setExpandedThemeGroup(null); }}
                             className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeCategory === cat.id && !showSystemFonts
                                 ? 'bg-gray-900 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -402,8 +420,63 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                             {cat.label}
                         </button>
                     ))}
+                    {/* Separator */}
+                    <div className="w-px bg-gray-300 mx-1 my-0.5" />
+                    {/* Theme Groups as scrollable buttons */}
+                    {FONT_THEME_GROUPS.map((group) => (
+                        <button
+                            key={group.id}
+                            onClick={() => {
+                                setExpandedThemeGroup(expandedThemeGroup === group.id ? null : group.id);
+                                setActiveCategory(null);
+                                setShowSystemFonts(false);
+                                setActiveTheme(null);
+                                setShowThemes(false);
+                            }}
+                            className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors flex items-center gap-1 ${expandedThemeGroup === group.id
+                                ? 'bg-purple-600 text-white'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                }`}
+                        >
+                            <span>{group.icon}</span>
+                            {group.label}
+                        </button>
+                    ))}
                 </div>
             </div>
+
+            {/* Theme sub-items panel - shows when a theme group is selected */}
+            {expandedThemeGroup && (
+                <div className="px-3 py-2 border-b border-gray-100 bg-purple-50">
+                    <div className="flex flex-wrap gap-1.5">
+                        {FONT_THEME_GROUPS.find(g => g.id === expandedThemeGroup)?.themes.map((theme) => (
+                            <button
+                                key={theme.id}
+                                onClick={() => { setActiveTheme(theme.id); }}
+                                className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeTheme === theme.id
+                                    ? 'bg-purple-600 text-white'
+                                    : 'bg-white text-gray-600 hover:bg-purple-100 border border-purple-200'
+                                    }`}
+                            >
+                                {theme.label}
+                            </button>
+                        ))}
+                    </div>
+                    {activeTheme && (
+                        <div className="mt-2 flex items-center gap-2">
+                            <span className="text-[10px] text-purple-600 font-medium">
+                                Showing fonts for: {FONT_THEME_GROUPS.flatMap(g => g.themes).find(t => t.id === activeTheme)?.label}
+                            </span>
+                            <button
+                                onClick={() => setActiveTheme(null)}
+                                className="text-purple-400 hover:text-purple-600"
+                            >
+                                <X size={12} />
+                            </button>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* Font list */}
             <div className="flex-1 overflow-y-auto custom-scrollbar" ref={scrollContainerRef}>
@@ -477,7 +550,11 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                 {/* All fonts */}
                 <div className="p-3">
                     <h4 className="text-[10px] font-semibold text-gray-400 uppercase tracking-wider mb-2">
-                        {activeCategory ? FONT_CATEGORIES.find(c => c.id === activeCategory)?.label : 'All Fonts'} ({filteredFonts.length})
+                        {activeTheme
+                            ? FONT_THEME_GROUPS.flatMap(g => g.themes).find(t => t.id === activeTheme)?.label
+                            : activeCategory
+                                ? FONT_CATEGORIES.find(c => c.id === activeCategory)?.label
+                                : 'All Fonts'} ({filteredFonts.length})
                     </h4>
                     {filteredFonts.map((font) => (
                         <FontItem

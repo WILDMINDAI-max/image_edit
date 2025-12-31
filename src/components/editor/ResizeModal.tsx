@@ -27,11 +27,54 @@ interface CanvasPreset {
 }
 
 const CANVAS_PRESETS: CanvasPreset[] = [
-    // Print
-    { name: 'Standard Print Page', width: 2480, height: 3508, category: 'Print', icon: <FileText size={16} /> },
-    { name: 'Medium Print Page', width: 1748, height: 2480, category: 'Print', icon: <FileText size={16} /> },
-    { name: 'Small Print Page', width: 1240, height: 1748, category: 'Print', icon: <FileText size={16} /> },
-    { name: 'Professional Card', width: 1004, height: 650, category: 'Print', icon: <CreditCard size={16} /> },
+    // Print - A Series
+    { name: 'A0', width: 9933, height: 14043, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A1', width: 7016, height: 9933, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A2', width: 4961, height: 7016, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A3', width: 3508, height: 4961, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A4', width: 2480, height: 3508, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A5', width: 1748, height: 2480, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A6', width: 1240, height: 1748, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A7', width: 874, height: 1240, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A8', width: 614, height: 874, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A9', width: 437, height: 614, category: 'Print - A Series', icon: <FileText size={16} /> },
+    { name: 'A10', width: 307, height: 437, category: 'Print - A Series', icon: <FileText size={16} /> },
+
+    // Print - B Series
+    { name: 'B0', width: 11811, height: 16701, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B1', width: 8350, height: 11811, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B2', width: 5906, height: 8350, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B3', width: 4175, height: 5906, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B4', width: 2953, height: 4175, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B5', width: 2079, height: 2953, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B6', width: 1476, height: 2079, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B7', width: 1039, height: 1476, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B8', width: 732, height: 1039, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B9', width: 520, height: 732, category: 'Print - B Series', icon: <FileText size={16} /> },
+    { name: 'B10', width: 366, height: 520, category: 'Print - B Series', icon: <FileText size={16} /> },
+
+    // Print - C Series
+    { name: 'C0', width: 12992, height: 18370, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C1', width: 9175, height: 12992, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C2', width: 6488, height: 9175, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C3', width: 4599, height: 6488, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C4', width: 3248, height: 4599, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C5', width: 2299, height: 3248, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C6', width: 1624, height: 2299, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C7', width: 1148, height: 1624, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C8', width: 812, height: 1148, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C9', width: 574, height: 812, category: 'Print - C Series', icon: <FileText size={16} /> },
+    { name: 'C10', width: 406, height: 574, category: 'Print - C Series', icon: <FileText size={16} /> },
+
+    // US Paper Sizes
+    { name: 'Letter', width: 2550, height: 3300, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Legal', width: 2550, height: 4200, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Tabloid', width: 3300, height: 5100, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Ledger', width: 5100, height: 3300, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Executive', width: 2175, height: 3150, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Statement', width: 1650, height: 2550, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Government Letter', width: 2400, height: 3150, category: 'US Paper Sizes', icon: <FileText size={16} /> },
+    { name: 'Professional Card', width: 1004, height: 650, category: 'US Paper Sizes', icon: <CreditCard size={16} /> },
 
     // Desktop
     { name: 'Desktop Wallpaper', width: 1920, height: 1080, category: 'Desktop', icon: <Monitor size={16} /> },
@@ -47,6 +90,45 @@ const CANVAS_PRESETS: CanvasPreset[] = [
     // Presentations
     { name: 'Widescreen Slides (16:9)', width: 1920, height: 1080, category: 'Presentations', icon: <Presentation size={16} /> },
     { name: 'Classic Slides (4:3)', width: 1024, height: 768, category: 'Presentations', icon: <Presentation size={16} /> },
+    { name: '4:5', width: 1080, height: 1350, category: 'Presentations', icon: <Presentation size={16} /> },
+    { name: '2:3', width: 2000, height: 3000, category: 'Presentations', icon: <Presentation size={16} /> },
+    { name: '3:4', width: 3000, height: 4000, category: 'Presentations', icon: <Presentation size={16} /> },
+    { name: '21:9', width: 2560, height: 1080, category: 'Presentations', icon: <Presentation size={16} /> },
+
+    // Mobile & Devices
+    { name: 'Android Small', width: 720, height: 1280, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'Android Medium', width: 1080, height: 1920, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'Android Large', width: 1440, height: 2960, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone SE', width: 640, height: 1136, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone 8', width: 750, height: 1334, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone 8 Plus', width: 1080, height: 1920, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone X / XS', width: 1125, height: 2436, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone 11 Pro Max', width: 1242, height: 2688, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+    { name: 'iPhone 14 Pro', width: 1179, height: 2556, category: 'Mobile & Devices', icon: <Smartphone size={16} /> },
+
+    // Web
+    { name: 'Web Small', width: 640, height: 480, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Web Medium', width: 1280, height: 800, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Web Large', width: 1920, height: 1080, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Website Header', width: 1920, height: 600, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Website Banner', width: 1920, height: 400, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Blog Image', width: 1200, height: 630, category: 'Web', icon: <Monitor size={16} /> },
+    { name: 'Email Header', width: 600, height: 300, category: 'Web', icon: <Monitor size={16} /> },
+
+    // Photo
+    { name: 'Photo – Small', width: 640, height: 480, category: 'Photo', icon: <Square size={16} /> },
+    { name: 'Photo – Medium', width: 1024, height: 768, category: 'Photo', icon: <Square size={16} /> },
+    { name: 'Photo – Large', width: 1600, height: 1200, category: 'Photo', icon: <Square size={16} /> },
+    { name: '3:2 Landscape', width: 3000, height: 2000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '3:2 Portrait', width: 2000, height: 3000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '4:3 Landscape', width: 4000, height: 3000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '4:3 Portrait', width: 3000, height: 4000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '5:4 Landscape', width: 2500, height: 2000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '5:4 Portrait', width: 2000, height: 2500, category: 'Photo', icon: <Square size={16} /> },
+    { name: '7:5 Landscape', width: 3500, height: 2500, category: 'Photo', icon: <Square size={16} /> },
+    { name: '7:5 Portrait', width: 2500, height: 3500, category: 'Photo', icon: <Square size={16} /> },
+    { name: '8 × 10', width: 2400, height: 3000, category: 'Photo', icon: <Square size={16} /> },
+    { name: '11 × 14', width: 3300, height: 4200, category: 'Photo', icon: <Square size={16} /> },
 ];
 
 // Group presets by category
