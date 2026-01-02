@@ -194,37 +194,49 @@ export function ResizeModal() {
             let updatedElements = undefined;
 
             if (scaleContent && activePage && activePage.elements.length > 0) {
-                const oldWidth = activePage.width;
-                const oldHeight = activePage.height;
+                const oldWidth = activePage.width || 1080;
+                const oldHeight = activePage.height || 1080;
 
-                // Calculate scale factor to fit
-                const scaleX = width / oldWidth;
-                const scaleY = height / oldHeight;
-                // Use minimum scale to preserve aspect ratio of the content layout
-                const scale = Math.min(scaleX, scaleY);
+                // Avoid division by zero
+                if (oldWidth > 0 && oldHeight > 0) {
+                    // Calculate scale factor to fit
+                    const scaleX = width / oldWidth;
+                    const scaleY = height / oldHeight;
+                    // Use minimum scale to preserve aspect ratio of the content layout
+                    // Ensure scale is never exactly 0 to prevent disappearance
+                    const scale = Math.max(0.0001, Math.min(scaleX, scaleY));
 
-                // Calculate offset to center the scaled content
-                const offsetX = (width - oldWidth * scale) / 2;
-                const offsetY = (height - oldHeight * scale) / 2;
+                    // Calculate offset to center the scaled content
+                    const offsetX = (width - oldWidth * scale) / 2;
+                    const offsetY = (height - oldHeight * scale) / 2;
 
-                updatedElements = activePage.elements.map(el => {
-                    const newTransform = { ...el.transform };
+                    updatedElements = activePage.elements.map(el => {
+                        const newTransform = { ...el.transform };
 
-                    // Scale position
-                    // Assuming centered origin for rotation, but global position is usually topleft/center depending on logic
-                    // If stored as center:
-                    newTransform.x = el.transform.x * scale + offsetX;
-                    newTransform.y = el.transform.y * scale + offsetY;
+                        // Scale position
+                        // Ensure values are valid numbers
+                        const newX = el.transform.x * scale + offsetX;
+                        const newY = el.transform.y * scale + offsetY;
 
-                    // Scale dimensions
-                    newTransform.scaleX = el.transform.scaleX * scale;
-                    newTransform.scaleY = el.transform.scaleY * scale;
+                        newTransform.x = Number.isFinite(newX) ? newX : el.transform.x;
+                        newTransform.y = Number.isFinite(newY) ? newY : el.transform.y;
 
-                    return {
-                        ...el,
-                        transform: newTransform,
-                    };
-                });
+                        // Scale dimensions (width/height), NOT scaleX/scaleY
+                        // scaleX/scaleY should remain 1 (or their current value)
+                        const newWidth = (el.transform.width || 200) * scale;
+                        const newHeight = (el.transform.height || 200) * scale;
+
+                        newTransform.width = Number.isFinite(newWidth) ? newWidth : el.transform.width;
+                        newTransform.height = Number.isFinite(newHeight) ? newHeight : el.transform.height;
+                        // Keep scaleX/scaleY unchanged
+                        // newTransform.scaleX and newTransform.scaleY remain as copied from el.transform
+
+                        return {
+                            ...el,
+                            transform: newTransform,
+                        };
+                    });
+                }
             }
 
             updatePage(project.activePageId, {

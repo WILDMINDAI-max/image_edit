@@ -80,8 +80,20 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
             return themeFonts;
         }
 
+        // Search by font family name AND theme names
         if (searchQuery) {
-            return searchFonts(searchQuery, activeCategory || undefined);
+            const lowerQuery = searchQuery.toLowerCase();
+            return GOOGLE_FONTS.filter(font => {
+                // Match font family name
+                const matchesFamily = font.family.toLowerCase().includes(lowerQuery);
+                // Match any theme name
+                const matchesTheme = font.themes?.some(theme =>
+                    theme.toLowerCase().includes(lowerQuery) ||
+                    theme.replace(/-/g, ' ').toLowerCase().includes(lowerQuery)
+                );
+                const matchesCategory = !activeCategory || font.category === activeCategory;
+                return (matchesFamily || matchesTheme) && matchesCategory;
+            });
         }
         if (activeCategory) {
             return GOOGLE_FONTS.filter(f => f.category === activeCategory);
@@ -434,7 +446,7 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                                 setShowThemes(false);
                             }}
                             className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors flex items-center gap-1 ${expandedThemeGroup === group.id
-                                ? 'bg-purple-600 text-white'
+                                ? 'bg-gray-900 text-white'
                                 : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                 }`}
                         >
@@ -447,15 +459,15 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
 
             {/* Theme sub-items panel - shows when a theme group is selected */}
             {expandedThemeGroup && (
-                <div className="px-3 py-2 border-b border-gray-100 bg-purple-50">
+                <div className="px-3 py-2 border-b border-gray-100 bg-white">
                     <div className="flex flex-wrap gap-1.5">
                         {FONT_THEME_GROUPS.find(g => g.id === expandedThemeGroup)?.themes.map((theme) => (
                             <button
                                 key={theme.id}
                                 onClick={() => { setActiveTheme(theme.id); }}
                                 className={`px-2.5 py-1 text-[10px] font-medium rounded-full whitespace-nowrap transition-colors ${activeTheme === theme.id
-                                    ? 'bg-purple-600 text-white'
-                                    : 'bg-white text-gray-600 hover:bg-purple-100 border border-purple-200'
+                                    ? 'bg-blue-100 text-blue-700'
+                                    : 'bg-white text-gray-600 hover:bg-blue-50 border border-blue-200'
                                     }`}
                             >
                                 {theme.label}
@@ -464,12 +476,12 @@ export function FontsPanel({ onClose }: FontsPanelProps) {
                     </div>
                     {activeTheme && (
                         <div className="mt-2 flex items-center gap-2">
-                            <span className="text-[10px] text-purple-600 font-medium">
+                            <span className="text-[10px] text-blue-600 font-medium">
                                 Showing fonts for: {FONT_THEME_GROUPS.flatMap(g => g.themes).find(t => t.id === activeTheme)?.label}
                             </span>
                             <button
                                 onClick={() => setActiveTheme(null)}
-                                className="text-purple-400 hover:text-purple-600"
+                                className="text-blue-400 hover:text-blue-600"
                             >
                                 <X size={12} />
                             </button>

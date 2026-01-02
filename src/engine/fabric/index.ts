@@ -34,3 +34,12 @@ export {
     FILTER_PRESETS_UI,
 } from './Filters';
 export type { FilterPresetUI } from './Filters';
+
+export {
+    SmartGuides,
+    initSmartGuides,
+    getSmartGuides,
+    disposeSmartGuides,
+    GUIDE_STYLES,
+} from './SmartGuides';
+export type { GuideLine, DistanceIndicator, SnapResult, ObjectBounds } from './SmartGuides';
