@@ -281,11 +281,19 @@ export function ExportModal() {
         }
 
         // Get the data URL from fabric canvas
+        // CRITICAL: The canvas is at WORKING scale, but we need to export at FULL (logical) scale
+        // So the multiplier must account for: (targetSize) / (workingSize)
+        // targetSize = page.width * exportScale
+        // workingSize = canvas.width (which is page.width * workingScale)
+        // multiplier = (page.width * exportScale) / (canvas.width) = exportScale / workingScale
         console.log('[ExportModal] Getting data URL from fabric canvas...');
+        const workingScale = getFabricCanvas().getWorkingScale();
+        const effectiveMultiplier = scale / workingScale;
+        console.log('[ExportModal] workingScale:', workingScale, 'exportScale:', scale, 'effectiveMultiplier:', effectiveMultiplier);
         const dataUrl = canvas.toDataURL({
             format: actualFormat === 'jpeg' ? 'jpeg' : 'png',
             quality: actualFormat === 'jpeg' ? 0.92 : 1,
-            multiplier: scale,
+            multiplier: effectiveMultiplier,
         });
         console.log('[ExportModal] Data URL generated, length:', dataUrl.length);
 

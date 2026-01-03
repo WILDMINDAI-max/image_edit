@@ -12,6 +12,7 @@ import {
     LineElement,
     LineStyle,
     StickerElement,
+    GroupElement,
     BlendMode,
     createDefaultTransform,
     createDefaultStyle,
@@ -248,14 +249,18 @@ export const useCanvasStore = create<CanvasStore>()(
                 scaleY: 1,
             };
 
-            // Merge with options transform (if any), but exclude x/y from options
-            const optionsTransform = options?.transform || {};
+            // Merge with options transform (if any)
+            // Only center if x/y are not explicitly provided
+            const optionsTransform = options?.transform || {} as any;
+            const hasExplicitX = optionsTransform.x !== undefined;
+            const hasExplicitY = optionsTransform.y !== undefined;
+
             const mergedTransform = {
                 ...baseTransform,
                 ...optionsTransform,
-                // ALWAYS center the text on canvas (override any x/y from options)
-                x: canvasWidth / 2,
-                y: canvasHeight / 2,
+                // Only center if not explicitly provided
+                x: hasExplicitX ? optionsTransform.x : canvasWidth / 2,
+                y: hasExplicitY ? optionsTransform.y : canvasHeight / 2,
             };
 
             // Create element without spreading options at the end (to avoid overriding transform)
@@ -631,14 +636,150 @@ export const useCanvasStore = create<CanvasStore>()(
 
         // Group operations
         groupElements: (ids: string[]) => {
-            // TODO: Implement grouping
+            if (ids.length < 2) return '';
+
+            const elements = getActivePageElements();
+            const elementsToGroup = elements.filter(el => ids.includes(el.id));
+
+            if (elementsToGroup.length < 2) return '';
+
+            // Calculate bounding box of all selected elements
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+            elementsToGroup.forEach(el => {
+                const width = el.transform.width * Math.abs(el.transform.scaleX);
+                const height = el.transform.height * Math.abs(el.transform.scaleY);
+                const halfWidth = width / 2;
+                const halfHeight = height / 2;
+
+                // Calculate bounds based on center origin
+                const left = el.transform.x - halfWidth;
+                const right = el.transform.x + halfWidth;
+                const top = el.transform.y - halfHeight;
+                const bottom = el.transform.y + halfHeight;
+
+                minX = Math.min(minX, left);
+                minY = Math.min(minY, top);
+                maxX = Math.max(maxX, right);
+                maxY = Math.max(maxY, bottom);
+            });
+
+            const groupWidth = maxX - minX;
+            const groupHeight = maxY - minY;
+            const groupCenterX = minX + groupWidth / 2;
+            const groupCenterY = minY + groupHeight / 2;
+
+            // Convert children to relative coordinates within the group
+            const children: CanvasElement[] = elementsToGroup.map(el => ({
+                ...JSON.parse(JSON.stringify(el)),
+                // Store relative position from group center
+                transform: {
+                    ...el.transform,
+                    x: el.transform.x - groupCenterX,
+                    y: el.transform.y - groupCenterY,
+                }
+            }));
+
             const groupId = crypto.randomUUID();
+            const maxZIndex = elements.length > 0
+                ? Math.max(...elements.map(e => e.zIndex))
+                : 0;
+
+            const groupElement: GroupElement = {
+                id: groupId,
+                type: 'group',
+                name: 'Group',
+                children,
+                transform: {
+                    ...createDefaultTransform(),
+                    x: groupCenterX,
+                    y: groupCenterY,
+                    width: groupWidth,
+                    height: groupHeight,
+                    scaleX: 1,
+                    scaleY: 1,
+                    rotation: 0,
+                },
+                style: createDefaultStyle(),
+                locked: false,
+                visible: true,
+                selectable: true,
+                zIndex: maxZIndex + 1,
+                blendMode: 'normal',
+            };
+
+            // Remove original elements and add group
+            const editorStore = useEditorStore.getState();
+            if (editorStore.project) {
+                const remainingElements = elements.filter(el => !ids.includes(el.id));
+                editorStore.updatePage(editorStore.project.activePageId, {
+                    elements: [...remainingElements, groupElement],
+                });
+            }
+
+            // Sync to Fabric.js canvas
+            const fabricCanvas = getFabricCanvas();
+            fabricCanvas.createGroup(groupElement, ids);
+
+            // Select the new group
+            set((state) => {
+                state.selectedIds = [groupId];
+            });
+
+            pushHistory('Group elements');
+
             return groupId;
         },
 
         ungroupElement: (groupId: string) => {
-            // TODO: Implement ungrouping
-            return [];
+            const elements = getActivePageElements();
+            const groupElement = elements.find(el => el.id === groupId) as GroupElement | undefined;
+
+            if (!groupElement || groupElement.type !== 'group') return [];
+
+            // Restore children with absolute positions
+            const restoredChildren: CanvasElement[] = groupElement.children.map((child, index) => ({
+                ...child,
+                transform: {
+                    ...child.transform,
+                    // Convert back to absolute coordinates
+                    x: child.transform.x + groupElement.transform.x,
+                    y: child.transform.y + groupElement.transform.y,
+                    // Apply group's scale and rotation to children
+                    scaleX: child.transform.scaleX * groupElement.transform.scaleX,
+                    scaleY: child.transform.scaleY * groupElement.transform.scaleY,
+                    rotation: child.transform.rotation + groupElement.transform.rotation,
+                },
+                // Ensure unique zIndex for each restored element
+                zIndex: groupElement.zIndex + index,
+            }));
+
+            const childIds = restoredChildren.map(c => c.id);
+
+            // Remove group and add children back
+            const editorStore = useEditorStore.getState();
+            if (editorStore.project) {
+                const remainingElements = elements.filter(el => el.id !== groupId);
+                editorStore.updatePage(editorStore.project.activePageId, {
+                    elements: [...remainingElements, ...restoredChildren],
+                });
+            }
+
+            // Sync to Fabric.js canvas
+            const fabricCanvas = getFabricCanvas();
+            fabricCanvas.ungroupObjects(groupId, restoredChildren);
+
+            // Select all restored children
+            set((state) => {
+                state.selectedIds = childIds;
+            });
+
+            // Select restored elements on canvas
+            fabricCanvas.selectObjects(childIds);
+
+            pushHistory('Ungroup elements');
+
+            return childIds;
         },
 
         // Layer operations

@@ -48,9 +48,11 @@ export class CanvasRenderer {
             }
 
             // Create a temporary canvas for export
+            // Use LOGICAL dimensions (full size) not working dimensions (scaled)
             const tempCanvas = document.createElement('canvas');
-            const width = options.width || canvas.width!;
-            const height = options.height || canvas.height!;
+            const logicalDimensions = this.fabricCanvas.getLogicalDimensions();
+            const width = options.width || logicalDimensions.width;
+            const height = options.height || logicalDimensions.height;
             const scale = options.scale || 1;
 
             tempCanvas.width = width * scale;
@@ -69,10 +71,13 @@ export class CanvasRenderer {
             }
 
             // Render Fabric canvas to temp canvas
+            // Use a multiplier that accounts for both scale AND workingScale
+            const workingScale = this.fabricCanvas.getWorkingScale();
+            const effectiveMultiplier = (scale * width) / (canvas.width! / workingScale);
             const dataUrl = canvas.toDataURL({
                 format: options.format || 'png',
                 quality: options.quality || 1,
-                multiplier: scale,
+                multiplier: effectiveMultiplier,
             });
 
             const img = new Image();
@@ -255,14 +260,11 @@ export class CanvasRenderer {
     }
 
     /**
-     * Get canvas dimensions
+     * Get canvas dimensions (returns LOGICAL dimensions, not working dimensions)
      */
     public getDimensions(): { width: number; height: number } {
-        const canvas = this.fabricCanvas.getCanvas();
-        return {
-            width: canvas?.width || 0,
-            height: canvas?.height || 0,
-        };
+        // Return logical (target) dimensions, not working (scaled) dimensions
+        return this.fabricCanvas.getLogicalDimensions();
     }
 }
 

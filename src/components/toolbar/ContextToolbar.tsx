@@ -1928,27 +1928,31 @@ export function ContextToolbar() {
                 {canGroup && (
                     <button
                         onClick={() => groupElements(selectedIds)}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
-                        title="Group"
+                        className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all flex items-center gap-1.5"
+                        title="Group selected elements"
                     >
                         <Group size={14} />
+                        <span>Group</span>
                     </button>
                 )}
                 {isGroup && (
-                    <button
-                        onClick={() => ungroupElement(selectedIds[0])}
-                        className="p-1.5 text-gray-500 hover:text-blue-600 hover:bg-blue-50 rounded transition-all"
-                        title="Ungroup"
-                    >
-                        <Ungroup size={14} />
-                    </button>
+                    <>
+                        <button
+                            onClick={() => ungroupElement(selectedIds[0])}
+                            className="px-3 py-1.5 text-xs font-medium text-gray-600 bg-gray-100 hover:bg-blue-50 hover:text-blue-600 rounded-lg transition-all flex items-center gap-1.5"
+                            title="Ungroup elements"
+                        >
+                            <Ungroup size={14} />
+                            <span>Ungroup</span>
+                        </button>
+                    </>
                 )}
             </div>
 
             {/* Lock */}
             <button
                 onClick={() => isLocked ? unlockElement(selectedIds[0]) : lockElement(selectedIds[0])}
-                className="p-1.5 text-gray-500 hover:text-amber-600 hover:bg-amber-50 rounded transition-all"
+                className={`p-1.5 rounded transition-all ${isLocked ? 'text-amber-600 bg-amber-50' : 'text-gray-500 hover:text-amber-600 hover:bg-amber-50'}`}
                 title={isLocked ? 'Unlock' : 'Lock'}
             >
                 {isLocked ? <LockOpen size={14} /> : <Lock size={14} />}

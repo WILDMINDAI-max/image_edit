@@ -2,7 +2,7 @@
 // Core Fabric.js wrapper and initialization
 
 import { fabric } from 'fabric';
-import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement, StickerElement, BlendMode } from '@/types/canvas';
+import { CanvasElement, TextElement, ImageElement, ShapeElement, LineElement, StickerElement, GroupElement, BlendMode } from '@/types/canvas';
 import { Page, PageBackground } from '@/types/project';
 import { CustomText } from './CustomText';
 import { SHAPE_CATALOG } from '@/types/shapes';
@@ -20,9 +20,9 @@ export interface FabricCanvasOptions {
 }
 
 // Maximum canvas size that browsers can reliably handle
-// Large canvases (like A0: 9933x14043) may exceed browser memory limits
+// Reduced from 4000 to 2500 for better performance on large canvases
 // For these sizes, we use virtual canvas: render at reduced size, display scaled up via CSS
-const MAX_WORKING_CANVAS_SIZE = 4000;
+const MAX_WORKING_CANVAS_SIZE = 2500;
 
 export class FabricCanvas {
     private canvas: fabric.Canvas | null = null;
@@ -33,6 +33,9 @@ export class FabricCanvas {
     // Smart guides for alignment and snapping
     private smartGuides: SmartGuides | null = null;
     private snapToGuidesEnabled: boolean = true;
+
+    // Performance optimization: skip heavy operations during drag
+    private isDragging: boolean = false;
 
     // Virtual canvas properties - store logical (target) dimensions separately
     private logicalWidth: number = 1080;
@@ -117,10 +120,11 @@ export class FabricCanvas {
         // Add after:render hook for custom blend modes and smart guides
         // This applies pixel-level blending for modes not supported by Canvas 2D API
         this.canvas.on('after:render', () => {
-            if (this.elementBlendModes.size > 0 && this.canvas) {
+            // Skip expensive blend mode operations during drag for better performance
+            if (this.elementBlendModes.size > 0 && this.canvas && !this.isDragging) {
                 applyCustomBlendModesToCanvas(this.canvas, this.elementBlendModes);
             }
-            // Render smart guides overlay
+            // Render smart guides overlay (lightweight, keep during drag)
             if (this.smartGuides && this.canvas) {
                 const ctx = this.canvas.getContext();
                 this.smartGuides.renderGuides(ctx);
@@ -170,6 +174,10 @@ export class FabricCanvas {
     private setupEventListeners(): void {
         if (!this.canvas) return;
 
+        // Throttle tracking for performance
+        let lastUpdateTime = 0;
+        const UPDATE_THROTTLE_MS = 60; // Only update store every 60ms during drag
+
         // Selection events
         this.canvas.on('selection:created', () => {
             const selectedIds = this.getSelectedObjectIds();
@@ -206,29 +214,50 @@ export class FabricCanvas {
             }
         });
 
-        // Object updating events (during transform)
-        const onUpdating = (e: fabric.IEvent<MouseEvent>) => {
+        // Object updating events (during transform) - THROTTLED for performance
+        const onUpdatingThrottled = (e: fabric.IEvent<MouseEvent>) => {
+            const now = performance.now();
+            // Skip if we updated too recently (throttle)
+            if (now - lastUpdateTime < UPDATE_THROTTLE_MS) {
+                return;
+            }
+            lastUpdateTime = now;
+
             const obj = e.target as fabric.Object & { data?: { id: string } };
             if (obj && obj.data?.id) {
                 this.onObjectUpdating?.(obj.data.id);
             }
         };
 
-        this.canvas.on('object:scaling', onUpdating);
-        this.canvas.on('object:rotating', onUpdating);
+        this.canvas.on('object:scaling', (e) => {
+            this.isDragging = true;
+            onUpdatingThrottled(e);
+        });
+        this.canvas.on('object:rotating', (e) => {
+            this.isDragging = true;
+            onUpdatingThrottled(e);
+        });
 
         // Object moving with smart guides snapping
         this.canvas.on('object:moving', (e: fabric.IEvent<MouseEvent>) => {
             const obj = e.target as fabric.Object & { data?: { id: string } };
             if (!obj) return;
 
-            // Call regular updating callback
-            if (obj.data?.id) {
-                this.onObjectUpdating?.(obj.data.id);
+            // Set dragging flag for performance optimization
+            this.isDragging = true;
+
+            // Throttled callback to update store (reduces React re-renders)
+            const now = performance.now();
+            if (now - lastUpdateTime >= UPDATE_THROTTLE_MS) {
+                lastUpdateTime = now;
+                if (obj.data?.id) {
+                    this.onObjectUpdating?.(obj.data.id);
+                }
             }
 
-            // Apply smart guides snapping
-            if (this.smartGuides && this.snapToGuidesEnabled) {
+            // Apply smart guides snapping ONLY on small canvases (workingScale === 1)
+            // On large canvases, skip this entirely for performance
+            if (this.smartGuides && this.snapToGuidesEnabled && this.workingScale >= 0.9) {
                 const snapResult = this.smartGuides.calculateSnap(obj);
 
                 // Apply snapping if alignments found
@@ -238,16 +267,21 @@ export class FabricCanvas {
                 if (snapResult.snapY !== null) {
                     obj.set('top', snapResult.snapY);
                 }
-
-                // Request re-render to show guide lines
-                this.canvas?.requestRenderAll();
             }
         });
 
-        // Clear guides when object modification ends
+        // Clear guides and dragging flag when object modification ends
         this.canvas.on('mouse:up', () => {
+            // Clear dragging flag
+            const wasDragging = this.isDragging;
+            this.isDragging = false;
+
             if (this.smartGuides) {
                 this.smartGuides.clearGuides();
+            }
+
+            // Re-render to apply blend modes that were skipped during drag
+            if (wasDragging) {
                 this.canvas?.requestRenderAll();
             }
         });
@@ -290,10 +324,10 @@ export class FabricCanvas {
     /**
      * Setup custom control styling
      */
-    /**
-     * Setup custom control styling
-     */
     private setupCustomControls(): void {
+        // Reference to FabricCanvas instance for accessing workingScale
+        const fabricCanvasInstance = this;
+
         // Customize control appearance
         fabric.Object.prototype.transparentCorners = false;
         fabric.Object.prototype.cornerColor = '#ffffff';
@@ -303,16 +337,30 @@ export class FabricCanvas {
         fabric.Object.prototype.padding = 10;
         fabric.Object.prototype.cornerStrokeColor = '#2563eb';
 
+        // Helper to get inverse scale for controls (keeps controls same visual size regardless of zoom)
+        const getControlScale = (): number => {
+            const canvas = fabricCanvasInstance.getCanvas();
+            if (!canvas) return 1;
+            const zoom = canvas.getZoom();
+            // Inverse scale: when zoom is 0.5, controls should be 2x larger
+            // Cap at 2.5x to prevent oversized controls on very large canvases
+            const inverseScale = 1 / zoom;
+            return Math.min(inverseScale, 2.5);
+        };
+
         // Render function for circular corner controls (tl, tr, bl, br)
         const renderCircleControl = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
-            const size = 18; // Reduced from 24
+            const scale = getControlScale();
+            const size = 18 * scale; // Scale with inverse zoom
+            const strokeWidth = 2.5 * scale;
+
             ctx.save();
             ctx.translate(left, top);
             ctx.beginPath();
             ctx.arc(0, 0, size / 2, 0, 2 * Math.PI, false);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = strokeWidth;
             ctx.strokeStyle = '#2563eb';
             ctx.stroke();
             ctx.restore();
@@ -320,9 +368,11 @@ export class FabricCanvas {
 
         // Render function for horizontal pill-shaped side controls (mt, mb)
         const renderPillControlH = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
-            const width = 24;
-            const height = 8;
-            const radius = 4;
+            const scale = getControlScale();
+            const width = 24 * scale;
+            const height = 8 * scale;
+            const radius = 4 * scale;
+            const strokeWidth = 2.5 * scale;
 
             ctx.save();
             ctx.translate(left, top);
@@ -335,7 +385,7 @@ export class FabricCanvas {
             ctx.roundRect(-width / 2, -height / 2, width, height, radius);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = strokeWidth;
             ctx.strokeStyle = '#2563eb';
             ctx.stroke();
             ctx.restore();
@@ -343,9 +393,11 @@ export class FabricCanvas {
 
         // Render function for vertical pill-shaped side controls (ml, mr)
         const renderPillControlV = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
-            const width = 8;
-            const height = 24;
-            const radius = 4;
+            const scale = getControlScale();
+            const width = 8 * scale;
+            const height = 24 * scale;
+            const radius = 4 * scale;
+            const strokeWidth = 2.5 * scale;
 
             ctx.save();
             ctx.translate(left, top);
@@ -358,7 +410,7 @@ export class FabricCanvas {
             ctx.roundRect(-width / 2, -height / 2, width, height, radius);
             ctx.fillStyle = '#ffffff';
             ctx.fill();
-            ctx.lineWidth = 2.5;
+            ctx.lineWidth = strokeWidth;
             ctx.strokeStyle = '#2563eb';
             ctx.stroke();
             ctx.restore();
@@ -366,7 +418,11 @@ export class FabricCanvas {
 
         // Custom Rotation Control Renderer
         const renderRotationControl = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
-            const size = 24; // Reduced from 32
+            const scale = getControlScale();
+            const size = 24 * scale;
+            const strokeWidth = 2 * scale;
+            const arcRadius = 6 * scale;
+
             ctx.save();
             ctx.translate(left, top);
 
@@ -376,20 +432,20 @@ export class FabricCanvas {
             ctx.fillStyle = '#2563eb';
             ctx.fill();
 
-            // White refresh icon (scaled down)
+            // White refresh icon (scaled)
             ctx.strokeStyle = '#ffffff';
-            ctx.lineWidth = 2;
+            ctx.lineWidth = strokeWidth;
             ctx.lineCap = 'round';
             ctx.beginPath();
             // Draw an open circle arrow
-            ctx.arc(0, 0, 6, 0.2 * Math.PI, 1.8 * Math.PI);
+            ctx.arc(0, 0, arcRadius, 0.2 * Math.PI, 1.8 * Math.PI);
             ctx.stroke();
 
-            // Arrowhead
+            // Arrowhead (scaled)
             ctx.beginPath();
-            ctx.moveTo(4, -4);
-            ctx.lineTo(6, -6);
-            ctx.lineTo(8, -3);
+            ctx.moveTo(4 * scale, -4 * scale);
+            ctx.lineTo(6 * scale, -6 * scale);
+            ctx.lineTo(8 * scale, -3 * scale);
             ctx.stroke();
 
             ctx.restore();
@@ -728,10 +784,9 @@ export class FabricCanvas {
             strokeWidth: element.style.strokeWidth,
             opacity: element.style.opacity,
             angle: element.transform.rotation,
-            // Note: For Textbox, we don't use scaleX/scaleY for text sizing
-            // The width controls how text wraps, height auto-adjusts
-            scaleX: 1,
-            scaleY: 1,
+            // Use saved scaleX/scaleY to preserve user's text scaling
+            scaleX: element.transform.scaleX || 1,
+            scaleY: element.transform.scaleY || 1,
             originX: element.transform.originX,
             originY: element.transform.originY,
             selectable: element.selectable,
@@ -1128,14 +1183,15 @@ export class FabricCanvas {
         shape.set({
             left: element.transform.x,
             top: element.transform.y,
+            // Apply saved scaleX/scaleY (now that we save base width separately)
+            scaleX: element.transform.scaleX || 1,
+            scaleY: element.transform.scaleY || 1,
             // Line shapes use stroke for color, not fill
             fill: isLineCategory ? 'transparent' : (element.style.fill as string),
             stroke: isLineCategory ? (element.style.fill as string || '#4A90D9') : (element.style.stroke ?? undefined),
             strokeWidth: isLineCategory ? 3 : element.style.strokeWidth,
             opacity: element.style.opacity,
             angle: element.transform.rotation,
-            scaleX: element.transform.scaleX,
-            scaleY: element.transform.scaleY,
             originX: element.transform.originX,
             originY: element.transform.originY,
             selectable: element.selectable,
@@ -1684,6 +1740,321 @@ export class FabricCanvas {
     }
 
     /**
+     * Create a Fabric.js Group from selected objects
+     * This creates a persistent group that doesn't ungroup on click outside
+     */
+    public createGroup(groupElement: GroupElement, childIds: string[]): fabric.Group | null {
+        if (!this.canvas) return null;
+
+        // First, discard any active selection before we manipulate objects
+        this.canvas.discardActiveObject();
+
+        // Get all fabric objects by child IDs - KEEP THEIR CURRENT POSITIONS
+        const objects: fabric.Object[] = [];
+        childIds.forEach(id => {
+            const obj = this.objectIdMap.get(id);
+            if (obj) {
+                objects.push(obj);
+                // Remove from object ID map (we'll track the group instead)
+                this.objectIdMap.delete(id);
+            }
+        });
+
+        if (objects.length === 0) return null;
+
+        // Create a Fabric.js Group - let Fabric.js handle the positioning
+        // Fabric.js will automatically calculate the group bounds from the objects
+        const group = new fabric.Group(objects, {
+            // Don't set left/top - let Fabric calculate from children
+            originX: 'center',
+            originY: 'center',
+            // Make the group behave as a single unit (not interactive children)
+            subTargetCheck: false,
+            // Add identification data
+            data: { id: groupElement.id, type: 'group' },
+            // Ensure group is selectable and movable
+            selectable: true,
+            evented: true,
+            hasControls: true,
+            hasBorders: true,
+        });
+
+        // The objects are automatically removed from canvas when added to group
+        // But we need to ensure they're not duplicated
+        objects.forEach(obj => {
+            if (this.canvas!.contains(obj)) {
+                this.canvas!.remove(obj);
+            }
+        });
+
+        // Add to canvas
+        this.canvas.add(group);
+
+        // Track in object ID map
+        this.objectIdMap.set(groupElement.id, group);
+
+        // Select the new group
+        this.canvas.setActiveObject(group);
+        this.canvas.requestRenderAll();
+
+        console.log('[FabricCanvas] Created group:', groupElement.id, 'with', objects.length, 'children',
+            'at position:', group.left, group.top, 'dimensions:', group.width, group.height);
+
+        return group;
+    }
+
+    /**
+     * Ungroup a Fabric.js Group and restore individual objects
+     */
+    public ungroupObjects(groupId: string, restoredElements: CanvasElement[]): void {
+        if (!this.canvas) return;
+
+        const groupObj = this.objectIdMap.get(groupId) as fabric.Group | undefined;
+        if (!groupObj) {
+            console.warn('[FabricCanvas] Group not found for ungrouping:', groupId);
+            return;
+        }
+
+        // Remove the group from canvas
+        this.canvas.remove(groupObj);
+        this.objectIdMap.delete(groupId);
+
+        // Add each restored element back to canvas
+        restoredElements.forEach(async (element) => {
+            await this.addElement(element);
+        });
+
+        this.canvas.renderAll();
+
+        console.log('[FabricCanvas] Ungrouped:', groupId, 'restored', restoredElements.length, 'elements');
+    }
+
+    /**
+     * Add a group element (for loading saved groups)
+     */
+    public async addGroup(element: GroupElement): Promise<fabric.Group | null> {
+        if (!this.canvas) return null;
+
+        // Recursively create fabric objects for all children
+        const childObjects: fabric.Object[] = [];
+
+        for (const child of element.children) {
+            // Create the child element first (without adding to canvas directly)
+            const childObj = await this.createChildObject(child);
+            if (childObj) {
+                childObjects.push(childObj);
+            }
+        }
+
+        if (childObjects.length === 0) return null;
+
+        // Create the group
+        const group = new fabric.Group(childObjects, {
+            left: element.transform.x,
+            top: element.transform.y,
+            originX: 'center',
+            originY: 'center',
+            angle: element.transform.rotation || 0,
+            scaleX: element.transform.scaleX,
+            scaleY: element.transform.scaleY,
+            opacity: element.style.opacity,
+            subTargetCheck: false,
+            data: { id: element.id, type: 'group' },
+            selectable: element.selectable,
+            evented: !element.locked,
+            hasControls: !element.locked,
+            hasBorders: !element.locked,
+            lockMovementX: element.locked,
+            lockMovementY: element.locked,
+            lockRotation: element.locked,
+            lockScalingX: element.locked,
+            lockScalingY: element.locked,
+            visible: element.visible,
+        });
+
+        this.canvas.add(group);
+        this.objectIdMap.set(element.id, group);
+
+        console.log('[FabricCanvas] Added group:', element.id, 'with', childObjects.length, 'children');
+
+        return group;
+    }
+
+    /**
+     * Create a fabric object for a child element (without adding to main canvas)
+     * Used internally for creating group children
+     */
+    private async createChildObject(element: CanvasElement): Promise<fabric.Object | null> {
+        switch (element.type) {
+            case 'text':
+                return this.createTextObject(element as TextElement);
+            case 'image':
+                return await this.createImageObject(element as ImageElement);
+            case 'shape':
+                return this.createShapeObject(element as ShapeElement);
+            case 'line':
+                return this.createLineObject(element as LineElement);
+            case 'group':
+                // Handle nested groups recursively
+                return this.createNestedGroup(element as GroupElement);
+            default:
+                console.warn(`Unknown child element type: ${element.type}`);
+                return null;
+        }
+    }
+
+    /**
+     * Create a text object without adding to canvas
+     */
+    private createTextObject(element: TextElement): fabric.Textbox {
+        const displayContent = element.textStyle.textTransform === 'uppercase'
+            ? element.content.toUpperCase()
+            : element.content;
+
+        return new fabric.Textbox(displayContent, {
+            left: element.transform.x,
+            top: element.transform.y,
+            width: element.transform.width || 300,
+            fontFamily: element.textStyle.fontFamily,
+            fontSize: element.textStyle.fontSize,
+            fontWeight: element.textStyle.fontWeight as number,
+            fontStyle: element.textStyle.fontStyle,
+            textAlign: element.textStyle.textAlign,
+            fill: element.style.fill as string,
+            opacity: element.style.opacity,
+            angle: element.transform.rotation,
+            originX: 'center',
+            originY: 'center',
+            data: { id: element.id, type: 'text' },
+        });
+    }
+
+    /**
+     * Create an image object without adding to canvas
+     */
+    private async createImageObject(element: ImageElement): Promise<fabric.Image> {
+        return new Promise((resolve, reject) => {
+            fabric.Image.fromURL(element.src, (img) => {
+                if (!img) {
+                    reject(new Error('Failed to load image'));
+                    return;
+                }
+
+                const scaleX = (element.transform.width * element.transform.scaleX) / (img.width || 1);
+                const scaleY = (element.transform.height * element.transform.scaleY) / (img.height || 1);
+
+                img.set({
+                    left: element.transform.x,
+                    top: element.transform.y,
+                    scaleX,
+                    scaleY,
+                    angle: element.transform.rotation,
+                    opacity: element.style.opacity,
+                    originX: 'center',
+                    originY: 'center',
+                    data: { id: element.id, type: 'image' },
+                });
+
+                resolve(img);
+            }, { crossOrigin: 'anonymous' });
+        });
+    }
+
+    /**
+     * Create a shape object without adding to canvas
+     */
+    private createShapeObject(element: ShapeElement): fabric.Object {
+        let shape: fabric.Object;
+
+        // Create basic shapes - for complex shapes, use the full addShape logic
+        switch (element.shapeType) {
+            case 'circle':
+                const radius = Math.min(element.transform.width, element.transform.height) / 2;
+                shape = new fabric.Circle({
+                    radius,
+                    fill: element.style.fill as string,
+                    stroke: element.style.stroke || undefined,
+                    strokeWidth: element.style.strokeWidth,
+                });
+                break;
+            case 'rectangle':
+            case 'square':
+            default:
+                shape = new fabric.Rect({
+                    width: element.transform.width,
+                    height: element.transform.height,
+                    fill: element.style.fill as string,
+                    stroke: element.style.stroke || undefined,
+                    strokeWidth: element.style.strokeWidth,
+                    rx: element.style.cornerRadius,
+                    ry: element.style.cornerRadius,
+                });
+                break;
+        }
+
+        shape.set({
+            left: element.transform.x,
+            top: element.transform.y,
+            scaleX: element.transform.scaleX,
+            scaleY: element.transform.scaleY,
+            angle: element.transform.rotation,
+            opacity: element.style.opacity,
+            originX: 'center',
+            originY: 'center',
+            data: { id: element.id, type: 'shape' },
+        });
+
+        return shape;
+    }
+
+    /**
+     * Create a line object without adding to canvas
+     */
+    private createLineObject(element: LineElement): fabric.Line {
+        const line = new fabric.Line(
+            [element.x1, element.y1, element.x2, element.y2],
+            {
+                stroke: element.strokeColor,
+                strokeWidth: element.strokeWidth,
+                originX: 'center',
+                originY: 'center',
+                data: { id: element.id, type: 'line' },
+            }
+        );
+
+        return line;
+    }
+
+    /**
+     * Create a nested group object
+     */
+    private async createNestedGroup(element: GroupElement): Promise<fabric.Group | null> {
+        const childObjects: fabric.Object[] = [];
+
+        for (const child of element.children) {
+            const childObj = await this.createChildObject(child);
+            if (childObj) {
+                childObjects.push(childObj);
+            }
+        }
+
+        if (childObjects.length === 0) return null;
+
+        return new fabric.Group(childObjects, {
+            left: element.transform.x,
+            top: element.transform.y,
+            originX: 'center',
+            originY: 'center',
+            angle: element.transform.rotation || 0,
+            scaleX: element.transform.scaleX,
+            scaleY: element.transform.scaleY,
+            opacity: element.style.opacity,
+            subTargetCheck: false,
+            data: { id: element.id, type: 'group' },
+        });
+    }
+
+    /**
      * Clear all objects
      */
     public clear(): void {
@@ -1890,7 +2261,8 @@ export class FabricCanvas {
                 return this.addLine(element as LineElement);
             case 'sticker':
                 return await this.addSticker(element as StickerElement);
-            // TODO: Add more element types
+            case 'group':
+                return await this.addGroup(element as GroupElement);
             default:
                 console.warn(`Unknown element type: ${element.type}`);
                 return null;

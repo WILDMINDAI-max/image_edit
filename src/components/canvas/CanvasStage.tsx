@@ -13,10 +13,63 @@ interface CanvasStageProps {
 }
 
 // Lock Icon Overlay Component - Shows lock icon when locked element is clicked
+// FIXED: No longer blocks clicks on other elements - uses Fabric.js events instead
 function LockIconOverlay({ displayScale }: { displayScale: number }) {
     const activePage = useActivePage();
     const unlockElement = useCanvasStore((state) => state.unlockElement);
     const [clickedLockedId, setClickedLockedId] = useState<string | null>(null);
+
+    // Listen to Fabric.js mouse:down to detect clicks on locked elements
+    useEffect(() => {
+        const fabricCanvas = getFabricCanvas();
+        const canvas = fabricCanvas.getCanvas();
+        if (!canvas) return;
+
+        const handleMouseDown = (e: any) => {
+            // If there's a target and it's locked (evented: false won't fire, but we can check the point)
+            const pointer = canvas.getPointer(e.e);
+
+            // Find if click is on any locked element
+            if (activePage) {
+                // Check locked elements from top to bottom (reverse z-index order)
+                const lockedElements = activePage.elements
+                    .filter(el => el.locked)
+                    .sort((a, b) => b.zIndex - a.zIndex); // Higher z-index first
+
+                for (const element of lockedElements) {
+                    const { x, y, width, height, scaleX, scaleY } = element.transform;
+                    const elementWidth = width * Math.abs(scaleX || 1);
+                    const elementHeight = height * Math.abs(scaleY || 1);
+
+                    // Check if click is within element bounds
+                    const left = x - elementWidth / 2;
+                    const right = x + elementWidth / 2;
+                    const top = y - elementHeight / 2;
+                    const bottom = y + elementHeight / 2;
+
+                    if (pointer.x >= left && pointer.x <= right &&
+                        pointer.y >= top && pointer.y <= bottom) {
+                        // Only show lock if no selectable object is at this position
+                        // This allows elements on top to be selected
+                        const targetAtPoint = canvas.findTarget(e.e, false);
+                        if (!targetAtPoint || (targetAtPoint as any).data?.id === element.id) {
+                            setClickedLockedId(element.id);
+                            return;
+                        }
+                    }
+                }
+            }
+
+            // Clear if clicked elsewhere
+            setClickedLockedId(null);
+        };
+
+        canvas.on('mouse:down', handleMouseDown);
+
+        return () => {
+            canvas.off('mouse:down', handleMouseDown);
+        };
+    }, [activePage]);
 
     // Auto-hide lock icon after 3 seconds
     useEffect(() => {
@@ -30,71 +83,43 @@ function LockIconOverlay({ displayScale }: { displayScale: number }) {
 
     if (!activePage) return null;
 
-    const lockedElements = activePage.elements.filter(el => el.locked);
+    // Only render the lock icon for the clicked locked element
+    const clickedElement = clickedLockedId
+        ? activePage.elements.find(el => el.id === clickedLockedId && el.locked)
+        : null;
 
-    if (lockedElements.length === 0) return null;
+    if (!clickedElement) return null;
+
+    const { x, y, width, height, scaleX, scaleY } = clickedElement.transform;
+    const elementWidth = width * Math.abs(scaleX || 1);
+    const elementHeight = height * Math.abs(scaleY || 1);
+    const elementLeft = (x - elementWidth / 2) * displayScale;
+    const elementTop = (y - elementHeight / 2) * displayScale;
+    const scaledWidth = elementWidth * displayScale;
+
+    // Lock icon position at top-right corner
+    const iconX = elementLeft + scaledWidth - 8;
+    const iconY = elementTop - 8;
 
     return (
-        <>
-            {lockedElements.map(element => {
-                const { x, y, width, height, scaleX, scaleY } = element.transform;
-
-                // Calculate element bounds (center-based origin)
-                const elementWidth = width * Math.abs(scaleX || 1);
-                const elementHeight = height * Math.abs(scaleY || 1);
-
-                // Element position (top-left corner)
-                const elementLeft = (x - elementWidth / 2) * displayScale;
-                const elementTop = (y - elementHeight / 2) * displayScale;
-                const scaledWidth = elementWidth * displayScale;
-                const scaledHeight = elementHeight * displayScale;
-
-                // Lock icon position at top-right corner
-                const iconX = elementLeft + scaledWidth - 8;
-                const iconY = elementTop - 8;
-
-                const isClicked = clickedLockedId === element.id;
-
-                return (
-                    <div key={`lock-area-${element.id}`}>
-                        {/* Invisible clickable area over locked element */}
-                        <div
-                            className="absolute cursor-pointer"
-                            style={{
-                                left: elementLeft,
-                                top: elementTop,
-                                width: scaledWidth,
-                                height: scaledHeight,
-                                zIndex: 999,
-                            }}
-                            onClick={() => setClickedLockedId(element.id)}
-                        />
-
-                        {/* Lock icon - only visible when this element is clicked */}
-                        {isClicked && (
-                            <div
-                                className="absolute cursor-pointer animate-in fade-in zoom-in duration-200"
-                                style={{
-                                    left: iconX,
-                                    top: iconY,
-                                    zIndex: 1001,
-                                }}
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    unlockElement(element.id);
-                                    setClickedLockedId(null);
-                                }}
-                                title="Click to unlock"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-all">
-                                    <Lock size={16} className="text-purple-600" />
-                                </div>
-                            </div>
-                        )}
-                    </div>
-                );
-            })}
-        </>
+        <div
+            className="absolute cursor-pointer animate-in fade-in zoom-in duration-200"
+            style={{
+                left: iconX,
+                top: iconY,
+                zIndex: 1001,
+            }}
+            onClick={(e) => {
+                e.stopPropagation();
+                unlockElement(clickedLockedId!);
+                setClickedLockedId(null);
+            }}
+            title="Click to unlock"
+        >
+            <div className="w-8 h-8 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-all">
+                <Lock size={16} className="text-purple-600" />
+            </div>
+        </div>
     );
 }
 
@@ -111,6 +136,7 @@ export function CanvasStage({ className }: CanvasStageProps) {
     const setZoom = useEditorStore((state) => state.setZoom);
     const fitTrigger = useEditorStore((state) => state.fitTrigger);
     const snapToGuides = useEditorStore((state) => state.snapToGuides);
+    const isExportModalOpen = useEditorStore((state) => state.isExportModalOpen);
     const select = useCanvasStore((state) => state.select);
     const deselect = useCanvasStore((state) => state.deselect);
 
@@ -269,16 +295,16 @@ export function CanvasStage({ className }: CanvasStageProps) {
                         rotation = options.angle;
                     }
 
-                    // For images, store visual size in width/height and keep scaleX/scaleY at 1
-                    // For text elements, preserve the scaleX/scaleY
-                    let newScaleX = el.transform.scaleX;
-                    let newScaleY = el.transform.scaleY;
+                    // Standardized update for ALL element types:
+                    // Always save BASE dimensions and Scale separately
+                    // This prevents double-scaling issues and ensures consistent rendering
+                    // newWidth/Height = unscaled dimensions (base)
+                    // newScaleX/Y = scale factor
 
-                    if (el.type !== 'text') {
-                        // For non-text elements, visual size IS the width/height
-                        newScaleX = 1;
-                        newScaleY = 1;
-                    }
+                    const newWidth = fabricObject.width || el.transform.width;
+                    const newHeight = fabricObject.height || el.transform.height;
+                    const newScaleX = fabricObject.scaleX || 1;
+                    const newScaleY = fabricObject.scaleY || 1;
 
                     // Base update for all element types
                     const baseUpdate = {
@@ -287,8 +313,8 @@ export function CanvasStage({ className }: CanvasStageProps) {
                             ...el.transform,
                             x,
                             y,
-                            width: fabricVisualWidth,
-                            height: fabricVisualHeight,
+                            width: newWidth,
+                            height: newHeight,
                             scaleX: newScaleX,
                             scaleY: newScaleY,
                             rotation,
@@ -366,6 +392,18 @@ export function CanvasStage({ className }: CanvasStageProps) {
             setWorkingScaleState(fabricCanvas.getWorkingScale());
         });
     }, [activePage?.id, activePage?.width, activePage?.height, isInitialized]);
+
+    // Re-sync canvas state when export modal closes
+    // Export modal calls loadPage independently, so we need to refresh our state after it closes
+    useEffect(() => {
+        if (!isInitialized || !activePage || isExportModalOpen) return;
+
+        // When modal closes, reload the page to ensure canvas is in correct state
+        const fabricCanvas = getFabricCanvas();
+        fabricCanvas.loadPage(activePage).then(() => {
+            setWorkingScaleState(fabricCanvas.getWorkingScale());
+        });
+    }, [isExportModalOpen]); // eslint-disable-line react-hooks/exhaustive-deps
 
     // Update background immediately when it changes (for real-time gradient updates)
     useEffect(() => {

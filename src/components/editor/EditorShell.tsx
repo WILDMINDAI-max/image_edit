@@ -16,6 +16,7 @@ import { ImageEditPanel } from '@/components/sidebar/ImageEditPanel';
 import { TextEditPanel } from '@/components/sidebar/TextEditPanel';
 import { ShapeEditPanel } from '@/components/sidebar/ShapeEditPanel';
 import { StickerEditPanel } from '@/components/sidebar/StickerEditPanel';
+import { GroupEditPanel } from '@/components/sidebar/GroupEditPanel';
 import { TextEffectsPanel } from '@/components/sidebar/TextEffectsPanel';
 import { FontsPanel } from '@/components/sidebar/FontsPanel';
 import { FilterPanel } from '@/components/sidebar/FilterPanel';
@@ -323,6 +324,8 @@ export function EditorShell() {
                             <ShapeEditPanel />
                         ) : selectedElementType === 'sticker' ? (
                             <StickerEditPanel />
+                        ) : selectedElementType === 'group' ? (
+                            <GroupEditPanel />
                         ) : (
                             <ImageEditPanel />
                         )}
