@@ -1,5 +1,26 @@
 import type { Metadata } from "next";
-import { Poppins, Playfair_Display, Montserrat, Oswald, Dancing_Script, Bebas_Neue, Caveat } from "next/font/google";
+import {
+  Poppins,
+  Playfair_Display,
+  Montserrat,
+  Oswald,
+  Dancing_Script,
+  Bebas_Neue,
+  Caveat,
+  Lobster,
+  Pacifico,
+  Permanent_Marker,
+  Satisfy,
+  Great_Vibes,
+  Sacramento,
+  Abril_Fatface,
+  Righteous,
+  Russo_One,
+  Bangers,
+  Fredoka,
+  Alfa_Slab_One,
+  Archivo_Black,
+} from "next/font/google";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -8,7 +29,6 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-// Elegant serif for certificates and formal text
 const playfairDisplay = Playfair_Display({
   variable: "--font-playfair",
   subsets: ["latin"],
@@ -16,39 +36,113 @@ const playfairDisplay = Playfair_Display({
   style: ["normal", "italic"],
 });
 
-// Modern sans-serif for versatile use
 const montserrat = Montserrat({
   variable: "--font-montserrat",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
 });
 
-// Condensed display font for bold headlines
 const oswald = Oswald({
   variable: "--font-oswald",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
 });
 
-// Handwritten/script font for elegant accents
 const dancingScript = Dancing_Script({
   variable: "--font-dancing",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
 });
 
-// Bold display font for impactful text
 const bebasNeue = Bebas_Neue({
   variable: "--font-bebas",
   subsets: ["latin"],
   weight: "400",
 });
 
-// Casual handwritten font
 const caveat = Caveat({
   variable: "--font-caveat",
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
+});
+
+// New stylish fonts
+const lobster = Lobster({
+  variable: "--font-lobster",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const pacifico = Pacifico({
+  variable: "--font-pacifico",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const permanentMarker = Permanent_Marker({
+  variable: "--font-permanent-marker",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const satisfy = Satisfy({
+  variable: "--font-satisfy",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const greatVibes = Great_Vibes({
+  variable: "--font-great-vibes",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const sacramento = Sacramento({
+  variable: "--font-sacramento",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const abrilFatface = Abril_Fatface({
+  variable: "--font-abril",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const righteous = Righteous({
+  variable: "--font-righteous",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const russoOne = Russo_One({
+  variable: "--font-russo",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const bangers = Bangers({
+  variable: "--font-bangers",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+});
+
+const alfaSlabOne = Alfa_Slab_One({
+  variable: "--font-alfa-slab",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const archivoBlack = Archivo_Black({
+  variable: "--font-archivo-black",
+  subsets: ["latin"],
+  weight: "400",
 });
 
 export const metadata: Metadata = {
@@ -72,6 +166,19 @@ export default function RootLayout({
           ${dancingScript.variable}
           ${bebasNeue.variable}
           ${caveat.variable}
+          ${lobster.variable}
+          ${pacifico.variable}
+          ${permanentMarker.variable}
+          ${satisfy.variable}
+          ${greatVibes.variable}
+          ${sacramento.variable}
+          ${abrilFatface.variable}
+          ${righteous.variable}
+          ${russoOne.variable}
+          ${bangers.variable}
+          ${fredoka.variable}
+          ${alfaSlabOne.variable}
+          ${archivoBlack.variable}
           antialiased
         `}
         suppressHydrationWarning
