@@ -1915,6 +1915,8 @@ export class FabricCanvas {
             left: element.transform.x,
             top: element.transform.y,
             width: element.transform.width || 300,
+            scaleX: element.transform.scaleX || 1,
+            scaleY: element.transform.scaleY || 1,
             fontFamily: element.textStyle.fontFamily,
             fontSize: element.textStyle.fontSize,
             fontWeight: element.textStyle.fontWeight as number,
@@ -1928,6 +1930,7 @@ export class FabricCanvas {
             data: { id: element.id, type: 'text' },
         });
     }
+
 
     /**
      * Create an image object without adding to canvas

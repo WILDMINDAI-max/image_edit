@@ -905,6 +905,213 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
+    // ================== NEW STYLISH TEMPLATES ==================
+    // Tech Startup Pitch Template
+    {
+        id: 'tech-startup-pitch',
+        name: 'Tech Startup Pitch',
+        category: 'Business',
+        width: 1920,
+        height: 1080,
+        background: {
+            type: 'gradient',
+            gradientType: 'linear',
+            angle: 45,
+            colorStops: [
+                { offset: 0, color: '#667EEA' },
+                { offset: 1, color: '#764BA2' }
+            ]
+        },
+        elements: [
+            // Abstract shapes decoration
+            {
+                type: 'shape',
+                name: 'Abstract Circle 1',
+                shapeType: 'circle',
+                transform: { x: 1700, y: 200, width: 300, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Abstract Circle 2',
+                shapeType: 'circle',
+                transform: { x: 200, y: 850, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.08 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Company Name
+            {
+                type: 'text',
+                name: 'Company',
+                content: 'NEXAFLOW',
+                transform: { x: 540, y: 280, width: 700, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 72, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 5, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Tagline
+            {
+                type: 'text',
+                name: 'Tagline',
+                content: 'AI-Powered Workflow Automation',
+                transform: { x: 440, y: 370, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.9 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 300, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Key Stats Box 1
+            {
+                type: 'shape',
+                name: 'Stat Box 1',
+                shapeType: 'rectangle',
+                transform: { x: 280, y: 600, width: 280, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.15 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Stat 1 Number',
+                content: '$50M+',
+                transform: { x: 280, y: 570, width: 240, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Stat 1 Label',
+                content: 'Total Funding',
+                transform: { x: 280, y: 630, width: 200, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.8 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+            // Key Stats Box 2
+            {
+                type: 'shape',
+                name: 'Stat Box 2',
+                shapeType: 'rectangle',
+                transform: { x: 600, y: 600, width: 280, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.15 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Stat 2 Number',
+                content: '500K+',
+                transform: { x: 600, y: 570, width: 240, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 14,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Stat 2 Label',
+                content: 'Active Users',
+                transform: { x: 600, y: 630, width: 200, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.8 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+            // Right side - Dashboard placeholder
+            {
+                type: 'shape',
+                name: 'Dashboard Preview',
+                shapeType: 'rectangle',
+                transform: { x: 1400, y: 540, width: 800, height: 600, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Dashboard Label',
+                content: 'Dashboard Preview',
+                transform: { x: 1400, y: 540, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.5 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+            // Footer
+            {
+                type: 'text',
+                name: 'Website',
+                content: 'nexaflow.io',
+                transform: { x: 280, y: 950, width: 200, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.8 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+        ],
+    },
+    // Lifestyle Quote Template
+    {
+        id: 'lifestyle-quote',
+        name: 'Lifestyle Quote',
+        category: 'Social Media',
+        width: 1080,
+        height: 1080,
+        background: {
+            type: 'gradient',
+            gradientType: 'radial',
+            radialPosition: 'center',
+            colorStops: [
+                { offset: 0, color: '#FED9B7' },
+                { offset: 1, color: '#F07167' }
+            ]
+        },
+        elements: [
+            // Decorative quotation mark
+            {
+                type: 'text',
+                name: 'Quote Mark',
+                content: '"',
+                transform: { x: 200, y: 300, width: 300, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.2 },
+                textStyle: { fontFamily: 'Georgia', fontSize: 400, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 1,
+            } as Partial<TextElement>,
+            // Main Quote
+            {
+                type: 'text',
+                name: 'Quote',
+                content: 'The only way to do great work is to love what you do.',
+                transform: { x: 540, y: 480, width: 800, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 52, fontWeight: 600, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Divider
+            {
+                type: 'shape',
+                name: 'Divider',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 620, width: 100, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            // Author
+            {
+                type: 'text',
+                name: 'Author',
+                content: '— Steve Jobs',
+                transform: { x: 540, y: 700, width: 400, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.9 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Hashtag
+            {
+                type: 'text',
+                name: 'Hashtag',
+                content: '#motivation #inspiration',
+                transform: { x: 540, y: 950, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.7 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+        ],
+    },
 ];
 
 export function TemplatesPanel() {
@@ -1341,6 +1548,43 @@ export function TemplatesPanel() {
                                                 <div className="absolute right-1 bottom-1 bg-[#C4AD1E] px-1 py-0.5">
                                                     <p className="text-white text-[3px]">WATCH & SUBSCRIBE</p>
                                                 </div>
+                                            </div>
+                                        ) : template.id === 'tech-startup-pitch' ? (
+                                            // Tech Startup Pitch Preview
+                                            <div className="flex-1 relative overflow-hidden" style={{ background: 'linear-gradient(45deg, #667EEA, #764BA2)' }}>
+                                                {/* Decorative circles */}
+                                                <div className="absolute right-1 top-1 w-4 h-4 rounded-full bg-white/10"></div>
+                                                <div className="absolute left-1 bottom-1 w-5 h-5 rounded-full bg-white/10"></div>
+                                                {/* Content */}
+                                                <div className="absolute left-1.5 top-2">
+                                                    <p className="text-white text-[10px] font-bold tracking-wide">NEXAFLOW</p>
+                                                    <p className="text-white/80 text-[4px] mt-0.5">AI-Powered Workflow</p>
+                                                </div>
+                                                {/* Stats boxes */}
+                                                <div className="absolute left-1.5 bottom-3 flex gap-1">
+                                                    <div className="bg-white/15 rounded px-1 py-0.5">
+                                                        <p className="text-white text-[6px] font-bold">$50M+</p>
+                                                        <p className="text-white/70 text-[3px]">Funding</p>
+                                                    </div>
+                                                    <div className="bg-white/15 rounded px-1 py-0.5">
+                                                        <p className="text-white text-[6px] font-bold">500K+</p>
+                                                        <p className="text-white/70 text-[3px]">Users</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'lifestyle-quote' ? (
+                                            // Lifestyle Quote Preview
+                                            <div className="flex-1 relative overflow-hidden flex items-center justify-center" style={{ background: 'radial-gradient(circle at center, #FED9B7, #F07167)' }}>
+                                                {/* Decorative quote mark */}
+                                                <div className="absolute left-1 top-0 text-white/20 text-[28px] font-serif leading-none">"</div>
+                                                {/* Quote content */}
+                                                <div className="flex flex-col items-center px-2 mt-2">
+                                                    <p className="text-white text-[5px] italic text-center leading-tight font-serif">The only way to do great work is to love what you do.</p>
+                                                    <div className="w-4 h-[1px] bg-white/60 my-1"></div>
+                                                    <p className="text-white/80 text-[4px]">— Steve Jobs</p>
+                                                </div>
+                                                {/* Hashtags */}
+                                                <p className="absolute bottom-1 text-white/60 text-[3px]">#motivation</p>
                                             </div>
                                         ) : (
                                             // Generic fallback preview

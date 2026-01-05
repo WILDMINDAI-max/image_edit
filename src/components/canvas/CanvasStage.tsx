@@ -286,13 +286,17 @@ export function CanvasStage({ className }: CanvasStageProps) {
                     let y = fabricObject.top ?? el.transform.y;
                     let rotation = fabricObject.angle ?? el.transform.rotation;
 
-                    // If object is in a group (ActiveSelection), calculate absolute coordinates
+                    // If object is in a group (ActiveSelection), calculate absolute coordinates and scale
+                    // The group's transform compounds on top of individual transforms, so we must decompose
+                    let decomposedScale: { scaleX: number; scaleY: number } | null = null;
                     if (fabricObject.group) {
                         const matrix = fabricObject.calcTransformMatrix();
                         const options = fabric.util.qrDecompose(matrix);
                         x = options.translateX;
                         y = options.translateY;
                         rotation = options.angle;
+                        // Extract scale from decomposed matrix (includes group's compound scaling)
+                        decomposedScale = { scaleX: options.scaleX, scaleY: options.scaleY };
                     }
 
                     // Standardized update for ALL element types:
@@ -303,8 +307,9 @@ export function CanvasStage({ className }: CanvasStageProps) {
 
                     const newWidth = fabricObject.width || el.transform.width;
                     const newHeight = fabricObject.height || el.transform.height;
-                    const newScaleX = fabricObject.scaleX || 1;
-                    const newScaleY = fabricObject.scaleY || 1;
+                    // Use decomposed scale if in group, otherwise use object's direct scale
+                    const newScaleX = decomposedScale ? decomposedScale.scaleX : (fabricObject.scaleX || 1);
+                    const newScaleY = decomposedScale ? decomposedScale.scaleY : (fabricObject.scaleY || 1);
 
                     // Base update for all element types
                     const baseUpdate = {
