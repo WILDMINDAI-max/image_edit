@@ -19,8 +19,10 @@ import { NATURAL_FILTERS, applyNaturalFilter, getNaturalFilter } from '@/utils/n
 import { WARM_FILTERS, applyWarmFilter, getWarmFilter } from '@/utils/warmFilters';
 import { COOL_FILTERS, applyCoolFilter, getCoolFilter } from '@/utils/coolFilters';
 import { VIVID_FILTERS, applyVividFilter, getVividFilter } from '@/utils/vividFilters';
+// LUT filters use simple adjustment values, no separate import needed
 import { applyImageAdjustments, hasActiveAdjustments } from '@/utils/imageAdjustments';
-import { X, RotateCcw } from 'lucide-react';
+import { readCubeFile, applyCustomLUT, ParsedLUT } from '@/utils/cubeLutParser';
+import { X, RotateCcw, Upload } from 'lucide-react';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { fabric } from 'fabric';
 
@@ -33,10 +35,12 @@ export function FilterPanel() {
     const [activeCategory, setActiveCategory] = useState<string>('natural');
     const [isProcessing, setIsProcessing] = useState(false);
     const [filterPreviews, setFilterPreviews] = useState<Record<string, string>>({});
+    const [customLUT, setCustomLUT] = useState<{ name: string; lut: ParsedLUT } | null>(null);
 
     // Debounce timer for smooth slider adjustments
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const isSliderDraggingRef = useRef(false);
+    const lutInputRef = useRef<HTMLInputElement>(null);
 
     // Get selected image element
     const imageElement = useMemo(() => {
@@ -141,6 +145,19 @@ export function FilterPanel() {
                             data[i] = Math.min(255, gray + (data[i] - gray) * 1.8);
                             data[i + 1] = Math.min(255, gray + (data[i + 1] - gray) * 1.8);
                             data[i + 2] = Math.min(255, gray + (data[i + 2] - gray) * 1.8);
+                        }
+                    } else if (activeCategory === 'lut') {
+                        // Cinematic teal-orange look
+                        for (let i = 0; i < data.length; i += 4) {
+                            const lum = (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) / 255;
+                            // Shadows get teal, highlights get orange
+                            if (lum < 0.5) {
+                                data[i] = Math.max(0, data[i] - 15);
+                                data[i + 2] = Math.min(255, data[i + 2] + 20);
+                            } else {
+                                data[i] = Math.min(255, data[i] + 20);
+                                data[i + 2] = Math.max(0, data[i + 2] - 10);
+                            }
                         }
                     }
 
@@ -614,6 +631,18 @@ export function FilterPanel() {
             return;
         }
 
+        // Check for LUT preset - LUTs use simple adjustment values
+        if (preset.category === 'lut') {
+            // Just apply the preset values like other filters
+            const newFilters = {
+                ...createResetFilters(),
+                ...preset.values,
+                filterPreset: presetId,
+            };
+            applyFilters(newFilters);
+            return;
+        }
+
         // Fallback for any other filters
         const newFilters = {
             ...createResetFilters(),
@@ -880,7 +909,30 @@ export function FilterPanel() {
             <div className="flex-1 overflow-y-auto custom-scrollbar">
                 {/* Filter Presets Section */}
                 <div className="p-4">
-                    <h3 className="text-sm font-medium text-gray-700 mb-3">Presets</h3>
+                    <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-sm font-medium text-gray-700">Presets</h3>
+                        <button
+                            onClick={() => lutInputRef.current?.click()}
+                            disabled={isProcessing || !imageElement}
+                            title="Add Custom LUT"
+                            className="w-5 h-5 flex items-center justify-center rounded hover:bg-green-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                            <svg
+                                width="14"
+                                height="14"
+                                viewBox="0 0 14 14"
+                                fill="none"
+                                className="text-green-500"
+                            >
+                                <path
+                                    d="M7 1v12M1 7h12"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                />
+                            </svg>
+                        </button>
+                    </div>
 
                     {/* Category Tabs */}
                     <div className="flex flex-wrap gap-1.5 mb-4">
@@ -943,10 +995,122 @@ export function FilterPanel() {
                                         <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300" />
                                     )}
                                 </div>
-                                <span className="text-xs font-medium text-gray-700">{preset.name}</span>
+                                <span className="text-xs font-medium text-gray-700 truncate block">{preset.name}</span>
                             </button>
                         ))}
                     </div>
+
+                    {/* Add Custom LUT Button - Only shown for Cinematic (lut) category */}
+                    {activeCategory === 'lut' && (
+                        <div className="mt-4">
+                            <input
+                                type="file"
+                                ref={lutInputRef}
+                                accept=".cube,.3dl"
+                                className="hidden"
+                                onChange={async (e) => {
+                                    const file = e.target.files?.[0];
+                                    if (!file || !imageElement) return;
+
+                                    setIsProcessing(true);
+
+                                    try {
+                                        // Parse the .cube file
+                                        const lut = await readCubeFile(file);
+                                        if (!lut) {
+                                            alert('Failed to parse LUT file. Please ensure it is a valid .cube file.');
+                                            setIsProcessing(false);
+                                            return;
+                                        }
+
+                                        // Store the custom LUT
+                                        setCustomLUT({ name: file.name.replace(/\.[^/.]+$/, ''), lut });
+
+                                        // Apply LUT to image
+                                        const originalSrc = imageElement.originalSrc || imageElement.src;
+                                        const img = new Image();
+                                        img.crossOrigin = 'anonymous';
+
+                                        img.onload = async () => {
+                                            try {
+                                                const newSrc = await applyCustomLUT(img, lut);
+
+                                                // Update element
+                                                updateElement(imageElement.id, {
+                                                    src: newSrc,
+                                                    filters: {
+                                                        ...createResetFilters(),
+                                                        filterPreset: 'custom-lut',
+                                                    },
+                                                });
+
+                                                // Update Fabric.js canvas
+                                                const fabricCanvas = getFabricCanvas();
+                                                const fabricObj = fabricCanvas.getObjectById(imageElement.id) as any;
+
+                                                if (fabricObj) {
+                                                    const canvas = fabricCanvas.getCanvas();
+                                                    if (canvas) {
+                                                        fabric.Image.fromURL(newSrc, (newImg) => {
+                                                            newImg.set({
+                                                                left: fabricObj.left,
+                                                                top: fabricObj.top,
+                                                                scaleX: fabricObj.scaleX,
+                                                                scaleY: fabricObj.scaleY,
+                                                                angle: fabricObj.angle,
+                                                                originX: fabricObj.originX,
+                                                                originY: fabricObj.originY,
+                                                                opacity: fabricObj.opacity,
+                                                                data: { id: imageElement.id, type: 'image' },
+                                                            });
+
+                                                            canvas.remove(fabricObj);
+                                                            canvas.add(newImg);
+                                                            fabricCanvas.setObjectById(imageElement.id, newImg);
+                                                            canvas.setActiveObject(newImg);
+                                                            canvas.renderAll();
+
+                                                            setIsProcessing(false);
+                                                        }, { crossOrigin: 'anonymous' });
+                                                    } else {
+                                                        setIsProcessing(false);
+                                                    }
+                                                } else {
+                                                    setIsProcessing(false);
+                                                }
+                                            } catch (error) {
+                                                console.error('Failed to apply LUT:', error);
+                                                setIsProcessing(false);
+                                            }
+                                        };
+
+                                        img.onerror = () => {
+                                            console.error('Failed to load image for LUT application');
+                                            setIsProcessing(false);
+                                        };
+
+                                        img.src = originalSrc;
+                                    } catch (error) {
+                                        console.error('Error applying custom LUT:', error);
+                                        setIsProcessing(false);
+                                    }
+
+                                    // Reset file input
+                                    if (lutInputRef.current) {
+                                        lutInputRef.current.value = '';
+                                    }
+                                }}
+                            />
+
+                            {customLUT && (
+                                <div className="mt-2 px-3 py-2 bg-purple-50 rounded-lg border border-purple-200">
+                                    <p className="text-xs text-purple-700">
+                                        <span className="font-medium">Active LUT:</span> {customLUT.name}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 {/* Divider */}

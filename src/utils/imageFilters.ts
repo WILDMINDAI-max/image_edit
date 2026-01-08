@@ -10,7 +10,7 @@ import { ImageFilter } from '@/types/canvas';
 export interface FilterPreset {
     id: string;
     name: string;
-    category: 'natural' | 'warm' | 'cool' | 'vivid' | 'soft' | 'vintage' | 'mono' | 'colorpop';
+    category: 'natural' | 'warm' | 'cool' | 'vivid' | 'soft' | 'vintage' | 'mono' | 'colorpop' | 'lut';
     values: Partial<ImageFilter>;
 }
 
@@ -81,6 +81,20 @@ export const FILTER_PRESETS: FilterPreset[] = [
     { id: 'poster', name: 'Graphic', category: 'colorpop', values: { contrast: 50, saturation: 30, clarity: 30 } },
     { id: 'xpro-', name: 'X-Dark', category: 'colorpop', values: { temperature: -15, contrast: 25, blacks: 20, saturation: -10 } },
     { id: 'xpro+', name: 'X-Light', category: 'colorpop', values: { temperature: 25, contrast: 30, saturation: 20, vibrance: 25 } },
+
+    // LUT (Cinematic) - Professional color grading presets (12 presets)
+    { id: 'lut-natural', name: 'Natural', category: 'lut', values: { brightness: 5, contrast: 5, vibrance: 10, saturation: 5, clarity: 10 } },
+    { id: 'lut-bright', name: 'Bright', category: 'lut', values: { brightness: 20, contrast: -5, highlights: 15, vibrance: 15, saturation: 10 } },
+    { id: 'lut-cinematic', name: 'Cinematic', category: 'lut', values: { temperature: -5, brightness: -5, contrast: 30, saturation: -10, clarity: 20, vignette: 25 } },
+    { id: 'lut-teal-orange', name: 'Teal Orange', category: 'lut', values: { temperature: 15, tint: -10, contrast: 20, vibrance: 20, saturation: 15, vignette: 15 } },
+    { id: 'lut-vibrant', name: 'Vibrant', category: 'lut', values: { brightness: 5, contrast: 15, vibrance: 35, saturation: 25, clarity: 20 } },
+    { id: 'lut-matte', name: 'Matte', category: 'lut', values: { temperature: 10, brightness: 10, contrast: -15, saturation: -15, blacks: 25 } },
+    { id: 'lut-warm', name: 'Warm', category: 'lut', values: { temperature: 35, tint: 5, brightness: 5, contrast: 10, vibrance: 15 } },
+    { id: 'lut-cool', name: 'Cool', category: 'lut', values: { temperature: -30, contrast: 15, vibrance: 10, clarity: 15, vignette: 10 } },
+    { id: 'lut-vintage', name: 'Vintage', category: 'lut', values: { temperature: 20, contrast: -5, saturation: -20, vignette: 20, blacks: 20 } },
+    { id: 'lut-moody', name: 'Moody', category: 'lut', values: { temperature: -10, brightness: -15, contrast: 25, saturation: -10, clarity: 25, vignette: 35 } },
+    { id: 'lut-bw', name: 'B&W', category: 'lut', values: { brightness: 5, contrast: 20, saturation: -100, clarity: 15, vignette: 15, grayscale: true } },
+    { id: 'lut-hdr', name: 'HDR', category: 'lut', values: { contrast: 25, highlights: -20, vibrance: 30, saturation: 20, clarity: 40, sharpness: 15 } },
 ];
 
 // Category names for display
@@ -93,6 +107,7 @@ export const FILTER_CATEGORIES = [
     { id: 'vintage', name: 'Film' },
     { id: 'mono', name: 'B&W' },
     { id: 'colorpop', name: 'Neon' },
+    { id: 'lut', name: 'Cinematic' },
 ] as const;
 
 /**

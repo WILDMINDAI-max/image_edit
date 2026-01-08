@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useActivePage } from '@/store/editorStore';
-import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Trash2, Layers, LayoutGrid, Palette } from 'lucide-react';
+import { Eye, EyeOff, Lock, Unlock, ChevronUp, ChevronDown, Trash2, Layers, LayoutGrid, Palette, Group, Copy } from 'lucide-react';
 import { CanvasElement, BlendMode } from '@/types/canvas';
 import { PageBackground } from '@/types/project';
 import { BlendModeSelector } from './BlendModeSelector';
@@ -69,6 +69,8 @@ export function LayersPanel() {
     const sendBackward = useCanvasStore((state) => state.sendBackward);
     const removeElement = useCanvasStore((state) => state.removeElement);
     const updateBlendMode = useCanvasStore((state) => state.updateBlendMode);
+    const groupElements = useCanvasStore((state) => state.groupElements);
+    const duplicateElements = useCanvasStore((state) => state.duplicateElements);
 
     // ... (keep existing filtering/sorting logic items 68-87)
 
@@ -229,7 +231,12 @@ export function LayersPanel() {
         return (
             <div
                 key={element.id}
-                onClick={() => !isEditing && select(element.id)}
+                onClick={(e) => {
+                    if (isEditing) return;
+                    // Ctrl/Cmd+Click adds to selection, normal click replaces selection
+                    const addToSelection = e.ctrlKey || e.metaKey;
+                    select(element.id, addToSelection);
+                }}
                 className={`
                     group relative flex items-center gap-3 p-2.5 rounded-xl cursor-pointer
                     transition-all duration-150 border
@@ -411,68 +418,117 @@ export function LayersPanel() {
 
             {/* Footer Actions - Expanded */}
             {selectedIds.length > 0 && (() => {
-                const selectedElement = sortedElements.find(el => el.id === selectedIds[0]);
-                if (!selectedElement) return null;
+                // Get all selected elements
+                const selectedElements = sortedElements.filter(el => selectedIds.includes(el.id));
+                if (selectedElements.length === 0) return null;
 
-                const selectedIndex = sortedElements.findIndex(el => el.id === selectedIds[0]);
-                const isAtTop = selectedIndex === 0;
-                const isAtBottom = selectedIndex === sortedElements.length - 1;
+                // For single selection, check position for reorder buttons
+                const isSingleSelection = selectedIds.length === 1;
+                const selectedIndex = isSingleSelection ? sortedElements.findIndex(el => el.id === selectedIds[0]) : -1;
+                const isAtTop = isSingleSelection && selectedIndex === 0;
+                const isAtBottom = isSingleSelection && selectedIndex === sortedElements.length - 1;
+
+                // Check if all selected elements share visibility/lock state
+                const allVisible = selectedElements.every(el => el.visible);
+                const allHidden = selectedElements.every(el => !el.visible);
+                const allLocked = selectedElements.every(el => el.locked);
+                const allUnlocked = selectedElements.every(el => !el.locked);
 
                 return (
                     <div className="p-3 bg-white border-t border-gray-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
-                        <div className="flex items-center justify-between gap-2">
+                        {/* Selection count indicator */}
+                        {selectedIds.length > 1 && (
+                            <div className="mb-2 text-center">
+                                <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-1 rounded-full">
+                                    {selectedIds.length} items selected
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between gap-1">
                             {/* Visibility & Lock Group */}
-                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                            <div className="flex items-center gap-0.5 bg-gray-50 p-0.5 rounded-lg border border-gray-100">
                                 <button
-                                    onClick={() => toggleVisibility(selectedElement.id)}
-                                    className={`p-2 rounded-md transition-all ${!selectedElement.visible
+                                    onClick={() => {
+                                        // Toggle visibility for all selected elements
+                                        selectedIds.forEach(id => toggleVisibility(id));
+                                    }}
+                                    className={`p-1.5 rounded-md transition-all ${allHidden
                                         ? 'bg-gray-200 text-gray-600'
                                         : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-400'}`}
-                                    title={selectedElement.visible ? "Hide Layer" : "Show Layer"}
+                                    title={allVisible ? "Hide All Selected" : "Show All Selected"}
                                 >
-                                    {selectedElement.visible ? <Eye size={16} /> : <EyeOff size={16} />}
+                                    {allVisible ? <Eye size={14} /> : <EyeOff size={14} />}
                                 </button>
-                                <div className="w-px h-4 bg-gray-200 mx-0.5" />
+                                <div className="w-px h-3 bg-gray-200" />
                                 <button
-                                    onClick={() => selectedElement.locked ? unlockElement(selectedElement.id) : lockElement(selectedElement.id)}
-                                    className={`p-2 rounded-md transition-all ${selectedElement.locked
+                                    onClick={() => {
+                                        // Toggle lock for all selected elements
+                                        if (allLocked) {
+                                            selectedIds.forEach(id => unlockElement(id));
+                                        } else {
+                                            selectedIds.forEach(id => lockElement(id));
+                                        }
+                                    }}
+                                    className={`p-1.5 rounded-md transition-all ${allLocked
                                         ? 'bg-amber-100 text-amber-600'
                                         : 'hover:bg-white hover:text-amber-600 hover:shadow-sm text-gray-400'}`}
-                                    title={selectedElement.locked ? "Unlock Layer" : "Lock Layer"}
+                                    title={allLocked ? "Unlock All Selected" : "Lock All Selected"}
                                 >
-                                    {selectedElement.locked ? <Lock size={16} /> : <Unlock size={16} />}
+                                    {allLocked ? <Lock size={14} /> : <Unlock size={14} />}
                                 </button>
                             </div>
 
-                            {/* Reorder & Delete Group */}
-                            <div className="flex items-center gap-1 bg-gray-50 p-1 rounded-lg border border-gray-100">
+                            {/* Reorder, Group, Duplicate & Delete Group */}
+                            <div className="flex items-center gap-0.5 bg-gray-50 p-0.5 rounded-lg border border-gray-100">
                                 <button
-                                    onClick={() => bringForward(selectedElement.id)}
-                                    disabled={isAtTop}
-                                    className={`p-2 rounded-md transition-all ${isAtTop
+                                    onClick={() => {
+                                        if (isSingleSelection) bringForward(selectedIds[0]);
+                                    }}
+                                    disabled={!isSingleSelection || isAtTop}
+                                    className={`p-1.5 rounded-md transition-all ${!isSingleSelection || isAtTop
                                         ? 'text-gray-300 cursor-not-allowed'
                                         : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-500'}`}
-                                    title="Bring Forward"
+                                    title={isSingleSelection ? "Bring Forward" : "Select single item to reorder"}
                                 >
-                                    <ChevronUp size={16} />
+                                    <ChevronUp size={14} />
                                 </button>
                                 <button
-                                    onClick={() => sendBackward(selectedElement.id)}
-                                    disabled={isAtBottom}
-                                    className={`p-2 rounded-md transition-all ${isAtBottom
+                                    onClick={() => {
+                                        if (isSingleSelection) sendBackward(selectedIds[0]);
+                                    }}
+                                    disabled={!isSingleSelection || isAtBottom}
+                                    className={`p-1.5 rounded-md transition-all ${!isSingleSelection || isAtBottom
                                         ? 'text-gray-300 cursor-not-allowed'
                                         : 'hover:bg-white hover:text-blue-600 hover:shadow-sm text-gray-500'}`}
-                                    title="Send Backward"
+                                    title={isSingleSelection ? "Send Backward" : "Select single item to reorder"}
                                 >
-                                    <ChevronDown size={16} />
+                                    <ChevronDown size={14} />
                                 </button>
-                                <div className="w-px h-4 bg-gray-200 mx-0.5" />
+                                <div className="w-px h-3 bg-gray-200" />
                                 <button
-                                    onClick={() => removeElement([selectedElement.id])}
-                                    className="p-2 rounded-md hover:bg-red-50 hover:text-red-600 hover:shadow-sm text-gray-400 transition-all"
-                                    title="Delete Layer"
+                                    onClick={() => groupElements(selectedIds)}
+                                    disabled={selectedIds.length < 2}
+                                    className={`p-1.5 rounded-md transition-all ${selectedIds.length < 2
+                                        ? 'text-gray-300 cursor-not-allowed'
+                                        : 'hover:bg-white hover:text-purple-600 hover:shadow-sm text-gray-500'}`}
+                                    title={selectedIds.length < 2 ? "Select 2+ items to group" : "Group Selected"}
                                 >
-                                    <Trash2 size={16} />
+                                    <Group size={14} />
+                                </button>
+                                <button
+                                    onClick={() => duplicateElements(selectedIds)}
+                                    className="p-1.5 rounded-md hover:bg-white hover:text-green-600 hover:shadow-sm text-gray-400 transition-all"
+                                    title={`Duplicate ${selectedIds.length > 1 ? 'All Selected' : 'Layer'}`}
+                                >
+                                    <Copy size={14} />
+                                </button>
+                                <div className="w-px h-3 bg-gray-200" />
+                                <button
+                                    onClick={() => removeElement(selectedIds)}
+                                    className="p-1.5 rounded-md hover:bg-red-50 hover:text-red-600 hover:shadow-sm text-gray-400 transition-all"
+                                    title={`Delete ${selectedIds.length > 1 ? 'All Selected' : 'Layer'}`}
+                                >
+                                    <Trash2 size={14} />
                                 </button>
                             </div>
                         </div>

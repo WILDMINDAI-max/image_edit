@@ -5,7 +5,7 @@ import { Search, Layout } from 'lucide-react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore } from '@/store/editorStore';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
-import { CanvasElement, TextElement, ShapeElement, ImageElement } from '@/types/canvas';
+import { CanvasElement, TextElement, ShapeElement, ImageElement, StickerElement, SVGElement as CanvasSVGElement } from '@/types/canvas';
 import { PageBackground } from '@/types/project';
 import { loadGoogleFont, GOOGLE_FONTS } from '@/services/googleFonts';
 
@@ -47,7 +47,7 @@ const TEMPLATES: TemplateData[] = [
                 content: 'PRICE LIST',
                 transform: { x: 540, y: 80, width: 400, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 42, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 10,
             } as Partial<TextElement>,
             // Subtitle
@@ -219,533 +219,658 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<ShapeElement>,
         ],
     },
-    // Pricing Table Template (converted from Elementor)
+    // Pricing Table Template - Modern Dark Theme
     {
         id: 'pricing-table-1',
         name: 'Pricing Table',
         category: 'Business',
         width: 1200,
         height: 800,
-        background: { type: 'solid', color: '#FFFFFF' },
+        background: { type: 'solid', color: '#0F0F23' },
         elements: [
-            // === BASIC PLAN (Left Card) ===
-            // Card Background
+            // Main Background Accent Shape
             {
                 type: 'shape',
-                name: 'Basic Card BG',
+                name: 'BG Accent',
+                shapeType: 'circle',
+                transform: { x: 600, y: 400, width: 800, height: 800, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1A1A3E', stroke: null, strokeWidth: 0, opacity: 0.4 },
+                zIndex: 0,
+            } as Partial<ShapeElement>,
+
+            // === STARTER PLAN (Left Card) ===
+            // Card Background with glass effect
+            {
+                type: 'shape',
+                name: 'Starter Card BG',
                 shapeType: 'rectangle',
-                transform: { x: 220, y: 400, width: 320, height: 550, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#F3E8EE', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 220, y: 400, width: 300, height: 520, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E1E3F', stroke: '#3B82F6', strokeWidth: 2, opacity: 0.95 },
                 zIndex: 1,
             } as Partial<ShapeElement>,
-            // Basic Header
+            // Starter Header Accent
             {
                 type: 'shape',
-                name: 'Basic Header BG',
+                name: 'Starter Header Accent',
                 shapeType: 'rectangle',
-                transform: { x: 220, y: 190, width: 320, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#4ECDC4', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 220, y: 175, width: 300, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 2,
             } as Partial<ShapeElement>,
-            // Basic Title
+            // Starter Icon
             {
                 type: 'text',
-                name: 'Basic Title',
-                content: 'Basic',
-                transform: { x: 220, y: 190, width: 280, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Starter Icon',
+                content: '🚀',
+                transform: { x: 220, y: 210, width: 60, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 32, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                textStyle: { fontFamily: 'Inter', fontSize: 36, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 10,
             } as Partial<TextElement>,
-            // Basic Price
+            // Starter Title
             {
                 type: 'text',
-                name: 'Basic Price',
-                content: '$0/mo',
-                transform: { x: 220, y: 280, width: 280, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A535C', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 46, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Starter Title',
+                content: 'STARTER',
+                transform: { x: 220, y: 260, width: 260, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 11,
             } as Partial<TextElement>,
-            // Basic Description
+            // Starter Price
             {
                 type: 'text',
-                name: 'Basic Desc',
-                content: 'Suitable for beginners',
-                transform: { x: 220, y: 330, width: 280, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#666666', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Starter Price',
+                content: '$0/mo',
+                transform: { x: 220, y: 328, width: 160, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 44, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 12,
             } as Partial<TextElement>,
-            // Basic Features
+            // Starter Description
             {
                 type: 'text',
-                name: 'Basic Features',
-                content: '✓ 2 GB Storage\n✓ 10 Accounts\n✓ 50 GB Bandwidth\n✓ 24/7 Support',
-                transform: { x: 220, y: 440, width: 260, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 13,
-            } as Partial<TextElement>,
-            // Basic CTA Button BG
-            {
-                type: 'shape',
-                name: 'Basic CTA BG',
-                shapeType: 'rectangle',
-                transform: { x: 220, y: 580, width: 200, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#4ECDC4', stroke: null, strokeWidth: 0, opacity: 1 },
+                name: 'Starter Desc',
+                content: 'Perfect for getting started',
+                transform: { x: 220, y: 370, width: 260, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#9CA3AF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 14,
-            } as Partial<ShapeElement>,
-            // Basic CTA Text
+            } as Partial<TextElement>,
+            // Starter Divider
             {
-                type: 'text',
-                name: 'Basic CTA',
-                content: 'Choose Plan',
-                transform: { x: 220, y: 580, width: 180, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                type: 'shape',
+                name: 'Starter Divider',
+                shapeType: 'rectangle',
+                transform: { x: 220, y: 405, width: 240, height: 1, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#374151', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 15,
+            } as Partial<ShapeElement>,
+            // Starter Features
+            {
+                type: 'text',
+                name: 'Starter Features',
+                content: '✓ 2 GB Storage\n✓ 5 Projects\n✓ Basic Analytics\n✓ Email Support',
+                transform: { x: 220, y: 490, width: 240, height: 130, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D1D5DB', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 2.0, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+            // Starter CTA Button
+            {
+                type: 'shape',
+                name: 'Starter CTA BG',
+                shapeType: 'rectangle',
+                transform: { x: 220, y: 610, width: 220, height: 48, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: 'transparent', stroke: '#3B82F6', strokeWidth: 2, opacity: 1 },
+                zIndex: 17,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Starter CTA',
+                content: 'Get Started Free',
+                transform: { x: 220, y: 610, width: 200, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 18,
             } as Partial<TextElement>,
 
-            // === STANDARD PLAN (Center Card - Larger) ===
-            // Card Background
+            // === PRO PLAN (Center Card - Featured) ===
+            // Popular Badge
             {
                 type: 'shape',
-                name: 'Standard Card BG',
+                name: 'Pro Badge BG',
                 shapeType: 'rectangle',
-                transform: { x: 600, y: 400, width: 340, height: 620, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#F3E8EE', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 3,
+                transform: { x: 600, y: 57, width: 140, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#8B5CF6', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 5,
             } as Partial<ShapeElement>,
-            // Standard Header
-            {
-                type: 'shape',
-                name: 'Standard Header BG',
-                shapeType: 'rectangle',
-                transform: { x: 600, y: 160, width: 340, height: 110, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A535C', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 4,
-            } as Partial<ShapeElement>,
-            // Standard Title
             {
                 type: 'text',
-                name: 'Standard Title',
-                content: 'Standard',
-                transform: { x: 600, y: 160, width: 300, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Pro Badge Text',
+                content: 'MOST POPULAR',
+                transform: { x: 600, y: 57, width: 130, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 34, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 20,
+                textStyle: { fontFamily: 'Inter', fontSize: 11, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 6,
             } as Partial<TextElement>,
-            // Standard Price
-            {
-                type: 'text',
-                name: 'Standard Price',
-                content: '$49/mo',
-                transform: { x: 600, y: 260, width: 300, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A535C', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 48, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 21,
-            } as Partial<TextElement>,
-            // Standard Description
-            {
-                type: 'text',
-                name: 'Standard Desc',
-                content: 'Best for growing teams',
-                transform: { x: 600, y: 315, width: 300, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#666666', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 22,
-            } as Partial<TextElement>,
-            // Standard Features
-            {
-                type: 'text',
-                name: 'Standard Features',
-                content: '✓ 20 GB Storage\n✓ 50 Accounts\n✓ 200 GB Bandwidth\n✓ 24/7 Priority Support',
-                transform: { x: 600, y: 430, width: 280, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 23,
-            } as Partial<TextElement>,
-            // Standard CTA BG
+            // Pro Card Glow Effect
             {
                 type: 'shape',
-                name: 'Standard CTA BG',
+                name: 'Pro Card Glow',
                 shapeType: 'rectangle',
-                transform: { x: 600, y: 580, width: 220, height: 55, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A535C', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 24,
-            } as Partial<ShapeElement>,
-            // Standard CTA Text
-            {
-                type: 'text',
-                name: 'Standard CTA',
-                content: 'Choose Plan',
-                transform: { x: 600, y: 580, width: 200, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 20, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 25,
-            } as Partial<TextElement>,
-
-            // === PREMIUM PLAN (Right Card) ===
-            // Card Background
-            {
-                type: 'shape',
-                name: 'Premium Card BG',
-                shapeType: 'rectangle',
-                transform: { x: 980, y: 400, width: 320, height: 550, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#F3E8EE', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 1,
-            } as Partial<ShapeElement>,
-            // Premium Header
-            {
-                type: 'shape',
-                name: 'Premium Header BG',
-                shapeType: 'rectangle',
-                transform: { x: 980, y: 190, width: 320, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF6B6B', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 600, y: 408, width: 340, height: 600, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#8B5CF6', stroke: null, strokeWidth: 0, opacity: 0.15 },
                 zIndex: 2,
             } as Partial<ShapeElement>,
-            // Premium Title
-            {
-                type: 'text',
-                name: 'Premium Title',
-                content: 'Premium',
-                transform: { x: 980, y: 190, width: 280, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 32, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 30,
-            } as Partial<TextElement>,
-            // Premium Price
-            {
-                type: 'text',
-                name: 'Premium Price',
-                content: '$99/mo',
-                transform: { x: 980, y: 280, width: 280, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF6B6B', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 46, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 31,
-            } as Partial<TextElement>,
-            // Premium Description
-            {
-                type: 'text',
-                name: 'Premium Desc',
-                content: 'For enterprise teams',
-                transform: { x: 980, y: 330, width: 280, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#666666', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 32,
-            } as Partial<TextElement>,
-            // Premium Features
-            {
-                type: 'text',
-                name: 'Premium Features',
-                content: '✓ Unlimited Storage\n✓ Unlimited Accounts\n✓ Unlimited Bandwidth\n✓ Dedicated Support',
-                transform: { x: 980, y: 440, width: 260, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 33,
-            } as Partial<TextElement>,
-            // Premium CTA BG
+            // Pro Card Background
             {
                 type: 'shape',
-                name: 'Premium CTA BG',
+                name: 'Pro Card BG',
                 shapeType: 'rectangle',
-                transform: { x: 980, y: 580, width: 200, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF6B6B', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 34,
+                transform: { x: 600, y: 408, width: 320, height: 580, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E1E3F', stroke: '#8B5CF6', strokeWidth: 3, opacity: 1 },
+                zIndex: 3,
             } as Partial<ShapeElement>,
-            // Premium CTA Text
+            // Pro Header Gradient
+            {
+                type: 'shape',
+                name: 'Pro Header Accent',
+                shapeType: 'rectangle',
+                transform: { x: 600, y: 153, width: 320, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#A855F7', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Pro Icon
             {
                 type: 'text',
-                name: 'Premium CTA',
-                content: 'Choose Plan',
-                transform: { x: 980, y: 580, width: 180, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Pro Icon',
+                content: '⚡',
+                transform: { x: 600, y: 195, width: 60, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                textStyle: { fontFamily: 'Inter', fontSize: 40, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            // Pro Title
+            {
+                type: 'text',
+                name: 'Pro Title',
+                content: 'PROFESSIONAL',
+                transform: { x: 610, y: 248, width: 280, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            // Pro Price
+            {
+                type: 'text',
+                name: 'Pro Price',
+                content: '$49/mo',
+                transform: { x: 600, y: 328, width: 180, height: 65, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#A855F7', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 44, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 22,
+            } as Partial<TextElement>,
+            // Pro Description
+            {
+                type: 'text',
+                name: 'Pro Desc',
+                content: 'Best for growing teams',
+                transform: { x: 600, y: 365, width: 280, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#9CA3AF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 24,
+            } as Partial<TextElement>,
+            // Pro Divider
+            {
+                type: 'shape',
+                name: 'Pro Divider',
+                shapeType: 'rectangle',
+                transform: { x: 600, y: 400, width: 260, height: 1, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#374151', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 25,
+            } as Partial<ShapeElement>,
+            // Pro Features
+            {
+                type: 'text',
+                name: 'Pro Features',
+                content: '✓ 50 GB Storage\n✓ Unlimited Projects\n✓ Advanced Analytics\n✓ Priority Support\n✓ Team Collaboration',
+                transform: { x: 600, y: 505, width: 260, height: 160, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D1D5DB', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 2.0, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 26,
+            } as Partial<TextElement>,
+            // Pro CTA Button (Outline like others)
+            {
+                type: 'shape',
+                name: 'Pro CTA BG',
+                shapeType: 'rectangle',
+                transform: { x: 610, y: 652, width: 220, height: 48, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: 'transparent', stroke: '#8B5CF6', strokeWidth: 2, opacity: 1 },
+                zIndex: 27,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Pro CTA',
+                content: 'Start Free Trial',
+                transform: { x: 610, y: 652, width: 200, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#8B5CF6', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 28,
+            } as Partial<TextElement>,
+
+            // === ENTERPRISE PLAN (Right Card) ===
+            // Enterprise Card Background
+            {
+                type: 'shape',
+                name: 'Enterprise Card BG',
+                shapeType: 'rectangle',
+                transform: { x: 980, y: 400, width: 300, height: 520, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E1E3F', stroke: '#F97316', strokeWidth: 2, opacity: 0.95 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Enterprise Header Accent
+            {
+                type: 'shape',
+                name: 'Enterprise Header Accent',
+                shapeType: 'rectangle',
+                transform: { x: 980, y: 175, width: 300, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F97316', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Enterprise Icon
+            {
+                type: 'text',
+                name: 'Enterprise Icon',
+                content: '🏢',
+                transform: { x: 980, y: 210, width: 60, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 36, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 30,
+            } as Partial<TextElement>,
+            // Enterprise Title
+            {
+                type: 'text',
+                name: 'Enterprise Title',
+                content: 'ENTERPRISE',
+                transform: { x: 980, y: 260, width: 260, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 31,
+            } as Partial<TextElement>,
+            // Enterprise Price
+            {
+                type: 'text',
+                name: 'Enterprise Price',
+                content: '$149/mo',
+                transform: { x: 980, y: 333, width: 200, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F97316', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 44, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 32,
+            } as Partial<TextElement>,
+            // Enterprise Description
+            {
+                type: 'text',
+                name: 'Enterprise Desc',
+                content: 'For large organizations',
+                transform: { x: 980, y: 370, width: 260, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#9CA3AF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 34,
+            } as Partial<TextElement>,
+            // Enterprise Divider
+            {
+                type: 'shape',
+                name: 'Enterprise Divider',
+                shapeType: 'rectangle',
+                transform: { x: 980, y: 405, width: 240, height: 1, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#374151', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 35,
+            } as Partial<ShapeElement>,
+            // Enterprise Features
+            {
+                type: 'text',
+                name: 'Enterprise Features',
+                content: '✓ Unlimited Storage\n✓ Custom Integrations\n✓ Dedicated Manager\n✓ SLA Guarantee',
+                transform: { x: 980, y: 490, width: 240, height: 130, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D1D5DB', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 2.0, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 36,
+            } as Partial<TextElement>,
+            // Enterprise CTA Button
+            {
+                type: 'shape',
+                name: 'Enterprise CTA BG',
+                shapeType: 'rectangle',
+                transform: { x: 980, y: 610, width: 220, height: 48, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: 'transparent', stroke: '#F97316', strokeWidth: 2, opacity: 1 },
+                zIndex: 37,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Enterprise CTA',
+                content: 'Contact Sales',
+                transform: { x: 980, y: 610, width: 200, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F97316', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 38,
             } as Partial<TextElement>,
         ],
     },
-    // Doctor Profile Template (converted from Elementor)
+    // Doctor Profile Template - Modern Medical Design
     {
         id: 'doctor-profile-1',
         name: 'Doctor Profile',
         category: 'Medical',
         width: 1080,
         height: 1920,
-        background: { type: 'solid', color: '#FFFFFF' },
+        background: { type: 'solid', color: '#F8FAFC' },
         elements: [
-            // === HEADER SECTION ===
-            // Hospital Background Image Placeholder
+            // === HEADER GRADIENT SECTION ===
             {
                 type: 'shape',
-                name: 'Hospital BG',
+                name: 'Header Gradient',
                 shapeType: 'rectangle',
-                transform: { x: 540, y: 200, width: 1080, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#E8F4F8', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 540, y: 280, width: 1080, height: 560, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 1,
             } as Partial<ShapeElement>,
-            // Logo Placeholder
+            // Header Accent Circle
             {
                 type: 'shape',
-                name: 'Logo Area',
+                name: 'Header Accent',
                 shapeType: 'circle',
-                transform: { x: 100, y: 80, width: 60, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 5,
+                transform: { x: 900, y: 100, width: 300, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#14B8A6', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 2,
             } as Partial<ShapeElement>,
-            // Search Bar Background
-            {
-                type: 'shape',
-                name: 'Search Bar BG',
-                shapeType: 'rectangle',
-                transform: { x: 540, y: 80, width: 500, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#F5F5F5', stroke: '#CCCCCC', strokeWidth: 1, opacity: 1 },
-                zIndex: 4,
-            } as Partial<ShapeElement>,
-            // Search Placeholder Text
+
+            // === TOP BAR ===
             {
                 type: 'text',
-                name: 'Search Text',
-                content: 'Search here...',
-                transform: { x: 540, y: 80, width: 480, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#999999', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 6,
-            } as Partial<TextElement>,
-
-            // === DOCTOR PROFILE SECTION ===
-            // Doctor Profile Picture (Circle)
-            {
-                type: 'shape',
-                name: 'Doctor Photo BG',
-                shapeType: 'circle',
-                transform: { x: 200, y: 450, width: 280, height: 280, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#2CA8D2', stroke: '#000000', strokeWidth: 2, opacity: 1 },
+                name: 'Clinic Name',
+                content: 'HEALTHCARE CLINIC',
+                transform: { x: 540, y: 60, width: 400, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.9 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 10,
-            } as Partial<ShapeElement>,
-            // Profile Stats Section
-            {
-                type: 'text',
-                name: 'Followers Label',
-                content: 'Followers',
-                transform: { x: 450, y: 420, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#02BAF1', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 11,
-            } as Partial<TextElement>,
-            {
-                type: 'text',
-                name: 'Followers Count',
-                content: '60k',
-                transform: { x: 450, y: 450, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 12,
-            } as Partial<TextElement>,
-            {
-                type: 'text',
-                name: 'Following Label',
-                content: 'Following',
-                transform: { x: 560, y: 420, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#02BAF1', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 13,
-            } as Partial<TextElement>,
-            {
-                type: 'text',
-                name: 'Following Count',
-                content: '10k',
-                transform: { x: 560, y: 450, width: 100, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 14,
             } as Partial<TextElement>,
 
-            // === ACTION BUTTONS ===
-            // Chat Now Button BG
+            // === DOCTOR PHOTO SECTION ===
+            // Photo Background Circle (Empty Placeholder)
             {
                 type: 'shape',
-                name: 'Chat Now BG',
-                shapeType: 'rectangle',
-                transform: { x: 720, y: 435, width: 140, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 15,
+                name: 'Photo Circle',
+                shapeType: 'circle',
+                transform: { x: 540, y: 350, width: 280, height: 280, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#0D9488', strokeWidth: 4, opacity: 1 },
+                zIndex: 6,
+            } as Partial<ShapeElement>,
+            // Verified Badge
+            {
+                type: 'shape',
+                name: 'Verified Badge',
+                shapeType: 'circle',
+                transform: { x: 680, y: 440, width: 50, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', stroke: '#FFFFFF', strokeWidth: 3, opacity: 1 },
+                zIndex: 7,
             } as Partial<ShapeElement>,
             {
                 type: 'text',
-                name: 'Chat Now Text',
-                content: 'Chat Now',
-                transform: { x: 720, y: 435, width: 120, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Verified Icon',
+                content: '✓',
+                transform: { x: 680, y: 440, width: 30, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 16,
-            } as Partial<TextElement>,
-            // Follow Button BG
-            {
-                type: 'shape',
-                name: 'Follow BG',
-                shapeType: 'rectangle',
-                transform: { x: 880, y: 435, width: 120, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 17,
-            } as Partial<ShapeElement>,
-            {
-                type: 'text',
-                name: 'Follow Text',
-                content: 'Follow',
-                transform: { x: 880, y: 435, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 18,
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 8,
             } as Partial<TextElement>,
 
-            // === DOCTOR INFO SECTION ===
-            // Doctor Name
+            // === DOCTOR INFO ===
             {
                 type: 'text',
-                name: 'Doctor Name',
-                content: 'Dr. Cape Fernand',
-                transform: { x: 300, y: 650, width: 400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A1A1A', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 36, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Name',
+                content: 'Name',
+                transform: { x: 540, y: 597, width: 500, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 38, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 20,
             } as Partial<TextElement>,
-            // Specialty Tag 1
-            {
-                type: 'shape',
-                name: 'Tag 1 BG',
-                shapeType: 'rectangle',
-                transform: { x: 180, y: 710, width: 140, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: '#EC0D64', strokeWidth: 1, opacity: 1 },
-                zIndex: 21,
-            } as Partial<ShapeElement>,
             {
                 type: 'text',
-                name: 'Tag 1 Text',
-                content: 'Arthroscopy',
-                transform: { x: 180, y: 710, width: 120, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A1A1A', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Specialty',
+                content: 'Orthopedic Surgeon',
+                transform: { x: 540, y: 630, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+
+            // === STATS ROW ===
+            // Stats Background
+            {
+                type: 'shape',
+                name: 'Stats BG',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 720, width: 900, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#E2E8F0', strokeWidth: 1, opacity: 1 },
+                zIndex: 15,
+            } as Partial<ShapeElement>,
+            // Experience
+            {
+                type: 'text',
+                name: 'Experience Value',
+                content: '15+',
+                transform: { x: 240, y: 705, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Experience Label',
+                content: 'Years Exp.',
+                transform: { x: 240, y: 740, width: 120, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 17,
+            } as Partial<TextElement>,
+            // Patients
+            {
+                type: 'text',
+                name: 'Patients Value',
+                content: '5000+',
+                transform: { x: 540, y: 705, width: 140, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 18,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Patients Label',
+                content: 'Patients',
+                transform: { x: 540, y: 740, width: 120, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 19,
+            } as Partial<TextElement>,
+            // Rating
+            {
+                type: 'text',
+                name: 'Rating Value',
+                content: '4.9',
+                transform: { x: 840, y: 705, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 22,
             } as Partial<TextElement>,
-            // Specialty Tag 2
             {
-                type: 'shape',
-                name: 'Tag 2 BG',
-                shapeType: 'rectangle',
-                transform: { x: 350, y: 710, width: 150, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: '#EC0D64', strokeWidth: 1, opacity: 1 },
+                type: 'text',
+                name: 'Rating Label',
+                content: '⭐ Rating',
+                transform: { x: 840, y: 740, width: 120, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 23,
-            } as Partial<ShapeElement>,
-            {
-                type: 'text',
-                name: 'Tag 2 Text',
-                content: 'Spine Surgery',
-                transform: { x: 350, y: 710, width: 130, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A1A1A', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 24,
             } as Partial<TextElement>,
-            // Bio Description
+
+            // === ABOUT SECTION ===
             {
                 type: 'text',
-                name: 'Bio Text',
-                content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.',
-                transform: { x: 300, y: 790, width: 500, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#666666', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'About Title',
+                content: 'About',
+                transform: { x: 150, y: 830, width: 150, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 25,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'About Text',
+                content: 'A board-certified surgeon with over 15 years of experience in joint replacement and sports medicine. Specializing in minimally invasive techniques for faster patient recovery.',
+                transform: { x: 540, y: 920, width: 920, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#475569', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 26,
             } as Partial<TextElement>,
 
             // === SERVICES SECTION ===
-            // Services Header
             {
                 type: 'text',
-                name: 'Services Header',
+                name: 'Services Title',
                 content: 'Services',
-                transform: { x: 780, y: 650, width: 200, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#1A1A1A', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                transform: { x: 165, y: 1020, width: 180, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 30,
             } as Partial<TextElement>,
-            // Services List BG
+            // Service Card 1
             {
                 type: 'shape',
-                name: 'Services List BG',
+                name: 'Service Card 1',
                 shapeType: 'rectangle',
-                transform: { x: 780, y: 760, width: 400, height: 160, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#F8F8F8', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 290, y: 1120, width: 460, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#E2E8F0', strokeWidth: 1, opacity: 1 },
                 zIndex: 31,
             } as Partial<ShapeElement>,
-            // Services List Items
             {
                 type: 'text',
-                name: 'Services List',
-                content: '• Joint Replacement\n• Arthroscopy\n• Fracture Care\n• Pediatric Orthopedics\n• Sports Medicine',
-                transform: { x: 780, y: 760, width: 380, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Service 1 Title',
+                content: '🦴 Joint Replacement',
+                transform: { x: 290, y: 1110, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 32,
             } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Service 1 Desc',
+                content: 'Hip, knee & shoulder replacements',
+                transform: { x: 290, y: 1140, width: 400, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 33,
+            } as Partial<TextElement>,
+            // Service Card 2
+            {
+                type: 'shape',
+                name: 'Service Card 2',
+                shapeType: 'rectangle',
+                transform: { x: 790, y: 1120, width: 460, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#E2E8F0', strokeWidth: 1, opacity: 1 },
+                zIndex: 34,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Service 2 Title',
+                content: '⚡ Sports Medicine',
+                transform: { x: 790, y: 1110, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 35,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Service 2 Desc',
+                content: 'Injury treatment & prevention',
+                transform: { x: 790, y: 1140, width: 400, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 36,
+            } as Partial<TextElement>,
 
-            // === CTA SECTION ===
-            // Online Consultation Button BG
+            // === CTA BUTTON ===
             {
                 type: 'shape',
                 name: 'CTA BG',
                 shapeType: 'rectangle',
-                transform: { x: 540, y: 950, width: 350, height: 55, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#EC0D64', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 540, y: 1280, width: 400, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 40,
             } as Partial<ShapeElement>,
             {
                 type: 'text',
                 name: 'CTA Text',
-                content: 'Click for Online Consultation',
-                transform: { x: 540, y: 950, width: 320, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                content: 'Book Appointment',
+                transform: { x: 540, y: 1280, width: 350, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 41,
             } as Partial<TextElement>,
 
-            // === MAP SECTION ===
-            // Map Placeholder
+            // === CONTACT INFO ===
+            {
+                type: 'text',
+                name: 'Contact Title',
+                content: 'Contact',
+                transform: { x: 165, y: 1380, width: 180, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 45,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Phone',
+                content: '📞 +1 (555) 123-4567',
+                transform: { x: 270, y: 1440, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#475569', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 46,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Email',
+                content: '✉️ dr.mitchell@healthcare.com',
+                transform: { x: 300, y: 1480, width: 360, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#475569', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 47,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Location',
+                content: '📍 123 Medical Center, New York, NY',
+                transform: { x: 340, y: 1520, width: 440, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#475569', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 48,
+            } as Partial<TextElement>,
+
+            // === FOOTER ===
             {
                 type: 'shape',
-                name: 'Map Placeholder',
+                name: 'Footer BG',
                 shapeType: 'rectangle',
-                transform: { x: 780, y: 1100, width: 400, height: 250, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#E0E0E0', stroke: '#CCCCCC', strokeWidth: 1, opacity: 1 },
-                zIndex: 45,
+                transform: { x: 540, y: 1870, width: 1080, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0D9488', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 50,
             } as Partial<ShapeElement>,
             {
                 type: 'text',
-                name: 'Map Label',
-                content: '📍 London, United Kingdom',
-                transform: { x: 780, y: 1100, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#666666', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 46,
-            } as Partial<TextElement>,
-
-            // === LIKES & REVIEWS SECTION ===
-            {
-                type: 'text',
-                name: 'Likes Label',
-                content: '❤️ Likes',
-                transform: { x: 980, y: 500, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 50,
-            } as Partial<TextElement>,
-            {
-                type: 'text',
-                name: 'Reviews Label',
-                content: '⭐ Reviews',
-                transform: { x: 980, y: 540, width: 100, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#333333', opacity: 1 },
-                textStyle: { fontFamily: 'Roboto', fontSize: 17, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Footer Text',
+                content: 'www.healthcareclinic.com',
+                transform: { x: 540, y: 1870, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.9 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 51,
             } as Partial<TextElement>,
         ],
@@ -763,8 +888,8 @@ const TEMPLATES: TemplateData[] = [
             {
                 type: 'image',
                 name: 'Food Background',
-                src: 'https://images.unsplash.com/photo-1541809354-0f0cfe132960?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTY5OTZ8MHwxfHNlYXJjaHw0MHx8Zm9vZCUyMGZsYXQlMjBsYXl8ZW58MHx8fHwxNjM1MDUzNjA3&ixlib=rb-1.2.1&q=80&w=1080',
-                transform: { x: 640, y: 360, width: 1080, height: 810, scaleX: 1.185, scaleY: 1.185, rotation: 0, originX: 'center', originY: 'center' },
+                src: 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1280&q=80',
+                transform: { x: 640, y: 360, width: 1280, height: 720, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: null, stroke: null, strokeWidth: 0, opacity: 1 },
                 filters: { brightness: 0, contrast: 0, saturation: 0, blur: 0, grayscale: false, sepia: false, invert: false },
                 isBackground: true,
@@ -816,7 +941,7 @@ const TEMPLATES: TemplateData[] = [
             {
                 type: 'image',
                 name: 'Workout Background',
-                src: 'https://images.unsplash.com/photo-1614928228253-dc09cbc3b11c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=MnwxMTY5OTZ8MHwxfHNlYXJjaHwxMTV8fHdvcmtvdXR8ZW58MHx8fHwxNjM2NDYxNjA5&ixlib=rb-1.2.1&q=80&w=1080',
+                src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1280&q=80',
                 transform: { x: 758, y: 359, width: 1080, height: 720, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: null, stroke: null, strokeWidth: 0, opacity: 1 },
                 filters: { brightness: 0, contrast: 0, saturation: 0, blur: 0, grayscale: false, sepia: false, invert: false },
@@ -855,7 +980,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: '10 Minutes Text',
                 content: '10 minutes fitness',
-                transform: { x: 351.1132072755644, y: 233.81132522111645, width: 450, height: 63.28, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 321, y: 231, width: 450, height: 63.28, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 56, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 effect: { type: 'none' },
@@ -866,7 +991,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: 'Cardio Text',
                 content: 'CARDIO',
-                transform: { x: 460.3494532079619, y: 360, width: 886.2303963476114, height: 226, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 352, y: 359, width: 886, height: 226, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 200, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
                 effect: { type: 'none' },
@@ -897,7 +1022,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: 'Subscribe Text',
                 content: 'watch & subscribe',
-                transform: { x: 1091, y: 602, width: 327, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 1057, y: 600, width: 327, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 41, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 effect: { type: 'none' },
@@ -1109,6 +1234,127 @@ const TEMPLATES: TemplateData[] = [
                 style: { fill: '#FFFFFF', opacity: 0.7 },
                 textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 12,
+            } as Partial<TextElement>,
+        ],
+    },
+
+    {
+        id: 'cyber-monday-1',
+        name: 'Cyber Monday',
+        category: 'Business',
+        width: 1920,
+        height: 1080,
+        background: { type: 'solid', color: '#09090B' },
+        elements: [
+            // Grid Lines
+            {
+                type: 'shape',
+                name: 'Grid 1',
+                shapeType: 'rectangle',
+                transform: { x: 960, y: 540, width: 1800, height: 900, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#22D3EE', strokeWidth: 2, opacity: 0.2 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Circle Glow',
+                shapeType: 'circle',
+                transform: { x: 960, y: 540, width: 800, height: 800, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#22D3EE', stroke: null, strokeWidth: 0, opacity: 0.1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Glitch Text Effect (Layered)
+            {
+                type: 'text',
+                name: 'Title Shadow',
+                content: 'CYBER\nMONDAY',
+                transform: { x: 965, y: 485, width: 1200, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EC4899', opacity: 0.8 },
+                textStyle: { fontFamily: 'Inter', fontSize: 160, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.9, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 3,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Title Main',
+                content: 'CYBER\nMONDAY',
+                transform: { x: 986, y: 485, width: 1200, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 164, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.9, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+            // Discount Box
+            {
+                type: 'shape',
+                name: 'Discount BG',
+                shapeType: 'rectangle',
+                transform: { x: 960, y: 850, width: 700, height: 120, rotation: -2, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FACC15', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Discount Text',
+                content: 'UP TO 70% OFF',
+                transform: { x: 960, y: 850, width: 700, height: 80, rotation: -2, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 60, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 6,
+            } as Partial<TextElement>,
+        ],
+    },
+    {
+        id: 'art-exhibit-1',
+        name: 'Art Exhibition',
+        category: 'Events',
+        width: 1080,
+        height: 1080,
+        background: { type: 'solid', color: '#F3F4F6' },
+        elements: [
+            // Abstract Shapes
+            {
+                type: 'shape',
+                name: 'Red Circle',
+                shapeType: 'circle',
+                transform: { x: 800, y: 300, width: 350, height: 350, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EF4444', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Black Rect',
+                shapeType: 'rectangle',
+                transform: { x: 250, y: 400, width: 300, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Image
+            {
+                type: 'image',
+                name: 'Art Image',
+                src: 'https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=800&q=80',
+                transform: { x: 540, y: 540, width: 500, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: null, strokeWidth: 0, opacity: 1 },
+                filters: { grayscale: true, contrast: 20, brightness: 0, saturation: 0, blur: 0, sepia: false, invert: false },
+                zIndex: 3,
+            } as Partial<ImageElement>,
+            // Typography
+            {
+                type: 'text',
+                name: 'Title',
+                content: 'MODERN\nABSTRACT',
+                transform: { x: 540, y: 900, width: 800, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 80, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Date',
+                content: 'JULY 20 - AUG 30',
+                transform: { x: 540, y: 1000, width: 500, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', opacity: 0.7 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 5,
             } as Partial<TextElement>,
         ],
     },
@@ -1391,118 +1637,57 @@ export function TemplatesPanel() {
                                                 </div>
                                             </>
                                         ) : template.id === 'pricing-table-1' ? (
-                                            // Pricing Table Preview - 3 cards
-                                            <div className="flex-1 flex items-center justify-center gap-1 p-2">
-                                                {/* Basic Card */}
-                                                <div className="w-[30%] h-[90%] bg-[#F3E8EE] rounded flex flex-col overflow-hidden">
-                                                    <div className="bg-[#4ECDC4] py-1">
-                                                        <p className="text-white text-[5px] font-bold text-center">Basic</p>
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col items-center pt-1">
-                                                        <p className="text-[#1A535C] text-[7px] font-bold">$0</p>
-                                                        <p className="text-gray-500 text-[3px]">/mo</p>
-                                                        <div className="mt-1 space-y-[1px]">
-                                                            <p className="text-[3px] text-gray-600">✓ 2 GB Storage</p>
-                                                            <p className="text-[3px] text-gray-600">✓ 10 Accounts</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-[#4ECDC4] py-0.5 mx-1 mb-1 rounded">
-                                                        <p className="text-white text-[3px] font-medium text-center">Choose</p>
-                                                    </div>
+                                            // Pricing Table Preview - Premium Dark Theme
+                                            <div className="flex-1 flex items-center justify-center gap-[3px] p-2 bg-gradient-to-b from-[#0F0F23] to-[#1a1a2e]">
+                                                {/* Starter Card */}
+                                                <div className="w-[30%] h-[55%] bg-[#1E1E3F]/90 rounded-sm flex flex-col items-center justify-center px-1 py-1" style={{ boxShadow: '0 0 4px rgba(59,130,246,0.3)', border: '1px solid #3B82F6' }}>
+                                                    <p className="text-white/90 text-[4px] font-medium mb-0.5">STARTER</p>
+                                                    <p className="text-[#3B82F6] text-[8px] font-bold leading-none">$0</p>
                                                 </div>
-                                                {/* Standard Card */}
-                                                <div className="w-[34%] h-full bg-[#F3E8EE] rounded flex flex-col overflow-hidden shadow-sm">
-                                                    <div className="bg-[#1A535C] py-1.5">
-                                                        <p className="text-white text-[6px] font-bold text-center">Standard</p>
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col items-center pt-1">
-                                                        <p className="text-[#1A535C] text-[9px] font-bold">$49</p>
-                                                        <p className="text-gray-500 text-[3px]">/mo</p>
-                                                        <div className="mt-1 space-y-[1px]">
-                                                            <p className="text-[3px] text-gray-600">✓ 20 GB Storage</p>
-                                                            <p className="text-[3px] text-gray-600">✓ 50 Accounts</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-[#1A535C] py-0.5 mx-1 mb-1 rounded">
-                                                        <p className="text-white text-[3px] font-medium text-center">Choose</p>
-                                                    </div>
+                                                {/* PRO Card - Featured */}
+                                                <div className="w-[34%] h-[70%] bg-[#1E1E3F] rounded-sm flex flex-col items-center justify-center px-1 py-1" style={{ boxShadow: '0 0 8px rgba(139,92,246,0.4)', border: '2px solid #8B5CF6' }}>
+                                                    <p className="text-[#A855F7] text-[3px] font-bold">★ POPULAR</p>
+                                                    <p className="text-white text-[4px] font-medium">PRO</p>
+                                                    <p className="text-[#A855F7] text-[10px] font-bold leading-none">$49</p>
                                                 </div>
-                                                {/* Premium Card */}
-                                                <div className="w-[30%] h-[90%] bg-[#F3E8EE] rounded flex flex-col overflow-hidden">
-                                                    <div className="bg-[#FF6B6B] py-1">
-                                                        <p className="text-white text-[5px] font-bold text-center">Premium</p>
-                                                    </div>
-                                                    <div className="flex-1 flex flex-col items-center pt-1">
-                                                        <p className="text-[#FF6B6B] text-[7px] font-bold">$99</p>
-                                                        <p className="text-gray-500 text-[3px]">/mo</p>
-                                                        <div className="mt-1 space-y-[1px]">
-                                                            <p className="text-[3px] text-gray-600">✓ Unlimited</p>
-                                                            <p className="text-[3px] text-gray-600">✓ Priority</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="bg-[#FF6B6B] py-0.5 mx-1 mb-1 rounded">
-                                                        <p className="text-white text-[3px] font-medium text-center">Choose</p>
-                                                    </div>
+                                                {/* Enterprise Card */}
+                                                <div className="w-[30%] h-[55%] bg-[#1E1E3F]/90 rounded-sm flex flex-col items-center justify-center px-1 py-1" style={{ boxShadow: '0 0 4px rgba(249,115,22,0.3)', border: '1px solid #F97316' }}>
+                                                    <p className="text-white/90 text-[3px] font-medium mb-0.5">ENTERPRISE</p>
+                                                    <p className="text-[#F97316] text-[8px] font-bold leading-none">$149</p>
                                                 </div>
                                             </div>
                                         ) : template.id === 'doctor-profile-1' ? (
-                                            // Doctor Profile Preview - Full Layout
-                                            <div className="flex-1 flex flex-col overflow-hidden text-[3px]">
-                                                {/* Header Section */}
-                                                <div className="w-full h-[20%] bg-[#E8F4F8] relative flex items-start px-1 pt-1">
-                                                    <div className="w-3 h-3 rounded-full bg-[#EC0D64] flex-shrink-0"></div>
-                                                    <div className="flex-1 h-2 bg-gray-100 rounded mx-1 border border-gray-200"></div>
-                                                    <div className="flex gap-0.5">
-                                                        <div className="w-2 h-2 rounded-full bg-[#EC0D64] opacity-60"></div>
-                                                        <div className="w-2 h-2 rounded-full bg-[#EC0D64] opacity-60"></div>
+                                            // Doctor Profile Preview - Modern Teal Design
+                                            <div className="flex-1 flex flex-col overflow-hidden bg-[#F8FAFC]">
+                                                {/* Teal Header */}
+                                                <div className="w-full h-[45%] bg-[#0D9488] flex flex-col items-center justify-center relative">
+                                                    {/* Empty Photo Circle */}
+                                                    <div className="w-10 h-10 rounded-full bg-white border-2 border-[#0D9488]"></div>
+                                                </div>
+                                                {/* Doctor Name & Specialty */}
+                                                <div className="px-2 py-1 text-center bg-[#F8FAFC]">
+                                                    <p className="font-bold text-[5px] text-gray-800">Name</p>
+                                                    <p className="text-[#0D9488] text-[3px]">Orthopedic Surgeon</p>
+                                                </div>
+                                                {/* Stats Row */}
+                                                <div className="flex justify-around px-1 py-1 bg-white border-y border-gray-200">
+                                                    <div className="text-center">
+                                                        <p className="text-[#0D9488] text-[5px] font-bold">15+</p>
+                                                        <p className="text-gray-500 text-[2px]">Years</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-[#0D9488] text-[5px] font-bold">5000+</p>
+                                                        <p className="text-gray-500 text-[2px]">Patients</p>
+                                                    </div>
+                                                    <div className="text-center">
+                                                        <p className="text-[#0D9488] text-[5px] font-bold">4.9</p>
+                                                        <p className="text-gray-500 text-[2px]">Rating</p>
                                                     </div>
                                                 </div>
-                                                {/* Profile Row */}
-                                                <div className="flex px-1 py-0.5 bg-white border-b border-gray-100">
-                                                    <div className="w-8 h-8 rounded-full bg-[#2CA8D2] border border-black flex-shrink-0 -mt-3"></div>
-                                                    <div className="flex-1 ml-1">
-                                                        <div className="flex gap-1 text-[3px]">
-                                                            <div><span className="text-[#02BAF1] font-bold">Followers</span> 60k</div>
-                                                            <div><span className="text-[#02BAF1] font-bold">Following</span> 10k</div>
-                                                        </div>
-                                                        <div className="flex gap-0.5 mt-0.5">
-                                                            <div className="bg-[#EC0D64] text-white px-1 py-0.5 rounded text-[2px]">Chat Now</div>
-                                                            <div className="bg-[#EC0D64] text-white px-1 py-0.5 rounded text-[2px]">Follow</div>
-                                                        </div>
-                                                    </div>
-                                                    <div className="text-right text-[2px]">
-                                                        <p>❤️ Likes</p>
-                                                        <p>⭐ Reviews</p>
-                                                    </div>
-                                                </div>
-                                                {/* Doctor Info */}
-                                                <div className="flex px-1 py-0.5 bg-white">
-                                                    <div className="flex-1">
-                                                        <p className="font-bold text-[4px] text-gray-800">Dr. Cape Fernand</p>
-                                                        <div className="flex gap-0.5 mt-0.5">
-                                                            <span className="border border-[#EC0D64] px-0.5 rounded text-[2px]">Arthroscopy</span>
-                                                            <span className="border border-[#EC0D64] px-0.5 rounded text-[2px]">Spine Surgery</span>
-                                                        </div>
-                                                        <p className="text-gray-500 text-[2px] mt-0.5 leading-tight">Lorem ipsum dolor sit amet...</p>
-                                                    </div>
-                                                    <div className="w-[40%] ml-1">
-                                                        <p className="font-bold text-[3px] text-center">Services</p>
-                                                        <div className="bg-gray-100 p-0.5 rounded text-[2px]">
-                                                            <p>• Joint Replacement</p>
-                                                            <p>• Arthroscopy</p>
-                                                            <p>• Fracture Care</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {/* CTA & Map */}
-                                                <div className="flex px-1 py-0.5 gap-1 bg-white flex-1">
-                                                    <div className="flex-1 flex flex-col justify-center">
-                                                        <div className="bg-[#EC0D64] py-0.5 rounded">
-                                                            <p className="text-white text-[2px] text-center font-medium">Online Consultation</p>
-                                                        </div>
-                                                    </div>
-                                                    <div className="w-[45%] bg-gray-200 rounded flex items-center justify-center border border-gray-300">
-                                                        <p className="text-[2px] text-gray-500">📍 London, UK</p>
+                                                {/* CTA Button */}
+                                                <div className="flex-1 flex items-center justify-center px-2">
+                                                    <div className="bg-[#0D9488] px-3 py-1 rounded">
+                                                        <p className="text-white text-[3px] font-medium">Book Appointment</p>
                                                     </div>
                                                 </div>
                                             </div>
@@ -1512,7 +1697,7 @@ export function TemplatesPanel() {
                                                 {/* Food background image */}
                                                 <div
                                                     className="absolute inset-0 bg-cover bg-center"
-                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1541809354-0f0cfe132960?w=200&q=60)' }}
+                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=200&q=60)' }}
                                                 />
                                                 {/* Overlay */}
                                                 <div className="absolute inset-x-0 top-1/4 h-[40%] bg-[#9CF3DF]/50" />
@@ -1528,7 +1713,7 @@ export function TemplatesPanel() {
                                                 {/* Workout background image (grayscale) */}
                                                 <div
                                                     className="absolute inset-0 bg-cover bg-center grayscale"
-                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1614928228253-dc09cbc3b11c?w=200&q=60)' }}
+                                                    style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=200&q=60)' }}
                                                 />
                                                 {/* Golden hexagon overlay */}
                                                 <div className="absolute left-0 top-0 bottom-0 w-[40%]">
@@ -1585,6 +1770,43 @@ export function TemplatesPanel() {
                                                 </div>
                                                 {/* Hashtags */}
                                                 <p className="absolute bottom-1 text-white/60 text-[3px]">#motivation</p>
+                                            </div>
+
+                                        ) : template.id === 'cyber-monday-1' ? (
+                                            // Cyber Monday Preview - Landscape
+                                            <div className="flex-1 flex items-center justify-center bg-[#09090B]">
+                                                <div className="w-[95%] aspect-video relative overflow-hidden bg-[#09090B] border border-[#22D3EE]/30 shadow-[0_0_10px_rgba(34,211,238,0.2)]">
+                                                    {/* Glow */}
+                                                    <div className="absolute inset-0" style={{ background: 'radial-gradient(circle at center, rgba(34,211,238,0.15), transparent 70%)' }}></div>
+                                                    {/* Text */}
+                                                    <div className="absolute inset-0 flex flex-col items-center justify-center">
+                                                        <p className="text-[#EC4899] text-[10px] font-black leading-none drop-shadow-[0_0_2px_rgba(236,72,153,0.5)]" style={{ fontFamily: 'Inter' }}>CYBER</p>
+                                                        <p className="text-white text-[10px] font-black leading-none mt-[-1px]" style={{ fontFamily: 'Inter' }}>MONDAY</p>
+                                                        {/* Discount */}
+                                                        <div className="mt-1.5 bg-[#FACC15] -rotate-2 px-1 shadow-[1px_1px_0_rgba(0,0,0,1)]">
+                                                            <p className="text-black text-[3px] font-bold" style={{ fontFamily: 'Inter' }}>UP TO 70% OFF</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'art-exhibit-1' ? (
+                                            // Art Exhibit Preview - Square
+                                            <div className="flex-1 flex items-center justify-center bg-gray-50">
+                                                <div className="w-[90%] aspect-square relative overflow-hidden bg-[#F3F4F6] shadow-sm border border-gray-200">
+                                                    {/* Shapes */}
+                                                    <div className="absolute -right-2 top-2 w-12 h-12 rounded-full bg-[#EF4444]"></div>
+                                                    <div className="absolute left-2 bottom-6 w-8 h-16 bg-black"></div>
+                                                    {/* Image */}
+                                                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[55%] h-[55%] border-2 border-white shadow-sm overflow-hidden">
+                                                        <img src="https://images.unsplash.com/photo-1547891654-e66ed7ebb968?w=200&q=60" className="w-full h-full object-cover grayscale contrast-125" alt="Art" />
+                                                    </div>
+                                                    {/* Text */}
+                                                    <div className="absolute bottom-1 w-full text-center">
+                                                        <p className="text-black text-[6px] leading-none" style={{ fontFamily: 'Playfair Display' }}>MODERN</p>
+                                                        <p className="text-black text-[6px] leading-none" style={{ fontFamily: 'Playfair Display' }}>ABSTRACT</p>
+                                                        <p className="text-black/60 text-[3px] mt-0.5 tracking-widest font-sans">JULY 20 - AUG 30</p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         ) : (
                                             // Generic fallback preview

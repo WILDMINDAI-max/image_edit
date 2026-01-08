@@ -2429,6 +2429,10 @@ export class FabricCanvas {
         const existingObj = this.objectIdMap.get(id);
         if (!existingObj) return;
 
+        // Check if the object is currently selected
+        const activeObject = this.canvas.getActiveObject();
+        const wasSelected = activeObject === existingObj || (activeObject?.type === 'activeSelection' && (activeObject as any).contains(existingObj));
+
         // Store current transform properties
         const currentProps = {
             left: existingObj.left,
@@ -2460,6 +2464,11 @@ export class FabricCanvas {
 
             this.canvas.add(group);
             this.objectIdMap.set(id, group);
+
+            // Restore selection if it was selected
+            if (wasSelected) {
+                this.canvas.setActiveObject(group);
+            }
 
             this.canvas.requestRenderAll();
         });

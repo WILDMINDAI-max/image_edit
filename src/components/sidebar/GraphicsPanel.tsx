@@ -14,7 +14,7 @@ import {
     StickerDefinition,
 } from '@/types/stickers';
 
-// Sticker preview component
+// Reuse sticker preview logic
 function StickerPreview({ sticker }: { sticker: StickerDefinition }) {
     return (
         <div
@@ -24,8 +24,8 @@ function StickerPreview({ sticker }: { sticker: StickerDefinition }) {
     );
 }
 
-// Category Row component - matches ElementsPanel/IconsPanel style
-function StickerCategoryRow({
+// Category Row component
+function GraphicsCategoryRow({
     category,
     stickers,
     isExpanded,
@@ -63,7 +63,6 @@ function StickerCategoryRow({
                         {STICKER_CATEGORY_LABELS[category]} ({stickers.length})
                     </h3>
                 </button>
-                {/* Right scroll arrow - only show when collapsed and has more than 3 stickers */}
                 {!isExpanded && stickers.length > 3 && (
                     <button
                         onClick={scrollRight}
@@ -86,7 +85,7 @@ function StickerCategoryRow({
                         <button
                             key={sticker.id}
                             onClick={() => onAddSticker(sticker)}
-                            className="flex-shrink-0 w-16 h-16 rounded-lg bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-200 flex items-center justify-center p-1 hover:shadow-md"
+                            className="flex-shrink-0 w-20 h-20 rounded-lg bg-gray-50 hover:bg-amber-50 cursor-pointer transition-all duration-200 flex items-center justify-center p-2 hover:shadow-md border border-transparent hover:border-amber-200"
                             title={sticker.name}
                         >
                             <StickerPreview sticker={sticker} />
@@ -102,7 +101,7 @@ function StickerCategoryRow({
                         <button
                             key={sticker.id}
                             onClick={() => onAddSticker(sticker)}
-                            className="w-full aspect-square rounded-lg bg-gray-50 hover:bg-blue-50 cursor-pointer transition-all duration-200 flex items-center justify-center p-2 hover:shadow-md"
+                            className="w-full aspect-square rounded-lg bg-gray-50 hover:bg-amber-50 cursor-pointer transition-all duration-200 flex items-center justify-center p-3 hover:shadow-md border border-transparent hover:border-amber-200"
                             title={sticker.name}
                         >
                             <StickerPreview sticker={sticker} />
@@ -114,12 +113,15 @@ function StickerCategoryRow({
     );
 }
 
-interface StickersPanelProps {
+interface GraphicsPanelProps {
     searchQuery?: string;
 }
 
-export function StickersPanel({ searchQuery = '' }: StickersPanelProps) {
-    const [expandedCategories, setExpandedCategories] = useState<Set<StickerCategory>>(new Set());
+const GRAPHICS_CATEGORIES: StickerCategory[] = ['gradients', 'abstract', 'decorations', '3d', 'liquid', 'badges', 'frames'];
+
+export function GraphicsPanel({ searchQuery = '' }: GraphicsPanelProps) {
+    // Default open all for graphics since there are fewer categories initially
+    const [expandedCategories, setExpandedCategories] = useState<Set<StickerCategory>>(new Set(['gradients', 'abstract']));
     const addStickerElement = useCanvasStore((state) => state.addStickerElement);
 
     const toggleCategory = (categoryId: StickerCategory) => {
@@ -134,41 +136,35 @@ export function StickersPanel({ searchQuery = '' }: StickersPanelProps) {
         });
     };
 
-    // Filter stickers based on search query
+    // Filter graphics based on search query
     const filteredCategories = useMemo(() => {
-        const GRAPHICS_CATEGORIES: StickerCategory[] = ['gradients', 'abstract', 'decorations', '3d', 'liquid', 'badges', 'frames'];
-        // Base categories excluding graphics
-        const baseCategories = getStickerCategories().filter(cat => !GRAPHICS_CATEGORIES.includes(cat.category));
+        const categories = getStickerCategories().filter(cat => GRAPHICS_CATEGORIES.includes(cat.category));
 
-        if (!searchQuery.trim()) return baseCategories;
+        if (!searchQuery.trim()) return categories;
 
         const matchingStickers = searchStickers(searchQuery);
 
-        return baseCategories.map(cat => ({
+        return categories.map(cat => ({
             ...cat,
             stickers: cat.stickers.filter(s => matchingStickers.includes(s)),
         })).filter(cat => cat.stickers.length > 0);
     }, [searchQuery]);
 
-    // Add sticker to canvas
-    const handleAddSticker = (sticker: StickerDefinition) => {
-        // Get canvas dimensions to center the sticker
+    // Add graphic to canvas (reuses addStickerElement)
+    const handleAddGraphic = (sticker: StickerDefinition) => {
         const project = useEditorStore.getState().project;
         const activePage = project?.pages.find(p => p.id === project.activePageId);
         const canvasWidth = activePage?.width || 1080;
         const canvasHeight = activePage?.height || 1080;
 
-        // Extract colors from the sticker SVG
         const colors = extractColorsFromSvg(sticker.svgContent);
-
-        // Create initial color map (original color -> same color)
         const colorMap: Record<string, string> = {};
         colors.forEach(color => {
             colorMap[color] = color;
         });
 
         addStickerElement(sticker.id, {
-            name: `Sticker (${sticker.name})`,
+            name: `Graphic (${sticker.name})`,
             stickerId: sticker.id,
             svgContent: sticker.svgContent,
             originalSvgContent: sticker.svgContent,
@@ -177,8 +173,8 @@ export function StickersPanel({ searchQuery = '' }: StickersPanelProps) {
             transform: {
                 x: canvasWidth / 2,
                 y: canvasHeight / 2,
-                width: 150,
-                height: 150,
+                width: 300, // Graphics default to larger size
+                height: 300,
                 scaleX: 1,
                 scaleY: 1,
                 rotation: 0,
@@ -200,24 +196,22 @@ export function StickersPanel({ searchQuery = '' }: StickersPanelProps) {
 
     return (
         <div className="h-full flex flex-col bg-white">
-            {/* Scrollable Content */}
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 {filteredCategories.map(({ category, stickers }) => (
-                    <StickerCategoryRow
+                    <GraphicsCategoryRow
                         key={category}
                         category={category}
                         stickers={stickers}
                         isExpanded={expandedCategories.has(category)}
                         onToggle={() => toggleCategory(category)}
-                        onAddSticker={handleAddSticker}
+                        onAddSticker={handleAddGraphic}
                     />
                 ))}
 
-                {/* Empty state */}
                 {filteredCategories.length === 0 && (
                     <div className="flex flex-col items-center justify-center py-12 text-gray-400">
                         <Search size={32} strokeWidth={1} />
-                        <p className="mt-3 text-sm">No stickers found</p>
+                        <p className="mt-3 text-sm">No graphics found</p>
                     </div>
                 )}
             </div>

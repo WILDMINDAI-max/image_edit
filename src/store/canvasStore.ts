@@ -498,17 +498,31 @@ export const useCanvasStore = create<CanvasStore>()(
             const elements = getActivePageElements();
             const duplicatedIds: string[] = [];
 
+            // Helper function to recursively regenerate IDs for an element and its children
+            const regenerateElementIds = (el: any): any => {
+                const newElement = JSON.parse(JSON.stringify(el));
+                newElement.id = crypto.randomUUID();
+
+                // If this is a group element with children, regenerate their IDs too
+                if (newElement.type === 'group' && Array.isArray(newElement.children)) {
+                    newElement.children = newElement.children.map((child: any) =>
+                        regenerateElementIds(child)
+                    );
+                }
+
+                return newElement;
+            };
+
             const elementsToDuplicate = elements.filter(el => targetIds.includes(el.id));
             const newElements = elementsToDuplicate.map(el => {
-                const newId = crypto.randomUUID();
-                duplicatedIds.push(newId);
+                const newElement = regenerateElementIds(el);
+                duplicatedIds.push(newElement.id);
                 return {
-                    ...JSON.parse(JSON.stringify(el)),
-                    id: newId,
+                    ...newElement,
                     // Remove existing (Copy) suffix before adding new one
                     name: `${el.name.replace(/\s*\(Copy\)$/i, '')} (Copy)`,
                     transform: {
-                        ...el.transform,
+                        ...newElement.transform,
                         x: el.transform.x + 20,
                         y: el.transform.y + 20,
                     },
@@ -877,15 +891,29 @@ export const useCanvasStore = create<CanvasStore>()(
                 ? Math.max(...elements.map(e => e.zIndex))
                 : 0;
 
+            // Helper function to recursively regenerate IDs for an element and its children
+            const regenerateElementIds = (el: any): any => {
+                const newElement = JSON.parse(JSON.stringify(el));
+                newElement.id = crypto.randomUUID();
+
+                // If this is a group element with children, regenerate their IDs too
+                if (newElement.type === 'group' && Array.isArray(newElement.children)) {
+                    newElement.children = newElement.children.map((child: any) =>
+                        regenerateElementIds(child)
+                    );
+                }
+
+                return newElement;
+            };
+
             const pastedIds: string[] = [];
             const pastedElements = clipboard.map((el, index) => {
-                const newId = crypto.randomUUID();
-                pastedIds.push(newId);
+                const newElement = regenerateElementIds(el);
+                pastedIds.push(newElement.id);
                 return {
-                    ...JSON.parse(JSON.stringify(el)),
-                    id: newId,
+                    ...newElement,
                     transform: {
-                        ...el.transform,
+                        ...newElement.transform,
                         x: el.transform.x + 20,
                         y: el.transform.y + 20,
                     },

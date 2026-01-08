@@ -44,22 +44,30 @@ export function PreviewMode() {
         // Calculate scale to fit page in container while maintaining aspect ratio
         const scaleX = containerWidth / pageWidth;
         const scaleY = containerHeight / pageHeight;
-        const scale = Math.min(scaleX, scaleY, 1); // Don't upscale beyond 100%
+        const scale = Math.min(scaleX, scaleY); // Removed cap of 1 to allow filling screen
 
-        // Set canvas size
+        // Display dimensions (CSS pixels)
         const displayWidth = Math.floor(pageWidth * scale);
         const displayHeight = Math.floor(pageHeight * scale);
-        canvas.width = displayWidth;
-        canvas.height = displayHeight;
+
+        // Handle High DPI (Retina) displays
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = displayWidth * dpr;
+        canvas.height = displayHeight * dpr;
+
+        // Force CSS dimensions
         canvas.style.width = `${displayWidth}px`;
         canvas.style.height = `${displayHeight}px`;
+
+        // Reset transform to identity before drawing
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
 
         // Draw background
         ctx.fillStyle = '#FFFFFF';
         if (currentPage.background.type === 'solid') {
             ctx.fillStyle = currentPage.background.color;
         }
-        ctx.fillRect(0, 0, displayWidth, displayHeight);
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
 
         // Try to get the current fabric canvas and export it
         try {
@@ -75,13 +83,14 @@ export function PreviewMode() {
             const dataUrl = fabricCanvas.toDataURL({
                 format: 'png',
                 quality: 1,
-                multiplier: scale,
+                // Multiplier needs to account for both layout scale AND device pixel ratio
+                multiplier: scale * dpr,
             });
 
             // Draw the exported canvas
             const img = new Image();
             img.onload = () => {
-                ctx.drawImage(img, 0, 0, displayWidth, displayHeight);
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
             };
             img.src = dataUrl;
 

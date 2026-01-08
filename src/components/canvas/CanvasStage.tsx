@@ -131,6 +131,9 @@ export function CanvasStage({ className }: CanvasStageProps) {
     // Track workingScale to force re-render when canvas is resized
     const [workingScaleState, setWorkingScaleState] = useState(1);
 
+    // Ref to track selection originating from Fabric.js (to prevent sync loops)
+    const lastFabricSelectionRef = useRef<string[]>([]);
+
     const activePage = useActivePage();
     const zoom = useEditorStore((state) => state.zoom);
     const setZoom = useEditorStore((state) => state.setZoom);
@@ -251,6 +254,8 @@ export function CanvasStage({ className }: CanvasStageProps) {
         // Set up event handlers
         // Set up event handlers
         fabricCanvas.onSelectionChange = (selectedIds) => {
+            // Update ref BEFORE calling select so the sync useEffect knows this came from Fabric
+            lastFabricSelectionRef.current = [...selectedIds];
             if (selectedIds.length === 0) {
                 deselect();
             } else {
@@ -469,6 +474,58 @@ export function CanvasStage({ className }: CanvasStageProps) {
         const fabricCanvas = getFabricCanvas();
         fabricCanvas.setSnapToGuides(snapToGuides);
     }, [snapToGuides, isInitialized]);
+
+    // Sync selectedIds from store to Fabric.js canvas
+    // This enables clicking a layer in the Layers panel to select it on canvas
+    const selectedIds = useCanvasStore((state) => state.selectedIds);
+
+    useEffect(() => {
+        if (!isInitialized) return;
+
+        const fabricCanvas = getFabricCanvas();
+        const canvas = fabricCanvas.getCanvas();
+        if (!canvas) return;
+
+        // Check if this selection change originated from Fabric.js itself
+        // If so, skip to avoid infinite loop
+        const currentFabricSelection = lastFabricSelectionRef.current;
+        if (
+            selectedIds.length === currentFabricSelection.length &&
+            selectedIds.every((id, i) => currentFabricSelection[i] === id)
+        ) {
+            return; // Selection unchanged or came from Fabric, skip sync
+        }
+
+        // Update ref to track this selection
+        lastFabricSelectionRef.current = [...selectedIds];
+
+        // First, discard any existing selection without triggering events
+        canvas.discardActiveObject();
+
+        if (selectedIds.length === 0) {
+            // Already discarded above
+            canvas.requestRenderAll();
+        } else if (selectedIds.length === 1) {
+            // Single selection
+            const fabricObject = fabricCanvas.getObjectById(selectedIds[0]);
+            if (fabricObject) {
+                canvas.setActiveObject(fabricObject);
+                canvas.requestRenderAll();
+            }
+        } else {
+            // Multi-selection: create ActiveSelection
+            const objects = selectedIds
+                .map(id => fabricCanvas.getObjectById(id))
+                .filter((obj): obj is fabric.Object => obj !== undefined);
+
+            if (objects.length > 0) {
+                // Standard Fabric.js multi-selection approach
+                const selection = new fabric.ActiveSelection(objects, { canvas });
+                canvas.setActiveObject(selection);
+                canvas.requestRenderAll();
+            }
+        }
+    }, [selectedIds, isInitialized]);
 
     // Note: Visual zoom is handled by CSS transform on the wrapper div
     // Fabric.js setZoom would cause double-scaling, so we don't use it

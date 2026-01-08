@@ -320,7 +320,7 @@ export function TopToolbar() {
                         <Minus size={14} aria-hidden="true" />
                     </button>
                     <span className="text-xs font-medium w-12 text-center text-gray-300">
-                        {zoom}%
+                        {Math.round(zoom)}%
                     </span>
                     <button
                         onClick={zoomIn}

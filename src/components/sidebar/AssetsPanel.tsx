@@ -5,6 +5,7 @@ import { Search, ArrowLeft, ChevronRight } from 'lucide-react';
 import { ElementsPanel } from './ElementsPanel';
 import { IconsPanel } from './IconsPanel';
 import { StickersPanel } from './StickersPanel';
+import { GraphicsPanel } from './GraphicsPanel';
 
 type AssetCategory = 'main' | 'shapes' | 'graphics' | 'stickers' | 'icons';
 
@@ -136,16 +137,8 @@ export function AssetsPanel() {
                     </button>
                     <h2 className="text-gray-800 font-semibold text-lg">Graphics</h2>
                 </div>
-                <div className="flex-1 flex items-center justify-center p-8">
-                    <div className="text-center">
-                        <div className="w-16 h-16 mx-auto mb-4 bg-amber-100 rounded-full flex items-center justify-center">
-                            <svg viewBox="0 0 24 24" className="w-8 h-8 text-amber-600" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
-                            </svg>
-                        </div>
-                        <h3 className="text-gray-700 font-semibold mb-2">Coming Soon</h3>
-                        <p className="text-gray-500 text-sm">Graphics library will be available soon</p>
-                    </div>
+                <div className="flex-1 overflow-hidden">
+                    <GraphicsPanel searchQuery={searchQuery} />
                 </div>
             </div>
         );

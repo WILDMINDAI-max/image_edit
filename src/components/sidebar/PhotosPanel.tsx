@@ -106,21 +106,64 @@ export function PhotosPanel() {
     });
 
     const handleAddImage = (src: string) => {
-        addImageElement(src, {
-            transform: {
-                x: 540,
-                y: 540,
-                width: 300,
-                height: 200,
-                scaleX: 1,
-                scaleY: 1,
-                rotation: 0,
-                skewX: 0,
-                skewY: 0,
-                originX: 'center',
-                originY: 'center',
-            },
-        });
+        // Load image first to get natural dimensions for correct aspect ratio
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        img.onload = () => {
+            const naturalWidth = img.naturalWidth;
+            const naturalHeight = img.naturalHeight;
+            const aspectRatio = naturalWidth / naturalHeight;
+
+            // Base size - fit within 300px on the larger dimension
+            const maxSize = 300;
+            let width: number;
+            let height: number;
+
+            if (aspectRatio >= 1) {
+                // Landscape or square
+                width = maxSize;
+                height = maxSize / aspectRatio;
+            } else {
+                // Portrait
+                height = maxSize;
+                width = maxSize * aspectRatio;
+            }
+
+            addImageElement(src, {
+                transform: {
+                    x: 540,
+                    y: 540,
+                    width,
+                    height,
+                    scaleX: 1,
+                    scaleY: 1,
+                    rotation: 0,
+                    skewX: 0,
+                    skewY: 0,
+                    originX: 'center',
+                    originY: 'center',
+                },
+            });
+        };
+        img.onerror = () => {
+            // Fallback to default size if image fails to load
+            addImageElement(src, {
+                transform: {
+                    x: 540,
+                    y: 540,
+                    width: 300,
+                    height: 300,
+                    scaleX: 1,
+                    scaleY: 1,
+                    rotation: 0,
+                    skewX: 0,
+                    skewY: 0,
+                    originX: 'center',
+                    originY: 'center',
+                },
+            });
+        };
+        img.src = src;
     };
 
     return (
