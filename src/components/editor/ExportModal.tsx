@@ -4,8 +4,9 @@ import { useState, useEffect, useCallback } from 'react';
 import { useEditorStore, usePages, useActivePage } from '@/store/editorStore';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { Page } from '@/types/project';
-import { TextElement } from '@/types/canvas';
+import { TextElement, ImageElement } from '@/types/canvas';
 import { loadGoogleFont, GOOGLE_FONTS } from '@/services/googleFonts';
+import { applyImageAdjustments, hasActiveAdjustments } from '@/utils/imageAdjustments';
 import { fabric } from 'fabric';
 import JSZip from 'jszip';
 import { PDFDocument } from 'pdf-lib';
@@ -59,15 +60,18 @@ export function ExportModal() {
         }
     }, [isOpen, pages]);
 
-    // Get pages to export based on selection
+    // Get pages to export based on selection (excludes hidden pages)
     const getPagesToExport = useCallback((): Page[] => {
+        let pagesToExport: Page[];
         if (pageSelection.type === 'all') {
-            return pages;
+            pagesToExport = pages;
         } else if (pageSelection.type === 'current' && activePage) {
-            return [activePage];
+            pagesToExport = [activePage];
         } else {
-            return pages.filter(p => pageSelection.selectedPageIds.includes(p.id));
+            pagesToExport = pages.filter(p => pageSelection.selectedPageIds.includes(p.id));
         }
+        // Filter out hidden pages - they should not be exported
+        return pagesToExport.filter(p => !p.hidden);
     }, [pageSelection, pages, activePage]);
 
     // Calculate output dimensions
@@ -173,6 +177,79 @@ export function ExportModal() {
         // Force another render to ensure fonts are displayed correctly
         canvas.renderAll();
 
+        // ========== RE-APPLY IMAGE ADJUSTMENTS FOR EXPORT ==========
+        // Image adjustments (brightness, contrast, temperature, etc.) are stored in element.filters
+        // but the canvas loads from element.src which may be the original unfiltered image.
+        // We need to re-apply these adjustments to ensure exported images match canvas preview.
+        console.log('[ExportModal] Re-applying image adjustments for export...');
+        const imageElements = page.elements.filter(el => el.type === 'image') as ImageElement[];
+
+        for (const imageEl of imageElements) {
+            // Check if this image has active adjustments that need to be applied
+            if (imageEl.filters && hasActiveAdjustments(imageEl.filters)) {
+                console.log(`[ExportModal] Applying adjustments to image: ${imageEl.id}`);
+
+                const fabricObj = fabricCanvas.getObjectById(imageEl.id) as fabric.Image | undefined;
+                if (fabricObj) {
+                    try {
+                        // Get original source to apply adjustments to
+                        const originalSrc = imageEl.originalSrc || imageEl.src;
+
+                        // Create image element and apply adjustments
+                        const originalImg = new window.Image();
+                        originalImg.crossOrigin = 'anonymous';
+
+                        await new Promise<void>((resolve, reject) => {
+                            originalImg.onload = async () => {
+                                try {
+                                    // Apply all filter adjustments
+                                    const processedSrc = await applyImageAdjustments(originalImg, imageEl.filters);
+
+                                    // Update the fabric canvas image with processed result
+                                    await new Promise<void>((innerResolve) => {
+                                        fabric.Image.fromURL(processedSrc, (newImg) => {
+                                            newImg.set({
+                                                left: fabricObj.left,
+                                                top: fabricObj.top,
+                                                scaleX: fabricObj.scaleX,
+                                                scaleY: fabricObj.scaleY,
+                                                angle: fabricObj.angle,
+                                                originX: fabricObj.originX,
+                                                originY: fabricObj.originY,
+                                                opacity: fabricObj.opacity,
+                                                data: { id: imageEl.id, type: 'image' },
+                                            });
+
+                                            canvas.remove(fabricObj);
+                                            canvas.add(newImg);
+                                            fabricCanvas.setObjectById(imageEl.id, newImg);
+                                            canvas.renderAll();
+
+                                            console.log(`[ExportModal] Successfully applied adjustments to image: ${imageEl.id}`);
+                                            innerResolve();
+                                        }, { crossOrigin: 'anonymous' });
+                                    });
+
+                                    resolve();
+                                } catch (err) {
+                                    console.error(`[ExportModal] Failed to apply adjustments to image ${imageEl.id}:`, err);
+                                    resolve(); // Continue with other images
+                                }
+                            };
+                            originalImg.onerror = () => {
+                                console.error(`[ExportModal] Failed to load original image for ${imageEl.id}`);
+                                resolve(); // Continue with other images
+                            };
+                            originalImg.src = originalSrc;
+                        });
+                    } catch (err) {
+                        console.error(`[ExportModal] Error processing adjustments for ${imageEl.id}:`, err);
+                    }
+                }
+            }
+        }
+        console.log('[ExportModal] Image adjustments re-application complete');
+        // ========== END RE-APPLY IMAGE ADJUSTMENTS ==========
         // Wait for images to load with timeout
         console.log('[ExportModal] Waiting for images to load...');
         await new Promise<void>((resolve) => {

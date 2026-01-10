@@ -1838,7 +1838,10 @@ export class FabricCanvas {
         // Recursively create fabric objects for all children
         const childObjects: fabric.Object[] = [];
 
-        for (const child of element.children) {
+        // Sort children by zIndex to ensure correct stacking order
+        const sortedChildren = [...element.children].sort((a, b) => a.zIndex - b.zIndex);
+
+        for (const child of sortedChildren) {
             // Create the child element first (without adding to canvas directly)
             const childObj = await this.createChildObject(child);
             if (childObj) {
@@ -1894,6 +1897,8 @@ export class FabricCanvas {
                 return this.createShapeObject(element as ShapeElement);
             case 'line':
                 return this.createLineObject(element as LineElement);
+            case 'sticker':
+                return await this.createStickerObject(element as StickerElement);
             case 'group':
                 // Handle nested groups recursively
                 return this.createNestedGroup(element as GroupElement);
@@ -2007,6 +2012,16 @@ export class FabricCanvas {
             data: { id: element.id, type: 'shape' },
         });
 
+        // Apply shadow if present (for glow effects)
+        if (element.style.shadow) {
+            shape.shadow = new fabric.Shadow({
+                color: element.style.shadow.color,
+                blur: element.style.shadow.blur,
+                offsetX: element.style.shadow.offsetX,
+                offsetY: element.style.shadow.offsetY,
+            });
+        }
+
         return shape;
     }
 
@@ -2034,7 +2049,10 @@ export class FabricCanvas {
     private async createNestedGroup(element: GroupElement): Promise<fabric.Group | null> {
         const childObjects: fabric.Object[] = [];
 
-        for (const child of element.children) {
+        // Sort children by zIndex to ensure correct stacking order
+        const sortedChildren = [...element.children].sort((a, b) => a.zIndex - b.zIndex);
+
+        for (const child of sortedChildren) {
             const childObj = await this.createChildObject(child);
             if (childObj) {
                 childObjects.push(childObj);
@@ -2054,6 +2072,49 @@ export class FabricCanvas {
             opacity: element.style.opacity,
             subTargetCheck: false,
             data: { id: element.id, type: 'group' },
+        });
+    }
+
+    /**
+     * Create a sticker object without adding to canvas
+     */
+    private async createStickerObject(element: StickerElement): Promise<fabric.Object> {
+        return new Promise((resolve, reject) => {
+            // Parse SVG string to fabric objects
+            fabric.loadSVGFromString(element.svgContent, (objects, options) => {
+                // Create a group from the SVG objects
+                const group = fabric.util.groupSVGElements(objects, options);
+
+                // Set position and properties
+                group.set({
+                    left: element.transform.x,
+                    top: element.transform.y,
+                    scaleX: element.transform.scaleX * (element.transform.width / (group.width || 100)),
+                    scaleY: element.transform.scaleY * (element.transform.height / (group.height || 100)),
+                    angle: element.transform.rotation,
+                    originX: element.transform.originX,
+                    originY: element.transform.originY,
+                    opacity: element.style.opacity,
+                    selectable: element.selectable,
+                    lockMovementX: element.locked,
+                    lockMovementY: element.locked,
+                    visible: element.visible,
+                    data: { id: element.id, type: 'sticker' },
+                    globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
+                });
+
+                // Apply shadow/glow if present (for neon glow frames)
+                if (element.style.shadow) {
+                    group.shadow = new fabric.Shadow({
+                        color: element.style.shadow.color,
+                        blur: element.style.shadow.blur,
+                        offsetX: element.style.shadow.offsetX,
+                        offsetY: element.style.shadow.offsetY,
+                    });
+                }
+
+                resolve(group);
+            });
         });
     }
 
@@ -2412,6 +2473,16 @@ export class FabricCanvas {
                     globalCompositeOperation: getCanvasBlendMode(element.blendMode || 'normal') || 'source-over',
                 });
 
+                // Apply shadow/glow if present (for neon glow frames)
+                if (element.style.shadow) {
+                    group.shadow = new fabric.Shadow({
+                        color: element.style.shadow.color,
+                        blur: element.style.shadow.blur,
+                        offsetX: element.style.shadow.offsetX,
+                        offsetY: element.style.shadow.offsetY,
+                    });
+                }
+
                 this.canvas!.add(group);
                 this.objectIdMap.set(element.id, group);
 
@@ -2433,7 +2504,7 @@ export class FabricCanvas {
         const activeObject = this.canvas.getActiveObject();
         const wasSelected = activeObject === existingObj || (activeObject?.type === 'activeSelection' && (activeObject as any).contains(existingObj));
 
-        // Store current transform properties
+        // Store current transform properties including shadow for glow effect
         const currentProps = {
             left: existingObj.left,
             top: existingObj.top,
@@ -2450,6 +2521,9 @@ export class FabricCanvas {
             data: (existingObj as any).data,
         };
 
+        // Store shadow separately (for glow frames)
+        const existingShadow = existingObj.shadow;
+
         // Remove old object
         this.canvas.remove(existingObj);
 
@@ -2461,6 +2535,11 @@ export class FabricCanvas {
 
             // Restore transform properties
             group.set(currentProps);
+
+            // Restore shadow/glow effect if it existed
+            if (existingShadow) {
+                group.shadow = existingShadow;
+            }
 
             this.canvas.add(group);
             this.objectIdMap.set(id, group);

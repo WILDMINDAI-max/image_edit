@@ -896,6 +896,280 @@ export const STICKER_CATALOG: StickerDefinition[] = [
         defaultColors: ['#434343', '#000000'],
         tags: ['gradient', 'dark', 'aura', 'black'],
     },
+    // New stylish gradients
+    {
+        id: 'grad-aurora',
+        name: 'Aurora Borealis',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradAurora" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#00C9FF;stop-opacity:1" />
+                    <stop offset="33%" style="stop-color:#92FE9D;stop-opacity:1" />
+                    <stop offset="66%" style="stop-color:#00C9FF;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#92FE9D;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M0,80 C20,60 30,90 50,70 C70,50 80,80 100,60 L100,100 L0,100 Z" fill="url(#gradAurora)" />
+        </svg>`,
+        defaultColors: ['#00c9ff', '#92fe9d'],
+        tags: ['gradient', 'aurora', 'northern lights', 'wave'],
+    },
+    {
+        id: 'grad-diamond',
+        name: 'Crystal Diamond',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradDiamond" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E8CBC0;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#636FA4;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#E8CBC0;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 95,50 50,95 5,50" fill="url(#gradDiamond)" />
+        </svg>`,
+        defaultColors: ['#e8cbc0', '#636fa4'],
+        tags: ['gradient', 'diamond', 'crystal', 'gem'],
+    },
+    {
+        id: 'grad-neon-star',
+        name: 'Neon Star',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradNeonStar" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF00FF;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#00FFFF;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FF00FF;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 61,35 95,35 68,57 79,90 50,70 21,90 32,57 5,35 39,35" fill="url(#gradNeonStar)" />
+        </svg>`,
+        defaultColors: ['#ff00ff', '#00ffff'],
+        tags: ['gradient', 'star', 'neon', 'cyber'],
+    },
+    {
+        id: 'grad-fire',
+        name: 'Fire Flame',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradFire" x1="50%" y1="100%" x2="50%" y2="0%">
+                    <stop offset="0%" style="stop-color:#FF4E50;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#FC913A;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#F9D423;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,5 Q65,25 60,45 Q80,35 75,55 Q90,50 80,70 Q95,75 75,90 L50,95 L25,90 Q5,75 20,70 Q10,50 25,55 Q20,35 40,45 Q35,25 50,5 Z" fill="url(#gradFire)" />
+        </svg>`,
+        defaultColors: ['#ff4e50', '#fc913a', '#f9d423'],
+        tags: ['gradient', 'fire', 'flame', 'hot'],
+    },
+    {
+        id: 'grad-sunset-hex',
+        name: 'Sunset Hexagon',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradSunsetHex" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FA709A;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FEE140;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <polygon points="50,5 93,27.5 93,72.5 50,95 7,72.5 7,27.5" fill="url(#gradSunsetHex)" />
+        </svg>`,
+        defaultColors: ['#fa709a', '#fee140'],
+        tags: ['gradient', 'hexagon', 'sunset', 'warm'],
+    },
+    // Heart gradient
+    {
+        id: 'grad-heart',
+        name: 'Love Heart',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradHeart" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF416C;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FF4B2B;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,88 C20,60 5,40 5,25 C5,10 20,5 35,15 C45,22 50,30 50,30 C50,30 55,22 65,15 C80,5 95,10 95,25 C95,40 80,60 50,88 Z" fill="url(#gradHeart)" />
+        </svg>`,
+        defaultColors: ['#ff416c', '#ff4b2b'],
+        tags: ['gradient', 'heart', 'love', 'valentine'],
+    },
+    // Cloud gradient
+    {
+        id: 'grad-cloud',
+        name: 'Fluffy Cloud',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradCloud" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#E0E5EC;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#A8C0FF;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M80,70 C90,70 95,60 90,52 C92,42 82,35 72,38 C68,28 55,25 45,32 C35,28 22,35 22,48 C10,48 8,65 20,70 Z" fill="url(#gradCloud)" />
+        </svg>`,
+        defaultColors: ['#e0e5ec', '#a8c0ff'],
+        tags: ['gradient', 'cloud', 'sky', 'fluffy'],
+    },
+    // Lightning bolt gradient
+    {
+        id: 'grad-lightning',
+        name: 'Electric Bolt',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradLightning" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#F7971E;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#FFD200;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <polygon points="60,5 25,55 45,55 38,95 75,42 55,42" fill="url(#gradLightning)" />
+        </svg>`,
+        defaultColors: ['#f7971e', '#ffd200'],
+        tags: ['gradient', 'lightning', 'bolt', 'energy'],
+    },
+    // Shield gradient
+    {
+        id: 'grad-shield',
+        name: 'Royal Shield',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradShield" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#4776E6;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#8E54E9;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,5 L90,20 L90,50 C90,75 60,95 50,95 C40,95 10,75 10,50 L10,20 Z" fill="url(#gradShield)" />
+        </svg>`,
+        defaultColors: ['#4776e6', '#8e54e9'],
+        tags: ['gradient', 'shield', 'badge', 'security'],
+    },
+    // Leaf gradient
+    {
+        id: 'grad-leaf',
+        name: 'Fresh Leaf',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradLeaf" x1="0%" y1="100%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#11998E;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#38EF7D;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,95 C50,95 15,80 15,45 C15,10 50,5 50,5 C50,5 85,10 85,45 C85,80 50,95 50,95 Z M50,95 L50,45" fill="url(#gradLeaf)" stroke="url(#gradLeaf)" stroke-width="2" />
+        </svg>`,
+        defaultColors: ['#11998e', '#38ef7d'],
+        tags: ['gradient', 'leaf', 'nature', 'eco'],
+    },
+    // Crescent Moon gradient
+    {
+        id: 'grad-moon',
+        name: 'Crescent Moon',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradMoon" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#2C3E50;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#4CA1AF;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,5 C75,5 95,28 95,55 C95,82 75,95 50,95 C25,95 5,75 5,50 C5,25 25,5 50,5 C40,20 40,80 50,95 C25,95 5,75 5,50 C5,25 25,5 50,5 Z" fill="url(#gradMoon)" />
+        </svg>`,
+        defaultColors: ['#2c3e50', '#4ca1af'],
+        tags: ['gradient', 'moon', 'night', 'crescent'],
+    },
+    // Arrow/Chevron gradient
+    {
+        id: 'grad-arrow',
+        name: 'Bold Arrow',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradArrow" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#834D9B;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#D04ED6;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <polygon points="10,50 50,10 90,50 70,50 70,90 30,90 30,50" fill="url(#gradArrow)" />
+        </svg>`,
+        defaultColors: ['#834d9b', '#d04ed6'],
+        tags: ['gradient', 'arrow', 'direction', 'up'],
+    },
+    // Crown gradient
+    {
+        id: 'grad-crown',
+        name: 'Royal Crown',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradCrown" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FDC830;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#F37335;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M10,80 L20,30 L40,60 L50,20 L60,60 L80,30 L90,80 Z" fill="url(#gradCrown)" />
+        </svg>`,
+        defaultColors: ['#fdc830', '#f37335'],
+        tags: ['gradient', 'crown', 'king', 'queen', 'royal'],
+    },
+    // Infinity gradient
+    {
+        id: 'grad-infinity',
+        name: 'Infinity Loop',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradInfinity" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style="stop-color:#00C9FF;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#92FE9D;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M30,30 C10,30 10,70 30,70 C40,70 45,60 50,50 C55,40 60,30 70,30 C90,30 90,70 70,70 C60,70 55,60 50,50 C45,40 40,30 30,30 Z M30,40 C35,40 40,45 43,50 C40,55 35,60 30,60 C20,60 20,40 30,40 M70,40 C80,40 80,60 70,60 C65,60 60,55 57,50 C60,45 65,40 70,40 Z" fill="url(#gradInfinity)" fill-rule="evenodd" />
+        </svg>`,
+        defaultColors: ['#00c9ff', '#92fe9d'],
+        tags: ['gradient', 'infinity', 'loop', 'forever'],
+    },
+    // Water Droplet gradient
+    {
+        id: 'grad-drop',
+        name: 'Water Drop',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradDrop" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#00C6FF;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#0072FF;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M50,10 Q80,50 80,70 Q80,95 50,95 Q20,95 20,70 Q20,50 50,10 Z" fill="url(#gradDrop)" />
+        </svg>`,
+        defaultColors: ['#00c6ff', '#0072ff'],
+        tags: ['gradient', 'drop', 'water', 'rain', 'tear'],
+    },
+    // Puzzle Piece gradient
+    {
+        id: 'grad-puzzle',
+        name: 'Puzzle Piece',
+        category: 'gradients',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="gradPuzzle" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" style="stop-color:#FF0099;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#493240;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+            <path d="M30,30 L50,30 C50,20 60,20 60,30 L80,30 L80,50 C90,50 90,60 80,60 L80,80 L60,80 C60,90 50,90 50,80 L30,80 L30,60 C20,60 20,50 30,50 Z" fill="url(#gradPuzzle)" />
+        </svg>`,
+        defaultColors: ['#ff0099', '#493240'],
+        tags: ['gradient', 'puzzle', 'game', 'connect'],
+    },
+    // Pill/Capsule gradient
 
     // ========== ABSTRACT ==========
     {
@@ -944,6 +1218,282 @@ export const STICKER_CATALOG: StickerDefinition[] = [
         defaultColors: ['#ff5722', '#4caf50', '#2196f3', '#9c27b0'],
         tags: ['lines', 'wave', 'abstract', 'colorful'],
     },
+    {
+        id: '3d-iso-package-stack',
+        name: 'Package Stack',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Box 1 (Bottom Left) -->
+            <path d="M10 55 L35 45 L60 55 L35 65 Z" fill="#FFD54F"/>
+            <path d="M10 55 L35 65 L35 90 L10 80 Z" fill="#FFA000"/>
+            <path d="M60 55 L35 65 L35 90 L60 80 Z" fill="#FFB300"/>
+            <path d="M25 58 L45 50 L45 90 L25 90" fill="none" opacity="0.1"/>
+            
+            <!-- Box 2 (Bottom Right) -->
+            <path d="M45 45 L70 35 L95 45 L70 55 Z" fill="#FFD54F"/>
+            <path d="M45 45 L70 55 L70 80 L45 70 Z" fill="#FFA000"/>
+            <path d="M95 45 L70 55 L70 80 L95 70 Z" fill="#FFB300"/>
+
+            <!-- Box 3 (Top) -->
+            <path d="M30 35 L55 25 L80 35 L55 45 Z" fill="#FFECB3"/>
+            <path d="M30 35 L55 45 L55 70 L30 60 Z" fill="#FFCA28"/>
+            <path d="M80 35 L55 45 L55 70 L80 60 Z" fill="#FFC107"/>
+            
+            <!-- Tape details -->
+            <path d="M55 25 L55 45" stroke="#FFFFFF" stroke-width="4" opacity="0.6"/>
+            <path d="M30 35 L55 45" stroke="#FFFFFF" stroke-width="1" opacity="0.3"/>
+            <path d="M80 35 L55 45" stroke="#FFFFFF" stroke-width="1" opacity="0.3"/>
+        </svg>`,
+        defaultColors: ['#ffd54f', '#ffa000', '#ffb300', '#ffecb3', '#ffca28', '#ffc107'],
+        tags: ['box', '3d', 'delivery', 'stack', 'package', 'shipping'],
+    },
+    {
+        id: '3d-iso-app-icon',
+        name: '3D App Icon',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Shadow -->
+            <ellipse cx="50" cy="85" rx="35" ry="10" fill="#000000" opacity="0.2"/>
+            
+            <!-- Icon Sides -->
+            <path d="M15 50 L50 65 L50 85 L15 70 Z" fill="#1565C0"/>
+            <path d="M85 50 L50 65 L50 85 L85 70 Z" fill="#0D47A1"/>
+            
+            <!-- Icon Top -->
+            <path d="M15 50 L50 35 L85 50 L50 65 Z" fill="#42A5F5"/>
+            
+            <!-- Symbol -->
+            <path d="M40 45 L50 40 L60 45 L60 55 L50 60 L40 55 Z" fill="#FFFFFF"/>
+        </svg>`,
+        defaultColors: ['#1565c0', '#0d47a1', '#42a5f5', '#ffffff'],
+        tags: ['app', 'icon', '3d', 'mobile', 'tile', 'interface'],
+    },
+    {
+        id: '3d-iso-clipboard',
+        name: '3D Clipboard',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Board Base -->
+            <path d="M20 30 L80 30 L80 90 L20 90 Z" fill="#795548"/>
+            <path d="M20 90 L80 90 L85 85 L25 85 Z" fill="#5D4037"/>
+            <path d="M80 30 L85 25 L85 85 L80 90 Z" fill="#3E2723"/>
+
+            <!-- Paper -->
+            <rect x="25" y="35" width="50" height="50" fill="#FFFFFF"/>
+            
+            <!-- Clip -->
+            <rect x="35" y="25" width="30" height="10" rx="2" fill="#90A4AE"/>
+            <circle cx="50" cy="30" r="3" fill="#546E7A"/>
+            
+            <!-- Checkmark -->
+            <circle cx="40" cy="50" r="4" fill="#4CAF50"/>
+            <path d="M38 50 L40 52 L42 48" stroke="#FFFFFF" stroke-width="1.5" fill="none"/>
+            
+            <!-- Lines -->
+            <rect x="48" y="48" width="20" height="2" fill="#E0E0E0"/>
+            <rect x="48" y="55" width="20" height="2" fill="#E0E0E0"/>
+            <rect x="35" y="65" width="33" height="2" fill="#E0E0E0"/>
+        </svg>`,
+        defaultColors: ['#795548', '#5d4037', '#ffffff', '#90a4ae', '#4caf50'],
+        tags: ['clipboard', '3d', 'checklist', 'task', 'office'],
+    },
+
+    {
+        id: '3d-iso-target',
+        name: '3D Target',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Target Base (Cylinder like) -->
+            <ellipse cx="50" cy="70" rx="30" ry="10" fill="#E53935"/>
+            <path d="M20 50 L20 70 A30 10 0 0 0 80 70 L80 50" fill="#C62828"/>
+            
+            <!-- Target Rings Top -->
+            <ellipse cx="50" cy="50" rx="30" ry="10" fill="#FFCDD2"/>
+            <ellipse cx="50" cy="50" rx="22" ry="7" fill="#EF5350"/>
+            <ellipse cx="50" cy="50" rx="14" ry="4.5" fill="#FFCDD2"/>
+            <ellipse cx="50" cy="50" rx="6" ry="2" fill="#C62828"/>
+            
+            <!-- Arrow -->
+            <path d="M65 20 L50 50" stroke="#795548" stroke-width="3"/>
+            <path d="M65 20 L75 25 L70 15 Z" fill="#8D6E63"/>
+        </svg>`,
+        defaultColors: ['#e53935', '#c62828', '#ffcdd2', '#ef5350'],
+        tags: ['target', '3d', 'goal', 'bullseye', 'aim'],
+    },
+    {
+        id: '3d-iso-mail',
+        name: '3D Mail',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Envelope Body -->
+            <path d="M20 50 L50 65 L80 50 L80 80 L20 80 Z" fill="#E0E0E0"/>
+            <path d="M20 50 L50 35 L80 50" fill="#F5F5F5"/>
+            <!-- Flap Open -->
+            <path d="M20 50 L50 65 L80 50 L50 35 Z" fill="#FFFFFF"/>
+            <!-- Sides -->
+            <path d="M20 50 L20 80 L50 95 L50 65 Z" fill="#BDBDBD"/>
+            <path d="M80 50 L80 80 L50 95 L50 65 Z" fill="#9E9E9E"/>
+        </svg>`,
+        defaultColors: ['#e0e0e0', '#f5f5f5', '#ffffff', '#bdbdbd', '#9e9e9e'],
+        tags: ['mail', '3d', 'envelope', 'letter', 'message'],
+    },
+    {
+        id: '3d-iso-megaphone',
+        name: '3D Megaphone',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Main cone -->
+            <path d="M20 40 L70 25 L70 75 L20 60 Z" fill="#FF5722"/>
+            <path d="M70 25 L80 20 L80 80 L70 75 Z" fill="#E64A19"/>
+            <!-- Handle -->
+            <rect x="12" y="42" width="10" height="16" rx="2" fill="#795548"/>
+            <rect x="8" y="45" width="6" height="10" rx="1" fill="#5D4037"/>
+            <!-- Sound waves -->
+            <path d="M85 35 Q95 50 85 65" fill="none" stroke="#FFCCBC" stroke-width="3" stroke-linecap="round"/>
+            <path d="M90 40 Q98 50 90 60" fill="none" stroke="#FFCCBC" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        defaultColors: ['#ff5722', '#e64a19', '#795548', '#ffccbc'],
+        tags: ['megaphone', '3d', 'announcement', 'marketing', 'speaker'],
+    },
+
+    {
+        id: '3d-iso-rocket',
+        name: '3D Rocket',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Body -->
+            <path d="M50 10 L65 50 L50 90 L35 50 Z" fill="#E0E0E0"/>
+            <path d="M50 10 L65 50 L50 50 Z" fill="#BDBDBD"/>
+            <!-- Nose -->
+            <path d="M50 10 L60 30 L40 30 Z" fill="#F44336"/>
+            <!-- Fins -->
+            <path d="M35 50 L20 75 L35 70 Z" fill="#2196F3"/>
+            <path d="M65 50 L80 75 L65 70 Z" fill="#1976D2"/>
+            <!-- Window -->
+            <circle cx="50" cy="40" r="8" fill="#81D4FA"/>
+            <circle cx="50" cy="40" r="5" fill="#29B6F6"/>
+            <!-- Flames -->
+            <path d="M45 85 L50 100 L55 85" fill="#FF9800"/>
+            <path d="M48 85 L50 95 L52 85" fill="#FFEB3B"/>
+        </svg>`,
+        defaultColors: ['#e0e0e0', '#f44336', '#2196f3', '#ff9800'],
+        tags: ['rocket', '3d', 'launch', 'startup', 'space'],
+    },
+    {
+        id: '3d-iso-lightbulb',
+        name: '3D Light Bulb',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Bulb -->
+            <ellipse cx="50" cy="40" rx="25" ry="28" fill="#FFEB3B"/>
+            <ellipse cx="45" cy="35" rx="8" ry="10" fill="#FFF9C4" opacity="0.6"/>
+            <!-- Base -->
+            <path d="M35 60 L35 75 L65 75 L65 60" fill="#9E9E9E"/>
+            <rect x="38" y="75" width="24" height="5" fill="#757575"/>
+            <rect x="40" y="80" width="20" height="5" fill="#616161"/>
+            <!-- Screw lines -->
+            <path d="M35 65 L65 65" stroke="#757575" stroke-width="2"/>
+            <path d="M35 70 L65 70" stroke="#757575" stroke-width="2"/>
+            <!-- Rays -->
+            <path d="M15 40 L25 40" stroke="#FFC107" stroke-width="3" stroke-linecap="round"/>
+            <path d="M75 40 L85 40" stroke="#FFC107" stroke-width="3" stroke-linecap="round"/>
+            <path d="M50 5 L50 15" stroke="#FFC107" stroke-width="3" stroke-linecap="round"/>
+        </svg>`,
+        defaultColors: ['#ffeb3b', '#fff9c4', '#9e9e9e', '#ffc107'],
+        tags: ['lightbulb', '3d', 'idea', 'innovation', 'creative'],
+    },
+    {
+        id: '3d-iso-calendar',
+        name: '3D Calendar',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Calendar body -->
+            <path d="M15 30 L85 30 L85 85 L15 85 Z" fill="#FFFFFF"/>
+            <path d="M15 85 L85 85 L90 80 L20 80 Z" fill="#E0E0E0"/>
+            <path d="M85 30 L90 25 L90 80 L85 85 Z" fill="#BDBDBD"/>
+            <!-- Header -->
+            <rect x="15" y="20" width="70" height="15" fill="#F44336"/>
+            <!-- Rings -->
+            <circle cx="30" cy="20" r="4" fill="#757575"/>
+            <circle cx="70" cy="20" r="4" fill="#757575"/>
+            <!-- Date grid -->
+            <rect x="22" y="40" width="12" height="10" fill="#FFCDD2"/>
+            <rect x="38" y="40" width="12" height="10" fill="#E0E0E0"/>
+            <rect x="54" y="40" width="12" height="10" fill="#E0E0E0"/>
+            <rect x="22" y="55" width="12" height="10" fill="#E0E0E0"/>
+            <rect x="38" y="55" width="12" height="10" fill="#E0E0E0"/>
+            <rect x="54" y="55" width="12" height="10" fill="#E0E0E0"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#f44336', '#757575', '#ffcdd2'],
+        tags: ['calendar', '3d', 'date', 'schedule', 'planner'],
+    },
+    {
+        id: '3d-iso-chart',
+        name: '3D Bar Chart',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Base -->
+            <path d="M10 80 L90 80 L90 85 L10 85 Z" fill="#9E9E9E"/>
+            <!-- Bar 1 -->
+            <path d="M20 80 L20 50 L35 50 L35 80 Z" fill="#4CAF50"/>
+            <path d="M35 50 L40 45 L40 75 L35 80 Z" fill="#388E3C"/>
+            <path d="M20 50 L25 45 L40 45 L35 50 Z" fill="#81C784"/>
+            <!-- Bar 2 -->
+            <path d="M45 80 L45 35 L60 35 L60 80 Z" fill="#2196F3"/>
+            <path d="M60 35 L65 30 L65 75 L60 80 Z" fill="#1976D2"/>
+            <path d="M45 35 L50 30 L65 30 L60 35 Z" fill="#64B5F6"/>
+            <!-- Bar 3 -->
+            <path d="M70 80 L70 55 L85 55 L85 80 Z" fill="#FF9800"/>
+            <path d="M85 55 L90 50 L90 75 L85 80 Z" fill="#F57C00"/>
+            <path d="M70 55 L75 50 L90 50 L85 55 Z" fill="#FFB74D"/>
+        </svg>`,
+        defaultColors: ['#4caf50', '#2196f3', '#ff9800', '#9e9e9e'],
+        tags: ['chart', '3d', 'graph', 'analytics', 'data'],
+    },
+    {
+        id: '3d-iso-cart',
+        name: '3D Shopping Cart',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Cart body -->
+            <path d="M25 35 L75 35 L70 60 L30 60 Z" fill="#42A5F5"/>
+            <path d="M75 35 L80 30 L75 55 L70 60 Z" fill="#1E88E5"/>
+            <path d="M25 35 L30 30 L80 30 L75 35 Z" fill="#64B5F6"/>
+            <!-- Handle -->
+            <path d="M20 30 L30 30" stroke="#757575" stroke-width="4" stroke-linecap="round"/>
+            <path d="M15 25 L20 30" stroke="#757575" stroke-width="4" stroke-linecap="round"/>
+            <!-- Wheels -->
+            <circle cx="35" cy="70" r="6" fill="#424242"/>
+            <circle cx="65" cy="70" r="6" fill="#424242"/>
+            <circle cx="35" cy="70" r="3" fill="#757575"/>
+            <circle cx="65" cy="70" r="3" fill="#757575"/>
+        </svg>`,
+        defaultColors: ['#42a5f5', '#1e88e5', '#64b5f6', '#424242'],
+        tags: ['cart', '3d', 'shopping', 'ecommerce', 'buy'],
+    },
+    {
+        id: '3d-iso-clock',
+        name: '3D Clock',
+        category: 'abstract',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <!-- Clock face -->
+            <ellipse cx="50" cy="50" rx="35" ry="35" fill="#FFFFFF" stroke="#1976D2" stroke-width="4"/>
+            <ellipse cx="50" cy="50" rx="30" ry="30" fill="#E3F2FD"/>
+            <!-- Hour marks -->
+            <path d="M50 25 L50 30" stroke="#1976D2" stroke-width="2"/>
+            <path d="M50 70 L50 75" stroke="#1976D2" stroke-width="2"/>
+            <path d="M25 50 L30 50" stroke="#1976D2" stroke-width="2"/>
+            <path d="M70 50 L75 50" stroke="#1976D2" stroke-width="2"/>
+            <!-- Hands -->
+            <path d="M50 50 L50 35" stroke="#1976D2" stroke-width="3" stroke-linecap="round"/>
+            <path d="M50 50 L62 50" stroke="#F44336" stroke-width="2" stroke-linecap="round"/>
+            <!-- Center dot -->
+            <circle cx="50" cy="50" r="3" fill="#1976D2"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#1976d2', '#e3f2fd', '#f44336'],
+        tags: ['clock', '3d', 'time', 'schedule', 'deadline'],
+    },
+
 
     // ========== DECORATIONS ==========
     {
@@ -978,6 +1528,416 @@ export const STICKER_CATALOG: StickerDefinition[] = [
         </svg>`,
         defaultColors: ['#333333'],
         tags: ['arrow', 'doodle', 'pointer', 'hand-drawn'],
+    },
+    {
+        id: 'grid-pattern',
+        name: 'Grid Pattern',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#4A4A4A" stroke-width="1" fill="none">
+                <line x1="0" y1="20" x2="100" y2="20"/>
+                <line x1="0" y1="40" x2="100" y2="40"/>
+                <line x1="0" y1="60" x2="100" y2="60"/>
+                <line x1="0" y1="80" x2="100" y2="80"/>
+                <line x1="20" y1="0" x2="20" y2="100"/>
+                <line x1="40" y1="0" x2="40" y2="100"/>
+                <line x1="60" y1="0" x2="60" y2="100"/>
+                <line x1="80" y1="0" x2="80" y2="100"/>
+            </g>
+        </svg>`,
+        defaultColors: ['#4a4a4a'],
+        tags: ['grid', 'pattern', 'lines', 'background', 'texture'],
+    },
+    {
+        id: 'grid-dots',
+        name: 'Dot Grid',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#666666">
+                <circle cx="10" cy="10" r="2"/><circle cx="30" cy="10" r="2"/><circle cx="50" cy="10" r="2"/><circle cx="70" cy="10" r="2"/><circle cx="90" cy="10" r="2"/>
+                <circle cx="10" cy="30" r="2"/><circle cx="30" cy="30" r="2"/><circle cx="50" cy="30" r="2"/><circle cx="70" cy="30" r="2"/><circle cx="90" cy="30" r="2"/>
+                <circle cx="10" cy="50" r="2"/><circle cx="30" cy="50" r="2"/><circle cx="50" cy="50" r="2"/><circle cx="70" cy="50" r="2"/><circle cx="90" cy="50" r="2"/>
+                <circle cx="10" cy="70" r="2"/><circle cx="30" cy="70" r="2"/><circle cx="50" cy="70" r="2"/><circle cx="70" cy="70" r="2"/><circle cx="90" cy="70" r="2"/>
+                <circle cx="10" cy="90" r="2"/><circle cx="30" cy="90" r="2"/><circle cx="50" cy="90" r="2"/><circle cx="70" cy="90" r="2"/><circle cx="90" cy="90" r="2"/>
+            </g>
+        </svg>`,
+        defaultColors: ['#666666'],
+        tags: ['grid', 'dots', 'pattern', 'bullet', 'journal'],
+    },
+    {
+        id: 'frame-simple',
+        name: 'Simple Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="90" height="90" fill="none" stroke="#333333" stroke-width="3"/>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#333333" stroke-width="1"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['frame', 'border', 'box', 'rectangle', 'simple'],
+    },
+    {
+        id: 'frame-decorative',
+        name: 'Decorative Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="8" y="8" width="84" height="84" fill="none" stroke="#D4AF37" stroke-width="2"/>
+            <rect x="12" y="12" width="76" height="76" fill="none" stroke="#D4AF37" stroke-width="1"/>
+            <circle cx="8" cy="8" r="3" fill="#D4AF37"/>
+            <circle cx="92" cy="8" r="3" fill="#D4AF37"/>
+            <circle cx="8" cy="92" r="3" fill="#D4AF37"/>
+            <circle cx="92" cy="92" r="3" fill="#D4AF37"/>
+        </svg>`,
+        defaultColors: ['#d4af37'],
+        tags: ['frame', 'decorative', 'gold', 'elegant', 'fancy'],
+    },
+    {
+        id: 'frame-rounded',
+        name: 'Rounded Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <rect x="5" y="5" width="90" height="90" rx="15" ry="15" fill="none" stroke="#2196F3" stroke-width="4"/>
+        </svg>`,
+        defaultColors: ['#2196f3'],
+        tags: ['frame', 'rounded', 'border', 'soft', 'modern'],
+    },
+    {
+        id: 'line-horizontal',
+        name: 'Horizontal Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="5" y1="50" x2="95" y2="50" stroke="#333333" stroke-width="2"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['line', 'horizontal', 'divider', 'separator'],
+    },
+    {
+        id: 'line-vertical',
+        name: 'Vertical Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="50" y1="5" x2="50" y2="95" stroke="#333333" stroke-width="2"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['line', 'vertical', 'divider', 'separator'],
+    },
+    {
+        id: 'line-diagonal',
+        name: 'Diagonal Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="10" y1="10" x2="90" y2="90" stroke="#333333" stroke-width="2"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['line', 'diagonal', 'slash', 'divider'],
+    },
+    {
+        id: 'divider-ornate',
+        name: 'Ornate Divider',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="5" y1="50" x2="40" y2="50" stroke="#666666" stroke-width="2"/>
+            <circle cx="50" cy="50" r="5" fill="#666666"/>
+            <line x1="60" y1="50" x2="95" y2="50" stroke="#666666" stroke-width="2"/>
+            <path d="M42 45 Q50 40 58 45" fill="none" stroke="#666666" stroke-width="1"/>
+            <path d="M42 55 Q50 60 58 55" fill="none" stroke="#666666" stroke-width="1"/>
+        </svg>`,
+        defaultColors: ['#666666'],
+        tags: ['divider', 'ornate', 'separator', 'elegant', 'fancy'],
+    },
+    {
+        id: 'divider-dots',
+        name: 'Dots Divider',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="20" cy="50" r="3" fill="#888888"/>
+            <circle cx="35" cy="50" r="3" fill="#888888"/>
+            <circle cx="50" cy="50" r="3" fill="#888888"/>
+            <circle cx="65" cy="50" r="3" fill="#888888"/>
+            <circle cx="80" cy="50" r="3" fill="#888888"/>
+        </svg>`,
+        defaultColors: ['#888888'],
+        tags: ['divider', 'dots', 'ellipsis', 'separator'],
+    },
+
+    {
+        id: 'corner-bracket',
+        name: 'Corner Bracket',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 40 L10 10 L40 10" fill="none" stroke="#333333" stroke-width="3"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['corner', 'bracket', 'l-shape', 'border'],
+    },
+
+    {
+        id: 'wavy-line',
+        name: 'Wavy Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 50 Q20 30 35 50 T65 50 T95 50" fill="none" stroke="#FF5722" stroke-width="3" stroke-linecap="round"/>
+        </svg>`,
+        defaultColors: ['#ff5722'],
+        tags: ['wave', 'wavy', 'line', 'squiggle', 'fun'],
+    },
+
+
+    {
+        id: 'double-line',
+        name: 'Double Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="5" y1="45" x2="95" y2="45" stroke="#333333" stroke-width="2"/>
+            <line x1="5" y1="55" x2="95" y2="55" stroke="#333333" stroke-width="2"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['double', 'line', 'parallel', 'divider'],
+    },
+    {
+        id: 'cross-pattern',
+        name: 'Cross Pattern',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="20" y1="50" x2="80" y2="50" stroke="#E91E63" stroke-width="3"/>
+            <line x1="50" y1="20" x2="50" y2="80" stroke="#E91E63" stroke-width="3"/>
+        </svg>`,
+        defaultColors: ['#e91e63'],
+        tags: ['cross', 'plus', 'pattern', 'center'],
+    },
+    {
+        id: 'diamond-border',
+        name: 'Diamond Border',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <polygon points="50,5 95,50 50,95 5,50" fill="none" stroke="#FF9800" stroke-width="3"/>
+        </svg>`,
+        defaultColors: ['#ff9800'],
+        tags: ['diamond', 'border', 'rhombus', 'shape'],
+    },
+    {
+        id: 'circle-frame',
+        name: 'Circle Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="42" fill="none" stroke="#673AB7" stroke-width="3"/>
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#673AB7" stroke-width="1"/>
+        </svg>`,
+        defaultColors: ['#673ab7'],
+        tags: ['circle', 'frame', 'round', 'border'],
+    },
+    {
+        id: 'star-burst',
+        name: 'Star Burst',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <g stroke="#FFC107" stroke-width="2">
+                <line x1="50" y1="10" x2="50" y2="90"/>
+                <line x1="10" y1="50" x2="90" y2="50"/>
+                <line x1="20" y1="20" x2="80" y2="80"/>
+                <line x1="80" y1="20" x2="20" y2="80"/>
+            </g>
+        </svg>`,
+        defaultColors: ['#ffc107'],
+        tags: ['star', 'burst', 'rays', 'sunburst'],
+    },
+    {
+        id: 'dashed-line',
+        name: 'Dashed Line',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <line x1="5" y1="50" x2="95" y2="50" stroke="#555555" stroke-width="2" stroke-dasharray="8 4"/>
+        </svg>`,
+        defaultColors: ['#555555'],
+        tags: ['dashed', 'line', 'dotted', 'divider'],
+    },
+    {
+        id: 'bracket-frame',
+        name: 'Bracket Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 10 L10 10 L10 90 L20 90" fill="none" stroke="#333333" stroke-width="3"/>
+            <path d="M80 10 L90 10 L90 90 L80 90" fill="none" stroke="#333333" stroke-width="3"/>
+        </svg>`,
+        defaultColors: ['#333333'],
+        tags: ['bracket', 'frame', 'border', 'sides'],
+    },
+
+    {
+        id: 'glow-frame-neon',
+        name: 'Neon Glow Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-blue" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#0066FF" stroke-width="3" rx="3" filter="url(#neon-glow-blue)"/>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#FFFFFF" stroke-width="2" rx="3"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#0066ff'],
+        tags: ['glow', 'neon', 'frame', 'border', 'glowing'],
+    },
+    {
+        id: 'glow-frame-cyan',
+        name: 'Cyan Neon Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-cyan" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#00FFFF" stroke-width="3" rx="3" filter="url(#neon-glow-cyan)"/>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#FFFFFF" stroke-width="2" rx="3"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#00ffff'],
+        tags: ['glow', 'neon', 'frame', 'cyan', 'border', 'glowing'],
+    },
+    {
+        id: 'glow-frame-open-corner',
+        name: 'Open Corner Neon Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-open" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Top line (gap at corners) -->
+            <line x1="18" y1="8" x2="82" y2="8" stroke="#0088FF" stroke-width="3" stroke-linecap="round" filter="url(#neon-glow-open)"/>
+            <line x1="18" y1="8" x2="82" y2="8" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <!-- Bottom line (gap at corners) -->
+            <line x1="18" y1="92" x2="82" y2="92" stroke="#0088FF" stroke-width="3" stroke-linecap="round" filter="url(#neon-glow-open)"/>
+            <line x1="18" y1="92" x2="82" y2="92" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <!-- Left line (gap at corners) -->
+            <line x1="8" y1="18" x2="8" y2="82" stroke="#0088FF" stroke-width="3" stroke-linecap="round" filter="url(#neon-glow-open)"/>
+            <line x1="8" y1="18" x2="8" y2="82" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+            <!-- Right line (gap at corners) -->
+            <line x1="92" y1="18" x2="92" y2="82" stroke="#0088FF" stroke-width="3" stroke-linecap="round" filter="url(#neon-glow-open)"/>
+            <line x1="92" y1="18" x2="92" y2="82" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#0088ff'],
+        tags: ['glow', 'neon', 'frame', 'open', 'corner', 'modern', 'border', 'glowing'],
+    },
+    {
+        id: 'glow-frame-3side-top',
+        name: 'Banner Neon Frame (Open Bottom)',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-banner" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+                    <feMerge>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="blur"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <!-- Blue glow layer -->
+            <path d="M 5 35 L 5 8 Q 5 5 8 5 L 92 5 Q 95 5 95 8 L 95 35" fill="none" stroke="#0088FF" stroke-width="6" stroke-linecap="round" filter="url(#neon-glow-banner)"/>
+            <!-- White stroke on top -->
+            <path d="M 5 35 L 5 8 Q 5 5 8 5 L 92 5 Q 95 5 95 8 L 95 35" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#0088ff'],
+        tags: ['glow', 'neon', 'frame', 'banner', '3-side', 'open', 'bottom', 'border', 'glowing', 'header'],
+    },
+    {
+        id: 'glow-frame-green',
+        name: 'Green Neon Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-green" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#00FF00" stroke-width="3" rx="3" filter="url(#neon-glow-green)"/>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#FFFFFF" stroke-width="2" rx="3"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#00ff00'],
+        tags: ['glow', 'neon', 'frame', 'green', 'border', 'glowing'],
+    },
+    {
+        id: 'glow-circle-frame',
+        name: 'Circle Neon Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-circle" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#00BFFF" stroke-width="3" filter="url(#neon-glow-circle)"/>
+            <circle cx="50" cy="50" r="40" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#00bfff'],
+        tags: ['glow', 'neon', 'circle', 'round', 'border', 'glowing'],
+    },
+    {
+        id: 'glow-frame-gold',
+        name: 'Gold Neon Frame',
+        category: 'decorations',
+        svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="neon-glow-gold" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="4" result="blur1"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="8" result="blur2"/>
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur3"/>
+                    <feMerge>
+                        <feMergeNode in="blur3"/>
+                        <feMergeNode in="blur2"/>
+                        <feMergeNode in="blur1"/>
+                        <feMergeNode in="SourceGraphic"/>
+                    </feMerge>
+                </filter>
+            </defs>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#FFD700" stroke-width="3" rx="3" filter="url(#neon-glow-gold)"/>
+            <rect x="10" y="10" width="80" height="80" fill="none" stroke="#FFFFFF" stroke-width="2" rx="3"/>
+        </svg>`,
+        defaultColors: ['#ffffff', '#ffd700'],
+        tags: ['glow', 'neon', 'frame', 'gold', 'yellow', 'border', 'glowing'],
     },
 
     // ========== 3D SHAPES ==========
@@ -1204,18 +2164,23 @@ export const STICKER_CATALOG: StickerDefinition[] = [
         tags: ['hemisphere', '3d', 'bowl', 'dome', 'half-sphere'],
     },
     {
-        id: '3d-pipe',
-        name: 'Hollow Pipe',
+        id: '3d-gem',
+        name: '3D Gemstone',
         category: '3d',
         svgContent: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-            <path d="M20 20 L20 80 A30 10 0 0 0 80 80 L80 20" fill="#90A4AE"/>
-            <ellipse cx="50" cy="80" rx="30" ry="10" fill="#78909C"/>
-            <ellipse cx="50" cy="20" rx="30" ry="10" fill="#B0BEC5"/>
-            <ellipse cx="50" cy="20" rx="20" ry="7" fill="#455A64"/>
+            <polygon points="30,30 70,30 90,50 50,90 10,50" fill="#29B6F6"/>
+            <polygon points="30,30 70,30 50,50" fill="#E1F5FE"/>
+            <polygon points="30,30 10,50 50,50" fill="#81D4FA"/>
+            <polygon points="70,30 90,50 50,50" fill="#4FC3F7"/>
+            <polygon points="10,50 50,90 50,50" fill="#039BE5"/>
+            <polygon points="90,50 50,90 50,50" fill="#0288D1"/>
+            <path d="M10 50 L90 50" stroke="#01579B" stroke-width="1" opacity="0.2"/>
         </svg>`,
-        defaultColors: ['#90a4ae', '#78909c', '#b0bec5', '#455a64'],
-        tags: ['pipe', '3d', 'tube', 'cylinder', 'hollow'],
+        defaultColors: ['#29b6f6', '#e1f5fe', '#81d4fa', '#4fc3f7', '#039be5', '#0288d1'],
+        tags: ['gem', '3d', 'diamond', 'crystal', 'jewel'],
     },
+
+
     // ========== LIQUID / FLUID ==========
     {
         id: 'liquid-blob-1',

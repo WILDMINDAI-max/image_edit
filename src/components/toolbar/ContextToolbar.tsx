@@ -4,7 +4,7 @@ import { useMemo, useState, useRef, useEffect } from 'react';
 import { useCanvasStore } from '@/store/canvasStore';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { SolidBackground } from '@/types/project';
-import { CanvasElement, ImageElement, TextElement, LineElement, ShapeElement } from '@/types/canvas';
+import { CanvasElement, ImageElement, TextElement, LineElement, ShapeElement, StickerElement } from '@/types/canvas';
 import { COLOR_PALETTE, applyColorReplacement } from '@/utils/colorReplace';
 import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { fabric } from 'fabric';
@@ -267,8 +267,10 @@ export function ContextToolbar() {
     const isText = element?.type === 'text';
     const isLine = element?.type === 'line';
     const isShape = element?.type === 'shape';
+    const isSticker = element?.type === 'sticker';
     const textElement = isText ? (element as TextElement) : null;
     const shapeElement = isShape ? (element as ShapeElement) : null;
+    const stickerElement = isSticker ? (element as StickerElement) : null;
     // Ensure lineElement has a valid lineStyle with defaults
     const lineElement = isLine ? (element as LineElement) : null;
     const lineStyleSafe = lineElement?.lineStyle || { dashPattern: 'solid', startCap: 'none', endCap: 'none', capFill: 'outline' };
@@ -302,6 +304,43 @@ export function ContextToolbar() {
             (fabricObj as any).set({ fill: color });
             fabricCanvas.getCanvas()?.renderAll();
         }
+    };
+
+    // Sticker/Graphics color change handler - applies color to ENTIRE element
+    const handleStickerColorChange = (color: string) => {
+        if (!stickerElement) return;
+
+        // Replace ALL colors in SVG with the selected color for uniform coloring
+        // This creates a single-color version of the sticker
+        let newSvgContent = stickerElement.originalSvgContent;
+
+        // Replace all fill colors
+        newSvgContent = newSvgContent.replace(/fill="[^"]*"/gi, `fill="${color}"`);
+        newSvgContent = newSvgContent.replace(/fill:[^;"]*/gi, `fill:${color}`);
+
+        // Replace all stroke colors
+        newSvgContent = newSvgContent.replace(/stroke="[^"]*"/gi, `stroke="${color}"`);
+        newSvgContent = newSvgContent.replace(/stroke:[^;"]*/gi, `stroke:${color}`);
+
+        // Handle "none" values - keep them as none
+        newSvgContent = newSvgContent.replace(/fill="none"/gi, 'fill="none"');
+        newSvgContent = newSvgContent.replace(/stroke="none"/gi, 'stroke="none"');
+
+        // Create new colorMap with all colors mapped to selected color
+        const newColorMap: Record<string, string> = {};
+        Object.keys(stickerElement.colorMap).forEach(originalColor => {
+            newColorMap[originalColor] = color;
+        });
+
+        // Update element in store
+        updateElement(stickerElement.id, {
+            svgContent: newSvgContent,
+            colorMap: newColorMap,
+        } as Partial<StickerElement>);
+
+        // Update Fabric.js canvas
+        const fabricCanvas = getFabricCanvas();
+        fabricCanvas.updateStickerSvg(stickerElement.id, newSvgContent);
     };
 
     // Shape stroke color change handler
@@ -1383,6 +1422,46 @@ export function ContextToolbar() {
                             </div>
                         )}
                     </div>
+                </>
+            )}
+
+            {/* Sticker/Graphics Color Options */}
+            {isSticker && stickerElement && (
+                <>
+                    {/* Color label */}
+                    <span className="text-xs text-gray-500 font-medium px-1">Color</span>
+
+                    {/* Color palette - common colors */}
+                    <div className="flex items-center gap-1">
+                        {['#000000', '#FFFFFF', '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8', '#9B59B6'].map((color) => (
+                            <button
+                                key={color}
+                                onClick={() => handleStickerColorChange(color)}
+                                className="w-5 h-5 rounded-full border border-gray-300 hover:border-blue-400 hover:scale-110 transition-all shadow-sm"
+                                style={{ backgroundColor: color }}
+                                title={`Apply ${color}`}
+                            />
+                        ))}
+
+                        {/* Custom Color Picker */}
+                        <div className="relative">
+                            <input
+                                type="color"
+                                onChange={(e) => handleStickerColorChange(e.target.value)}
+                                className="absolute inset-0 opacity-0 w-5 h-5 cursor-pointer"
+                                title="Pick custom color"
+                            />
+                            <div
+                                className="w-5 h-5 rounded-full border border-gray-300 hover:border-blue-400 hover:scale-110 transition-all shadow-sm cursor-pointer"
+                                style={{
+                                    background: 'conic-gradient(from 0deg, red, yellow, lime, aqua, blue, magenta, red)'
+                                }}
+                                title="Pick custom color"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="w-px h-6 bg-gray-200" />
                 </>
             )}
 

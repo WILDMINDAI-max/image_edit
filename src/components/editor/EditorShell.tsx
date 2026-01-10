@@ -20,7 +20,8 @@ import { GroupEditPanel } from '@/components/sidebar/GroupEditPanel';
 import { TextEffectsPanel } from '@/components/sidebar/TextEffectsPanel';
 import { FontsPanel } from '@/components/sidebar/FontsPanel';
 import { FilterPanel } from '@/components/sidebar/FilterPanel';
-import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, FileText, AlertCircle, MoreHorizontal, Plus, Copy, ClipboardPaste, CopyPlus, Trash2, EyeOff, Lock } from 'lucide-react';
+import { getFabricCanvas } from '@/engine/fabric/FabricCanvas';
+import { ChevronRight, ChevronLeft, ChevronUp, ChevronDown, FileText, AlertCircle, MoreHorizontal, Plus, Copy, ClipboardPaste, CopyPlus, Trash2, Eye, EyeOff, Lock, LockOpen } from 'lucide-react';
 
 export function EditorShell() {
     const createNewProject = useEditorStore((state) => state.createNewProject);
@@ -39,12 +40,47 @@ export function EditorShell() {
     // Right panel state from store
     const rightPanel = useEditorStore((state) => state.activeRightPanel);
     const setRightPanel = useEditorStore((state) => state.setRightPanel);
+    const updatePageThumbnail = useEditorStore((state) => state.updatePageThumbnail);
 
     // Local panel states
     const [pagesExpanded, setPagesExpanded] = useState(false);
 
     // Helper to check if right panel is open
     const showRightPanel = rightPanel !== null;
+
+    // Generate thumbnail for current page
+    const generateThumbnail = useCallback(() => {
+        try {
+            const fabricCanvas = getFabricCanvas();
+            const dataUrl = fabricCanvas.toDataURL({
+                format: 'jpeg',
+                quality: 0.6,
+                multiplier: 0.15, // Small multiplier for thumbnail
+            });
+            return dataUrl;
+        } catch (error) {
+            console.warn('Failed to generate thumbnail:', error);
+            return undefined;
+        }
+    }, []);
+
+    // Handle page switch with thumbnail generation
+    const handlePageSwitch = useCallback((pageId: string) => {
+        const store = useEditorStore.getState();
+        const currentPageId = store.project?.activePageId;
+
+        // Generate and save thumbnail for current page BEFORE switching
+        // This must be synchronous to capture the current canvas state
+        if (currentPageId && currentPageId !== pageId) {
+            const thumbnail = generateThumbnail();
+            if (thumbnail) {
+                updatePageThumbnail(currentPageId, thumbnail);
+            }
+        }
+
+        // Now switch to the new page
+        store.setActivePage(pageId);
+    }, [generateThumbnail, updatePageThumbnail]);
 
     // Initialize with a new project if none exists
     useEffect(() => {
@@ -59,6 +95,20 @@ export function EditorShell() {
             pushState('Initial state');
         }
     }, []);
+
+    // Generate thumbnail for current page when pages panel is expanded
+    useEffect(() => {
+        if (pagesExpanded && project?.activePageId) {
+            // Small delay to ensure canvas is fully rendered
+            const timeoutId = setTimeout(() => {
+                const thumbnail = generateThumbnail();
+                if (thumbnail && project?.activePageId) {
+                    updatePageThumbnail(project.activePageId, thumbnail);
+                }
+            }, 100);
+            return () => clearTimeout(timeoutId);
+        }
+    }, [pagesExpanded, project?.activePageId, generateThumbnail, updatePageThumbnail]);
 
     // Keyboard shortcuts for pages
     useEffect(() => {
@@ -137,7 +187,7 @@ export function EditorShell() {
                                     {project.pages.map((page, index) => (
                                         <div key={page.id} className="relative flex-shrink-0 group">
                                             <button
-                                                onClick={() => useEditorStore.getState().setActivePage(page.id)}
+                                                onClick={() => handlePageSwitch(page.id)}
                                                 className={`
                                                     w-28 h-[72px] rounded-xl overflow-hidden transition-all duration-200
                                                     ${project.activePageId === page.id
@@ -145,17 +195,56 @@ export function EditorShell() {
                                                         : 'shadow-md hover:shadow-lg hover:scale-[1.01] border border-gray-200/80'}
                                                 `}
                                             >
-                                                {/* Page Preview with gradient */}
-                                                <div className={`
-                                                    w-full h-full flex items-center justify-center
-                                                    ${project.activePageId === page.id
-                                                        ? 'bg-gradient-to-br from-blue-50 via-white to-blue-50'
-                                                        : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'}
-                                                `}>
-                                                    <span className={`text-xs font-medium ${project.activePageId === page.id ? 'text-blue-600' : 'text-gray-500'}`}>
-                                                        Page {index + 1}
-                                                    </span>
-                                                </div>
+                                                {/* Page Preview - Show thumbnail if available */}
+                                                {page.thumbnail ? (
+                                                    <div className="w-full h-full relative">
+                                                        <img
+                                                            src={page.thumbnail}
+                                                            alt={`Page ${index + 1}`}
+                                                            className={`w-full h-full object-cover ${page.hidden ? 'opacity-50' : ''}`}
+                                                        />
+                                                        {/* Page number overlay */}
+                                                        <div className="absolute bottom-0 right-0 bg-black/60 px-1.5 py-0.5 rounded-tl-md">
+                                                            <span className="text-white text-[9px] font-medium">{index + 1}</span>
+                                                        </div>
+                                                        {/* Hidden indicator */}
+                                                        {page.hidden && (
+                                                            <div className="absolute top-1 left-1 bg-orange-500 rounded-full p-1">
+                                                                <EyeOff size={10} className="text-white" />
+                                                            </div>
+                                                        )}
+                                                        {/* Locked indicator */}
+                                                        {page.locked && (
+                                                            <div className="absolute top-1 right-1 bg-blue-500 rounded-full p-1">
+                                                                <Lock size={10} className="text-white" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                ) : (
+                                                    <div className={`
+                                                        w-full h-full flex items-center justify-center relative
+                                                        ${project.activePageId === page.id
+                                                            ? 'bg-gradient-to-br from-blue-50 via-white to-blue-50'
+                                                            : 'bg-gradient-to-br from-gray-50 via-white to-gray-100'}
+                                                        ${page.hidden ? 'opacity-50' : ''}
+                                                    `}>
+                                                        <span className={`text-xs font-medium ${project.activePageId === page.id ? 'text-blue-600' : 'text-gray-500'}`}>
+                                                            Page {index + 1}
+                                                        </span>
+                                                        {/* Hidden indicator */}
+                                                        {page.hidden && (
+                                                            <div className="absolute top-1 left-1 bg-orange-500 rounded-full p-1">
+                                                                <EyeOff size={10} className="text-white" />
+                                                            </div>
+                                                        )}
+                                                        {/* Locked indicator */}
+                                                        {page.locked && (
+                                                            <div className="absolute top-1 right-1 bg-blue-500 rounded-full p-1">
+                                                                <Lock size={10} className="text-white" />
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </button>
                                             {/* Options Button */}
                                             <button className="absolute top-1.5 right-1.5 p-1.5 bg-white/95 backdrop-blur-sm border border-gray-100 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-200 shadow-sm hover:shadow hover:bg-gray-50">
@@ -197,9 +286,9 @@ export function EditorShell() {
                             <div className="flex items-center gap-1 w-[180px] justify-end">
                                 {/* Copy Page Content */}
                                 <button
-                                    onClick={() => useCanvasStore.getState().copy()}
+                                    onClick={() => useCanvasStore.getState().copyPageContent()}
                                     className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                                    title="Copy page content"
+                                    title="Copy all page content"
                                 >
                                     <Copy size={15} />
                                 </button>
@@ -247,20 +336,26 @@ export function EditorShell() {
 
                                 {/* Hide Page */}
                                 <button
-                                    onClick={() => {/* TODO: Implement hide page */ }}
-                                    className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                                    title="Hide page (coming soon)"
+                                    onClick={() => useEditorStore.getState().togglePageHidden(project.activePageId)}
+                                    className={`p-1.5 rounded-md transition-colors ${activePage?.hidden
+                                        ? 'bg-orange-50 text-orange-500 hover:bg-orange-100'
+                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                                        }`}
+                                    title={activePage?.hidden ? "Show page (currently hidden from export)" : "Hide page from export"}
                                 >
-                                    <EyeOff size={15} />
+                                    {activePage?.hidden ? <EyeOff size={15} /> : <Eye size={15} />}
                                 </button>
 
                                 {/* Lock Page */}
                                 <button
-                                    onClick={() => {/* TODO: Implement lock page */ }}
-                                    className="p-1.5 rounded-md hover:bg-gray-100 text-gray-500 hover:text-gray-700 transition-colors"
-                                    title="Lock page (coming soon)"
+                                    onClick={() => useEditorStore.getState().togglePageLocked(project.activePageId)}
+                                    className={`p-1.5 rounded-md transition-colors ${activePage?.locked
+                                        ? 'bg-blue-50 text-blue-500 hover:bg-blue-100'
+                                        : 'hover:bg-gray-100 text-gray-500 hover:text-gray-700'
+                                        }`}
+                                    title={activePage?.locked ? "Unlock page (currently locked)" : "Lock page to prevent editing"}
                                 >
-                                    <Lock size={15} />
+                                    {activePage?.locked ? <Lock size={15} /> : <LockOpen size={15} />}
                                 </button>
                             </div>
 

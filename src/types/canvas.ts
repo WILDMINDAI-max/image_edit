@@ -440,6 +440,7 @@ export interface StickerElement extends BaseElement {
     originalSvgContent: string;           // Original SVG template
     colorMap: Record<string, string>;     // Maps original colors to current colors
     category: string;                     // Sticker category
+    strokeWidth?: number;                 // Custom stroke width for stroked stickers
 }
 
 // Union type for all canvas elements

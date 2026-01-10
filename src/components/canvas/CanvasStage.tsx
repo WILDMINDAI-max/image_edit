@@ -596,6 +596,45 @@ export function CanvasStage({ className }: CanvasStageProps) {
 
                     {/* Lock Icon Overlays for locked elements */}
                     <LockIconOverlay displayScale={userZoom} />
+
+                    {/* Page Locked Overlay - Prevents all interaction when page is locked */}
+                    {activePage?.locked && (
+                        <div
+                            className="absolute inset-0 bg-blue-500/10 backdrop-blur-[1px] flex items-center justify-center z-50 cursor-not-allowed"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="bg-white/95 shadow-lg rounded-xl px-6 py-4 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
+                                    <Lock size={20} className="text-blue-600" />
+                                </div>
+                                <div>
+                                    <p className="text-gray-800 font-semibold">Page Locked</p>
+                                    <p className="text-gray-500 text-sm">Click the lock button below to unlock</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Page Hidden Overlay - Completely hides page content */}
+                    {activePage?.hidden && !activePage?.locked && (
+                        <div
+                            className="absolute inset-0 bg-gray-100 flex items-center justify-center z-40"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="bg-white shadow-lg rounded-xl px-6 py-4 flex items-center gap-3">
+                                <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-orange-600">
+                                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24" />
+                                        <line x1="1" y1="1" x2="23" y2="23" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p className="text-gray-800 font-semibold">Page Hidden</p>
+                                    <p className="text-gray-500 text-sm">Click the hide button below to show</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

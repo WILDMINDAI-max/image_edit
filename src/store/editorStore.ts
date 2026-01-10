@@ -72,6 +72,9 @@ interface EditorActions {
     setActivePage: (pageId: string) => void;
     reorderPages: (fromIndex: number, toIndex: number) => void;
     updatePage: (pageId: string, updates: Partial<Page>) => void;
+    updatePageThumbnail: (pageId: string, thumbnail: string) => void;
+    togglePageHidden: (pageId: string) => void;
+    togglePageLocked: (pageId: string) => void;
 
     // UI actions
     setSidebarPanel: (panel: SidebarPanel) => void;
@@ -263,6 +266,45 @@ export const useEditorStore = create<EditorStore>()(
                     const page = state.project.pages.find((p) => p.id === pageId);
                     if (page) {
                         Object.assign(page, updates);
+                        page.updatedAt = Date.now();
+                        state.project.updatedAt = Date.now();
+                        state.hasUnsavedChanges = true;
+                    }
+                }
+            });
+        },
+
+        updatePageThumbnail: (pageId: string, thumbnail: string) => {
+            set((state) => {
+                if (state.project) {
+                    const page = state.project.pages.find((p) => p.id === pageId);
+                    if (page) {
+                        page.thumbnail = thumbnail;
+                    }
+                }
+            });
+        },
+
+        togglePageHidden: (pageId: string) => {
+            set((state) => {
+                if (state.project) {
+                    const page = state.project.pages.find((p) => p.id === pageId);
+                    if (page) {
+                        page.hidden = !page.hidden;
+                        page.updatedAt = Date.now();
+                        state.project.updatedAt = Date.now();
+                        state.hasUnsavedChanges = true;
+                    }
+                }
+            });
+        },
+
+        togglePageLocked: (pageId: string) => {
+            set((state) => {
+                if (state.project) {
+                    const page = state.project.pages.find((p) => p.id === pageId);
+                    if (page) {
+                        page.locked = !page.locked;
                         page.updatedAt = Date.now();
                         state.project.updatedAt = Date.now();
                         state.hasUnsavedChanges = true;

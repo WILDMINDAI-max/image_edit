@@ -56,6 +56,8 @@ export interface Page {
     background: PageBackground;
     elements: CanvasElement[];
     thumbnail?: string; // Base64 thumbnail for preview
+    hidden?: boolean; // Whether page is hidden from export
+    locked?: boolean; // Whether page elements are locked from editing
     createdAt: number;
     updatedAt: number;
 }

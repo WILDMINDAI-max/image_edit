@@ -70,6 +70,7 @@ interface CanvasActions {
     addLineElement: (lineStyle: LineStyle, options?: { x1?: number; y1?: number; x2?: number; y2?: number; strokeColor?: string; strokeWidth?: number }) => string;
     addStickerElement: (stickerId: string, options?: Partial<StickerElement>) => string;
     updateStickerColor: (elementId: string, originalColor: string, newColor: string) => void;
+    updateStickerStrokeWidth: (elementId: string, strokeWidth: number) => void;
     updateElement: (id: string, updates: Partial<CanvasElement>) => void;
     removeElement: (id: string | string[]) => void;
     duplicateElements: (ids?: string[]) => string[];
@@ -96,6 +97,7 @@ interface CanvasActions {
 
     // Clipboard operations
     copy: () => void;
+    copyPageContent: () => void;
     cut: () => void;
     paste: () => void;
 
@@ -450,6 +452,57 @@ export const useCanvasStore = create<CanvasStore>()(
             fabricCanvas.updateStickerSvg(elementId, newSvgContent);
 
             pushHistory('Update sticker color');
+        },
+
+        updateStickerStrokeWidth: (elementId: string, strokeWidth: number) => {
+            const elements = getActivePageElements();
+            const element = elements.find(el => el.id === elementId);
+
+            if (!element || element.type !== 'sticker') return;
+
+            const stickerElement = element as StickerElement;
+
+            // Update stroke-width in SVG content
+            // Use absolute values for direct control
+            let newSvgContent = stickerElement.svgContent;
+
+            // Replace all stroke-width attributes with the new value
+            // For elements with glow effects, we use a simple multiplier for the glow layer
+            const strokeMatches = newSvgContent.match(/stroke-width="([^"]*)"/g);
+            if (strokeMatches && strokeMatches.length > 1) {
+                // Multiple strokes - glow layers get 3x the main stroke width
+                const originalValues = strokeMatches.map(m => parseFloat(m.replace(/stroke-width="([^"]*)"/, '$1')));
+                const minOriginal = Math.min(...originalValues);
+
+                // Replace each stroke-width - main stroke gets exact value, larger strokes get proportional
+                newSvgContent = newSvgContent.replace(/stroke-width="([^"]*)"/g, (match, p1) => {
+                    const originalValue = parseFloat(p1);
+                    if (originalValue === minOriginal) {
+                        // This is the main stroke - use exact value
+                        return `stroke-width="${strokeWidth}"`;
+                    } else {
+                        // This is a glow layer - use 3x the main stroke
+                        return `stroke-width="${strokeWidth * 3}"`;
+                    }
+                });
+            } else {
+                // Single stroke - replace directly
+                newSvgContent = newSvgContent.replace(/stroke-width="[^"]*"/g, `stroke-width="${strokeWidth}"`);
+            }
+
+            // Also handle strokeWidth (camelCase) attribute
+            newSvgContent = newSvgContent.replace(/strokeWidth="[^"]*"/g, `strokeWidth="${strokeWidth}"`);
+
+            get().updateElement(elementId, {
+                strokeWidth,
+                svgContent: newSvgContent,
+            });
+
+            // Sync to Fabric.js canvas
+            const fabricCanvas = getFabricCanvas();
+            fabricCanvas.updateStickerSvg(elementId, newSvgContent);
+
+            pushHistory('Update sticker stroke width');
         },
 
         updateElement: (id: string, updates: Partial<CanvasElement>) => {
@@ -874,6 +927,15 @@ export const useCanvasStore = create<CanvasStore>()(
 
             set((state) => {
                 state.clipboard = JSON.parse(JSON.stringify(selectedElements));
+            });
+        },
+
+        copyPageContent: () => {
+            // Copy ALL elements from the current page (not just selected)
+            const elements = getActivePageElements();
+
+            set((state) => {
+                state.clipboard = JSON.parse(JSON.stringify(elements));
             });
         },
 

@@ -233,6 +233,111 @@ export function StickerEditPanel() {
                     </p>
                 </div>
 
+                {/* Glow Color Section - Only for glow stickers */}
+                {selectedElement && selectedElement.style?.shadow && (
+                    <div className="p-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 mb-3">
+                            <div className="w-3.5 h-3.5 rounded-full" style={{
+                                backgroundColor: selectedElement.style.shadow.color,
+                                boxShadow: `0 0 8px 2px ${selectedElement.style.shadow.color}`
+                            }} />
+                            <h4 className="text-xs font-medium text-gray-500">Glow Effect</h4>
+                        </div>
+
+                        <div className="space-y-3">
+                            {/* Glow Color */}
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-600">Glow Color</span>
+                                <input
+                                    type="color"
+                                    value={selectedElement.style.shadow.color}
+                                    onChange={(e) => {
+                                        useCanvasStore.getState().updateStyle(selectedElement.id, {
+                                            shadow: {
+                                                ...selectedElement.style.shadow!,
+                                                color: e.target.value,
+                                            }
+                                        });
+                                        // Also update the Fabric.js canvas shadow
+                                        const fabricCanvas = getFabricCanvas();
+                                        const obj = fabricCanvas.getObjectById(selectedElement.id);
+                                        if (obj && obj.shadow) {
+                                            (obj.shadow as any).color = e.target.value;
+                                            fabricCanvas.getCanvas()?.renderAll();
+                                        }
+                                    }}
+                                    className="w-8 h-8 rounded-lg border-2 border-gray-200 cursor-pointer hover:scale-110 transition-transform"
+                                    title="Change glow color"
+                                />
+                            </div>
+
+                            {/* Glow Intensity */}
+                            <div>
+                                <div className="flex items-center justify-between mb-1">
+                                    <span className="text-xs text-gray-600">Glow Intensity</span>
+                                    <span className="text-xs text-gray-400">{Math.round((selectedElement.style.shadow.blur / 400) * 100)}%</span>
+                                </div>
+                                <input
+                                    type="range"
+                                    min="0"
+                                    max="100"
+                                    value={Math.round((selectedElement.style.shadow.blur / 400) * 100)}
+                                    onChange={(e) => {
+                                        // Map 0-100 slider to 0-400 blur for intense neon glow
+                                        const sliderValue = parseInt(e.target.value);
+                                        const blur = Math.round((sliderValue / 100) * 400);
+                                        useCanvasStore.getState().updateStyle(selectedElement.id, {
+                                            shadow: {
+                                                ...selectedElement.style.shadow!,
+                                                blur,
+                                            }
+                                        });
+                                        // Also update the Fabric.js canvas shadow
+                                        const fabricCanvas = getFabricCanvas();
+                                        const obj = fabricCanvas.getObjectById(selectedElement.id);
+                                        if (obj && obj.shadow) {
+                                            (obj.shadow as any).blur = blur;
+                                            fabricCanvas.getCanvas()?.renderAll();
+                                        }
+                                    }}
+                                    className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                                />
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Stroke Width Section - for stickers with strokes */}
+                {selectedElement && ['decorations', 'frames', 'lines'].includes(selectedElement.category) && (
+                    <div className="p-4 border-t border-gray-100">
+                        <div className="flex items-center gap-2 mb-3">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-gray-400">
+                                <line x1="5" y1="12" x2="19" y2="12" strokeLinecap="round" />
+                            </svg>
+                            <h4 className="text-xs font-medium text-gray-500">Stroke Width</h4>
+                        </div>
+
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-gray-600">Width</span>
+                                <span className="text-xs text-gray-500">{(selectedElement.strokeWidth || 1).toFixed(1)}px</span>
+                            </div>
+                            <input
+                                type="range"
+                                min="0.25"
+                                max="8"
+                                step="0.25"
+                                value={selectedElement.strokeWidth || 1}
+                                onChange={(e) => {
+                                    const strokeWidth = parseFloat(e.target.value);
+                                    useCanvasStore.getState().updateStickerStrokeWidth(selectedElement.id, strokeWidth);
+                                }}
+                                className="w-full h-1.5 bg-gray-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                            />
+                        </div>
+                    </div>
+                )}
+
                 {/* Alignment Section */}
                 <div className="p-4 border-t border-gray-100">
                     <h4 className="text-xs font-medium text-gray-500 mb-3">Alignment</h4>

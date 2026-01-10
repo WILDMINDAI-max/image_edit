@@ -163,6 +163,33 @@ export function GraphicsPanel({ searchQuery = '' }: GraphicsPanelProps) {
             colorMap[color] = color;
         });
 
+        // Check if this is a glow sticker - add shadow effect for neon glow
+        const isGlowSticker = sticker.tags.includes('glow') || sticker.tags.includes('glowing') || sticker.tags.includes('neon');
+
+        // For glow stickers, use second color as glow color (first is frame color)
+        // Format: defaultColors[0] = frame color, defaultColors[1] = glow color
+        let glowColor = '#0066FF'; // Default blue glow
+        if (sticker.defaultColors && sticker.defaultColors.length > 1) {
+            glowColor = sticker.defaultColors[1];  // Use second color as glow
+        } else if (sticker.defaultColors && sticker.defaultColors.length > 0) {
+            glowColor = sticker.defaultColors[0];  // Fallback to first color
+        }
+
+        // Debug: log the style with shadow
+        const styleWithShadow = {
+            fill: null,
+            stroke: null,
+            strokeWidth: 0,
+            opacity: 1,
+            shadow: isGlowSticker ? {
+                color: glowColor,
+                blur: 200,  // Strong blur for prominent neon glow effect
+                offsetX: 0,
+                offsetY: 0,
+            } : null,
+            cornerRadius: 0,
+        };
+
         addStickerElement(sticker.id, {
             name: `Graphic (${sticker.name})`,
             stickerId: sticker.id,
@@ -183,14 +210,7 @@ export function GraphicsPanel({ searchQuery = '' }: GraphicsPanelProps) {
                 originX: 'center',
                 originY: 'center',
             },
-            style: {
-                fill: null,
-                stroke: null,
-                strokeWidth: 0,
-                opacity: 1,
-                shadow: null,
-                cornerRadius: 0,
-            },
+            style: styleWithShadow,
         });
     };
 

@@ -980,7 +980,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: '10 Minutes Text',
                 content: '10 minutes fitness',
-                transform: { x: 321, y: 231, width: 450, height: 63.28, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 352, y: 231, width: 450, height: 63.28, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 56, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 effect: { type: 'none' },
@@ -991,7 +991,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: 'Cardio Text',
                 content: 'CARDIO',
-                transform: { x: 352, y: 359, width: 886, height: 226, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 529, y: 367, width: 886, height: 226, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 200, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
                 effect: { type: 'none' },
@@ -1022,7 +1022,7 @@ const TEMPLATES: TemplateData[] = [
                 type: 'text',
                 name: 'Subscribe Text',
                 content: 'watch & subscribe',
-                transform: { x: 1057, y: 600, width: 327, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
+                transform: { x: 1093, y: 600, width: 327, height: 46.33, scaleX: 1, scaleY: 1, rotation: 0, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
                 textStyle: { fontFamily: 'Bebas Neue', fontSize: 41, fontWeight: 'normal', fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 effect: { type: 'none' },
@@ -1355,6 +1355,958 @@ const TEMPLATES: TemplateData[] = [
                 style: { fill: '#000000', opacity: 0.7 },
                 textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 5,
+            } as Partial<TextElement>,
+        ],
+    },
+    // Party Event Poster - Neon Frame Design
+    {
+        id: 'party-event-neon',
+        name: 'Party Event Neon',
+        category: 'Events',
+        width: 1080,
+        height: 1350,
+        background: {
+            type: 'gradient',
+            gradientType: 'radial',
+            radialPosition: 'center',
+            colorStops: [
+                { offset: 0, color: '#1a0a2e' },
+                { offset: 0.5, color: '#0d1b2a' },
+                { offset: 1, color: '#0a0a12' }
+            ]
+        },
+        elements: [
+            // Decorative gradient circles for party feel
+            {
+                type: 'shape',
+                name: 'Glow Circle 1',
+                shapeType: 'circle',
+                transform: { x: 200, y: 300, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FF1493', stroke: null, strokeWidth: 0, opacity: 0.15 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Glow Circle 2',
+                shapeType: 'circle',
+                transform: { x: 880, y: 500, width: 350, height: 350, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.12 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Glow Circle 3',
+                shapeType: 'circle',
+                transform: { x: 300, y: 1000, width: 500, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#8A2BE2', stroke: null, strokeWidth: 0, opacity: 0.18 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // FULL NEON FRAME - using layered shapes for reliable glow effect
+            // Top frame glow layer (outer glow)
+            {
+                type: 'shape',
+                name: 'Neon Frame Top Glow',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 80, width: 930, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            // Top frame core (white line)
+            {
+                type: 'shape',
+                name: 'Neon Frame Top',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 80, width: 920, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Bottom frame glow layer
+            {
+                type: 'shape',
+                name: 'Neon Frame Bottom Glow',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 1270, width: 930, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            // Bottom frame core
+            {
+                type: 'shape',
+                name: 'Neon Frame Bottom',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 1270, width: 920, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Left frame glow layer
+            {
+                type: 'shape',
+                name: 'Neon Frame Left Glow',
+                shapeType: 'rectangle',
+                transform: { x: 80, y: 675, width: 20, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            // Left frame core
+            {
+                type: 'shape',
+                name: 'Neon Frame Left',
+                shapeType: 'rectangle',
+                transform: { x: 80, y: 675, width: 3, height: 1190, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Right frame glow layer
+            {
+                type: 'shape',
+                name: 'Neon Frame Right Glow',
+                shapeType: 'rectangle',
+                transform: { x: 1000, y: 675, width: 20, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            // Right frame core
+            {
+                type: 'shape',
+                name: 'Neon Frame Right',
+                shapeType: 'rectangle',
+                transform: { x: 1000, y: 675, width: 3, height: 1190, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Event Type Badge
+            {
+                type: 'text',
+                name: 'Event Badge',
+                content: '★ EXCLUSIVE EVENT ★',
+                transform: { x: 540, y: 140, width: 500, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFD700', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 14, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            // Brand name
+            {
+                type: 'text',
+                name: 'Brand Name',
+                content: "BHAILU'S",
+                transform: { x: 540, y: 220, width: 700, height: 70, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 48, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            // Presents
+            {
+                type: 'text',
+                name: 'Presents',
+                content: 'PRESENTS',
+                transform: { x: 540, y: 280, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FF6B9D', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 10, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 22,
+            } as Partial<TextElement>,
+            // THE BIG BANG
+            {
+                type: 'text',
+                name: 'Main Title 1',
+                content: 'THE BIG BANG',
+                transform: { x: 540, y: 420, width: 900, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1, shadow: { color: '#00BFFF', blur: 30, offsetX: 0, offsetY: 0 } },
+                textStyle: { fontFamily: 'Poppins', fontSize: 80, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 23,
+            } as Partial<TextElement>,
+            // PARTY (with glow effect)
+            {
+                type: 'text',
+                name: 'Main Title 2',
+                content: 'PARTY',
+                transform: { x: 540, y: 560, width: 900, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1, shadow: { color: '#FF1493', blur: 40, offsetX: 0, offsetY: 0 } },
+                textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 24,
+            } as Partial<TextElement>,
+            // Decorative line
+            {
+                type: 'shape',
+                name: 'Divider Line',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 680, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFD700', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 15,
+            } as Partial<ShapeElement>,
+            // CTA
+            {
+                type: 'text',
+                name: 'CTA Text',
+                content: '✨ SECURE YOUR SPOT ✨',
+                transform: { x: 540, y: 740, width: 700, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFD700', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 25,
+            } as Partial<TextElement>,
+            // Feature
+            {
+                type: 'text',
+                name: 'Feature Text',
+                content: 'UNLIMITED FOOD & MOCKTAIL',
+                transform: { x: 540, y: 820, width: 800, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.9 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 26, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 26,
+            } as Partial<TextElement>,
+            // Date
+            {
+                type: 'text',
+                name: 'Date',
+                content: '10TH OF JANUARY',
+                transform: { x: 540, y: 940, width: 600, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FF6B9D', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 42, fontWeight: 700, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 27,
+            } as Partial<TextElement>,
+            // Time
+            {
+                type: 'text',
+                name: 'Time',
+                content: 'STARTING AT 3 PM',
+                transform: { x: 540, y: 1010, width: 500, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 22, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 5, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 28,
+            } as Partial<TextElement>,
+            // Location
+            {
+                type: 'text',
+                name: 'Location',
+                content: 'AHMEDABAD CITY',
+                transform: { x: 540, y: 1070, width: 500, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.7 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 10, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 29,
+            } as Partial<TextElement>,
+            // Contact Info
+            {
+                type: 'text',
+                name: 'Contact',
+                content: 'FOR MORE DETAILS: +91 7600686748',
+                transform: { x: 540, y: 1180, width: 600, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 0.6 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 30,
+            } as Partial<TextElement>,
+        ],
+    },
+    // Certificate of Achievement Template - Elegant Navy & Gold Design
+    {
+        id: 'certificate-achievement-1',
+        name: 'Certificate of Achievement',
+        category: 'Business',
+        width: 1600,
+        height: 1200,
+        background: { type: 'solid', color: '#FDFBF7' },
+        elements: [
+            // === OUTER DECORATIVE BORDER ===
+            {
+                type: 'shape',
+                name: 'Border Outer',
+                shapeType: 'rectangle',
+                transform: { x: 800, y: 600, width: 1540, height: 1140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#1E3A5F', strokeWidth: 8, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Inner border
+            {
+                type: 'shape',
+                name: 'Border Inner',
+                shapeType: 'rectangle',
+                transform: { x: 800, y: 600, width: 1480, height: 1080, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#C9A227', strokeWidth: 3, opacity: 1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+
+            // === CORNER ORNAMENTS ===
+            // Top-left corner ornament
+            {
+                type: 'shape',
+                name: 'Corner TL Outer',
+                shapeType: 'circle',
+                transform: { x: 100, y: 100, width: 50, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Corner TL Inner',
+                shapeType: 'circle',
+                transform: { x: 100, y: 100, width: 30, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Top-right corner ornament
+            {
+                type: 'shape',
+                name: 'Corner TR Outer',
+                shapeType: 'circle',
+                transform: { x: 1500, y: 100, width: 50, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Corner TR Inner',
+                shapeType: 'circle',
+                transform: { x: 1500, y: 100, width: 30, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Bottom-left corner ornament
+            {
+                type: 'shape',
+                name: 'Corner BL Outer',
+                shapeType: 'circle',
+                transform: { x: 100, y: 1100, width: 50, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Corner BL Inner',
+                shapeType: 'circle',
+                transform: { x: 100, y: 1100, width: 30, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Bottom-right corner ornament
+            {
+                type: 'shape',
+                name: 'Corner BR Outer',
+                shapeType: 'circle',
+                transform: { x: 1500, y: 1100, width: 50, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Corner BR Inner',
+                shapeType: 'circle',
+                transform: { x: 1500, y: 1100, width: 30, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+
+            // === HEADER RIBBON/BADGE ===
+            {
+                type: 'shape',
+                name: 'Header Ribbon',
+                shapeType: 'rectangle',
+                transform: { x: 800, y: 140, width: 400, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Header Text',
+                content: '✦ OFFICIAL DOCUMENT ✦',
+                transform: { x: 800, y: 140, width: 380, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+
+            // === MAIN CERTIFICATE TITLE ===
+            {
+                type: 'text',
+                name: 'Certificate Title',
+                content: 'Certificate',
+                transform: { x: 800, y: 260, width: 1000, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 96, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.1, letterSpacing: 4, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Decorative line under title
+            {
+                type: 'shape',
+                name: 'Title Underline Left',
+                shapeType: 'rectangle',
+                transform: { x: 500, y: 320, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 6,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Title Diamond',
+                shapeType: 'rectangle',
+                transform: { x: 800, y: 320, width: 12, height: 12, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 7,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Title Underline Right',
+                shapeType: 'rectangle',
+                transform: { x: 1100, y: 320, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 6,
+            } as Partial<ShapeElement>,
+
+            // OF ACHIEVEMENT text
+            {
+                type: 'text',
+                name: 'Achievement Text',
+                content: 'of Achievement',
+                transform: { x: 800, y: 380, width: 500, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 36, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+
+            // === PRESENTATION TEXT ===
+            {
+                type: 'text',
+                name: 'Presented To',
+                content: 'This Certificate is Proudly Presented to',
+                transform: { x: 800, y: 480, width: 800, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#5A6C7D', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+
+            // === RECIPIENT NAME ===
+            {
+                type: 'text',
+                name: 'Recipient Name',
+                content: 'John William Smith',
+                transform: { x: 800, y: 570, width: 1000, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', opacity: 1 },
+                textStyle: { fontFamily: 'Great Vibes', fontSize: 72, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 14,
+            } as Partial<TextElement>,
+            // Name underline with ornaments
+            {
+                type: 'shape',
+                name: 'Name Line Left',
+                shapeType: 'rectangle',
+                transform: { x: 450, y: 630, width: 250, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 0.7 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Name Star',
+                shapeType: 'circle',
+                transform: { x: 800, y: 630, width: 10, height: 10, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 9,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Name Line Right',
+                shapeType: 'rectangle',
+                transform: { x: 1150, y: 630, width: 250, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 0.7 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+
+            // === DESCRIPTION TEXT ===
+            {
+                type: 'text',
+                name: 'Description',
+                content: 'In recognition of outstanding dedication, exceptional performance,\nand remarkable contribution to excellence in their field of expertise.',
+                transform: { x: 800, y: 720, width: 1000, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#5A6C7D', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+
+            // === SEAL/BADGE ===
+            {
+                type: 'shape',
+                name: 'Seal Outer',
+                shapeType: 'circle',
+                transform: { x: 800, y: 880, width: 120, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 20,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Seal Middle',
+                shapeType: 'circle',
+                transform: { x: 800, y: 880, width: 100, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 21,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Seal Inner',
+                shapeType: 'circle',
+                transform: { x: 800, y: 880, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#C9A227', strokeWidth: 2, opacity: 1 },
+                zIndex: 22,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Seal Icon',
+                content: '★',
+                transform: { x: 800, y: 880, width: 60, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A227', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 40, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 23,
+            } as Partial<TextElement>,
+
+            // === DATE SECTION ===
+            {
+                type: 'text',
+                name: 'Date Value',
+                content: 'January 9th, 2026',
+                transform: { x: 350, y: 1000, width: 250, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Date Line',
+                shapeType: 'rectangle',
+                transform: { x: 350, y: 1025, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 0.5 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Date Label',
+                content: 'Date Awarded',
+                transform: { x: 350, y: 1055, width: 150, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#5A6C7D', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 12, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 17,
+            } as Partial<TextElement>,
+
+            // === SIGNATURE SECTION ===
+            {
+                type: 'text',
+                name: 'Signature',
+                content: 'Director Signature',
+                transform: { x: 1250, y: 1000, width: 250, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', opacity: 1 },
+                textStyle: { fontFamily: 'Great Vibes', fontSize: 28, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 18,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Signature Line',
+                shapeType: 'rectangle',
+                transform: { x: 1250, y: 1025, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A5F', stroke: null, strokeWidth: 0, opacity: 0.5 },
+                zIndex: 8,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Signature Label',
+                content: 'Authorized Signature',
+                transform: { x: 1250, y: 1055, width: 180, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#5A6C7D', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 12, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 19,
+            } as Partial<TextElement>,
+
+            // === CERTIFICATE ID ===
+            {
+                type: 'text',
+                name: 'Certificate ID',
+                content: 'Certificate No: WM-2026-0109',
+                transform: { x: 800, y: 1000, width: 300, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#5A6C7D', opacity: 0.7 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 11, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+        ],
+    },
+    // ========== A4 PORTRAIT TEMPLATES (2480 x 3508 px at 300dpi) ==========
+    // A4 Modern Resume Template - ENHANCED
+    {
+        id: 'a4-resume-modern',
+        name: 'Modern Resume',
+        category: 'A4 Portrait',
+        width: 2480,
+        height: 3508,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // Left sidebar
+            { type: 'shape', name: 'Sidebar', shapeType: 'rectangle', transform: { x: 400, y: 1754, width: 800, height: 3508, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#1A1A2E', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 1 } as Partial<ShapeElement>,
+            // Profile photo
+            { type: 'shape', name: 'Photo Frame', shapeType: 'circle', transform: { x: 400, y: 450, width: 350, height: 350, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#16213E', stroke: '#4ECCA3', strokeWidth: 6, opacity: 1 }, zIndex: 2 } as Partial<ShapeElement>,
+            // Name
+            { type: 'text', name: 'Name', content: 'JOHN DOE', transform: { x: 400, y: 700, width: 600, height: 70, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 42, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
+            // Title
+            { type: 'text', name: 'Title', content: 'Senior UX Designer', transform: { x: 400, y: 780, width: 500, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 11 } as Partial<TextElement>,
+            // Divider 1
+            { type: 'shape', name: 'Divider 1', shapeType: 'rectangle', transform: { x: 400, y: 860, width: 300, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', stroke: null, strokeWidth: 0, opacity: 0.5 }, zIndex: 5 } as Partial<ShapeElement>,
+            // Contact header
+            { type: 'text', name: 'Contact Header', content: 'CONTACT', transform: { x: 400, y: 950, width: 400, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 12 } as Partial<TextElement>,
+            // Email
+            { type: 'text', name: 'Email', content: '📧 john@example.com', transform: { x: 400, y: 1020, width: 600, height: 26, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 13 } as Partial<TextElement>,
+            // Phone
+            { type: 'text', name: 'Phone', content: '📱 +1 (555) 123-4567', transform: { x: 400, y: 1070, width: 600, height: 26, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 14 } as Partial<TextElement>,
+            // Website
+            { type: 'text', name: 'Website', content: '🌐 www.johndoe.com', transform: { x: 400, y: 1120, width: 600, height: 26, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 15 } as Partial<TextElement>,
+            // Location
+            { type: 'text', name: 'Location', content: '📍 New York, USA', transform: { x: 400, y: 1170, width: 600, height: 26, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 16 } as Partial<TextElement>,
+            // Divider 2
+            { type: 'shape', name: 'Divider 2', shapeType: 'rectangle', transform: { x: 400, y: 1260, width: 300, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', stroke: null, strokeWidth: 0, opacity: 0.5 }, zIndex: 5 } as Partial<ShapeElement>,
+            // Skills header
+            { type: 'text', name: 'Skills Header', content: 'SKILLS', transform: { x: 400, y: 1350, width: 400, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 17 } as Partial<TextElement>,
+            // Skills list
+            { type: 'text', name: 'Skills List', content: '• UI/UX Design\n• Figma & Adobe XD\n• Prototyping\n• User Research\n• Design Systems\n• HTML/CSS', transform: { x: 400, y: 1550, width: 600, height: 280, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 18 } as Partial<TextElement>,
+            // Education header
+            { type: 'text', name: 'Education Header', content: 'EDUCATION', transform: { x: 400, y: 1850, width: 400, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 19 } as Partial<TextElement>,
+            // Education content
+            { type: 'text', name: 'Education', content: 'Bachelor of Design\nArt Institute\n2016 - 2020', transform: { x: 400, y: 1980, width: 600, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 20 } as Partial<TextElement>,
+            // Main content - Experience header
+            { type: 'shape', name: 'Exp Accent', shapeType: 'rectangle', transform: { x: 900, y: 350, width: 8, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 3 } as Partial<ShapeElement>,
+            { type: 'text', name: 'Experience Header', content: 'WORK EXPERIENCE', transform: { x: 1540, y: 350, width: 900, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#1A1A2E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 30 } as Partial<TextElement>,
+            // Job 1
+            { type: 'text', name: 'Job 1 Title', content: 'Senior UX Designer', transform: { x: 1540, y: 480, width: 900, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#1A1A2E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 22, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.3, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 31 } as Partial<TextElement>,
+            { type: 'text', name: 'Job 1 Company', content: 'Tech Innovations Inc. | 2021 - Present', transform: { x: 1540, y: 530, width: 900, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.3, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 32 } as Partial<TextElement>,
+            { type: 'text', name: 'Job 1 Desc', content: '• Lead design team of 5 members\n• Created design system used across 12 products\n• Improved user retention by 35%', transform: { x: 1540, y: 640, width: 900, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 33 } as Partial<TextElement>,
+            // Job 2
+            { type: 'text', name: 'Job 2 Title', content: 'UX Designer', transform: { x: 1540, y: 800, width: 900, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#1A1A2E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 22, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.3, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 34 } as Partial<TextElement>,
+            { type: 'text', name: 'Job 2 Company', content: 'Creative Agency | 2018 - 2021', transform: { x: 1540, y: 850, width: 900, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.3, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 35 } as Partial<TextElement>,
+            { type: 'text', name: 'Job 2 Desc', content: '• Designed mobile apps for Fortune 500 clients\n• Conducted user research & usability testing\n• Collaborated with cross-functional teams', transform: { x: 1540, y: 960, width: 900, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 36 } as Partial<TextElement>,
+            // About header
+            { type: 'shape', name: 'About Accent', shapeType: 'rectangle', transform: { x: 900, y: 1150, width: 8, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4ECCA3', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 3 } as Partial<ShapeElement>,
+            { type: 'text', name: 'About Header', content: 'ABOUT ME', transform: { x: 1540, y: 1150, width: 900, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#1A1A2E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 40 } as Partial<TextElement>,
+            { type: 'text', name: 'About Text', content: 'Passionate UX designer with 6+ years of experience creating user-centered digital products. I combine creativity with data-driven insights to deliver exceptional user experiences.', transform: { x: 1540, y: 1300, width: 900, height: 150, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 41 } as Partial<TextElement>,
+        ],
+    },
+    // A4 Gradient Poster Template - ENHANCED
+    {
+        id: 'a4-poster-gradient',
+        name: 'Gradient Poster',
+        category: 'A4 Portrait',
+        width: 2480,
+        height: 3508,
+        background: { type: 'solid', color: '#0D0D0D' },
+        elements: [
+            // Gradient circles
+            { type: 'shape', name: 'Gradient Top', shapeType: 'circle', transform: { x: 300, y: 400, width: 1000, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 0.35 }, zIndex: 1 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Mid', shapeType: 'circle', transform: { x: 2100, y: 1200, width: 800, height: 800, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#8B5CF6', stroke: null, strokeWidth: 0, opacity: 0.3 }, zIndex: 1 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Bottom', shapeType: 'circle', transform: { x: 2100, y: 3000, width: 1200, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', stroke: null, strokeWidth: 0, opacity: 0.4 }, zIndex: 2 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Left', shapeType: 'circle', transform: { x: -200, y: 2500, width: 900, height: 900, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#00D4FF', stroke: null, strokeWidth: 0, opacity: 0.25 }, zIndex: 1 } as Partial<ShapeElement>,
+            // Top bar accent
+            { type: 'shape', name: 'Top Bar', shapeType: 'rectangle', transform: { x: 1240, y: 80, width: 2200, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 0.8 }, zIndex: 3 } as Partial<ShapeElement>,
+            // Event tag
+            { type: 'text', name: 'Event Tag', content: '✦ ANNUAL EVENT ✦', transform: { x: 1240, y: 200, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
+            // Main headline
+            { type: 'text', name: 'Headline', content: 'DESIGN\nFESTIVAL', transform: { x: 1240, y: 700, width: 2200, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 200, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.95, letterSpacing: -6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
+            // Year with outline effect
+            { type: 'text', name: 'Year', content: '2026', transform: { x: 1240, y: 1100, width: 800, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 30, textDecoration: 'none', textTransform: 'none' }, zIndex: 11 } as Partial<TextElement>,
+            // Tagline
+            { type: 'text', name: 'Tagline', content: '"Where Creativity Meets Innovation"', transform: { x: 1240, y: 1280, width: 1400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#AAAAAA', opacity: 0.9 }, textStyle: { fontFamily: 'Inter', fontSize: 28, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' }, zIndex: 12 } as Partial<TextElement>,
+            // Divider
+            { type: 'shape', name: 'Divider', shapeType: 'rectangle', transform: { x: 1240, y: 1400, width: 400, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.3 }, zIndex: 5 } as Partial<ShapeElement>,
+            // Featured speakers header
+            { type: 'text', name: 'Speakers Header', content: 'FEATURED SPEAKERS', transform: { x: 1240, y: 1520, width: 1000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 13 } as Partial<TextElement>,
+            // Speakers
+            { type: 'text', name: 'Speaker 1', content: '• Sarah Chen - Creative Director, Adobe', transform: { x: 1240, y: 1620, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 14 } as Partial<TextElement>,
+            { type: 'text', name: 'Speaker 2', content: '• Marcus Thompson - UX Lead, Google', transform: { x: 1240, y: 1690, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 15 } as Partial<TextElement>,
+            { type: 'text', name: 'Speaker 3', content: '• Elena Rodriguez - Brand Designer, Apple', transform: { x: 1240, y: 1760, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 16 } as Partial<TextElement>,
+            // Workshops section
+            { type: 'text', name: 'Workshops Header', content: '20+ WORKSHOPS • 50+ SPEAKERS • 3 DAYS', transform: { x: 1240, y: 1920, width: 1800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 26, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 17 } as Partial<TextElement>,
+            // Ticket info box
+            { type: 'shape', name: 'Ticket Box', shapeType: 'rounded-rectangle', transform: { x: 1240, y: 2150, width: 1000, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 1, cornerRadius: 20 }, zIndex: 6 } as Partial<ShapeElement>,
+            { type: 'text', name: 'Ticket CTA', content: 'GET YOUR TICKETS NOW', transform: { x: 1240, y: 2130, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 18 } as Partial<TextElement>,
+            { type: 'text', name: 'Ticket Price', content: 'Early Bird: $199 | Regular: $299', transform: { x: 1240, y: 2180, width: 800, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 0.9 }, textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 19 } as Partial<TextElement>,
+            // Date and venue
+            { type: 'text', name: 'Date', content: 'MARCH 15-17, 2026', transform: { x: 1240, y: 2900, width: 1000, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 42, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 20 } as Partial<TextElement>,
+            { type: 'text', name: 'Location', content: 'JAVITS CENTER • NEW YORK CITY', transform: { x: 1240, y: 2980, width: 1200, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#888888', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 21 } as Partial<TextElement>,
+            // Website
+            { type: 'text', name: 'Website', content: 'www.designfestival.com', transform: { x: 1240, y: 3100, width: 800, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' }, zIndex: 22 } as Partial<TextElement>,
+            // Bottom bar
+            { type: 'shape', name: 'Bottom Bar', shapeType: 'rectangle', transform: { x: 1240, y: 3428, width: 2200, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', stroke: null, strokeWidth: 0, opacity: 0.8 }, zIndex: 3 } as Partial<ShapeElement>,
+            // Sponsors section
+            { type: 'text', name: 'Sponsors', content: 'PRESENTED BY: ADOBE • FIGMA • SKETCH • WEBFLOW', transform: { x: 1240, y: 3350, width: 1800, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 23 } as Partial<TextElement>,
+        ],
+    },
+    // ========== A5 PORTRAIT TEMPLATES (1748 x 2480 px at 300dpi) ==========
+    // A5 Event Flyer
+    {
+        id: 'a5-event-flyer',
+        name: 'Event Flyer',
+        category: 'A5 Portrait',
+        width: 1748,
+        height: 2480,
+        background: { type: 'solid', color: '#1C1C1C' },
+        elements: [
+            // Neon accent circles
+            {
+                type: 'shape',
+                name: 'Neon Circle 1',
+                shapeType: 'circle',
+                transform: { x: 300, y: 400, width: 300, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00F5FF', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Neon Circle 2',
+                shapeType: 'circle',
+                transform: { x: 1500, y: 2000, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FF00FF', stroke: null, strokeWidth: 0, opacity: 0.25 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Event title
+            {
+                type: 'text',
+                name: 'Event Title',
+                content: 'NIGHT\nPARTY',
+                transform: { x: 874, y: 900, width: 1400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.95, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Date badge
+            {
+                type: 'shape',
+                name: 'Date Badge',
+                shapeType: 'rounded-rectangle',
+                transform: { x: 874, y: 1300, width: 400, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FF00FF', stroke: null, strokeWidth: 0, opacity: 1, cornerRadius: 40 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Date',
+                content: 'FEB 14',
+                transform: { x: 874, y: 1300, width: 300, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // DJ name
+            {
+                type: 'text',
+                name: 'DJ Name',
+                content: 'FEATURING DJ SPARK',
+                transform: { x: 874, y: 1500, width: 1000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#00F5FF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+            // Venue
+            {
+                type: 'text',
+                name: 'Venue',
+                content: 'SKYLINE CLUB',
+                transform: { x: 874, y: 2200, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#888888', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+        ],
+    },
+    // A5 Restaurant Menu
+    {
+        id: 'a5-menu-elegant',
+        name: 'Elegant Menu',
+        category: 'A5 Portrait',
+        width: 1748,
+        height: 2480,
+        background: { type: 'solid', color: '#0A0A0A' },
+        elements: [
+            // Gold border frame
+            {
+                type: 'shape',
+                name: 'Border Frame',
+                shapeType: 'rectangle',
+                transform: { x: 874, y: 1240, width: 1648, height: 2380, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#C9A962', strokeWidth: 4, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Restaurant name
+            {
+                type: 'text',
+                name: 'Restaurant Name',
+                content: 'LA MAISON',
+                transform: { x: 874, y: 300, width: 1200, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A962', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 64, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 12, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Tagline
+            {
+                type: 'text',
+                name: 'Tagline',
+                content: 'Fine Dining Experience',
+                transform: { x: 874, y: 400, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#888888', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Decorative divider
+            {
+                type: 'shape',
+                name: 'Divider',
+                shapeType: 'rectangle',
+                transform: { x: 874, y: 500, width: 400, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A962', stroke: null, strokeWidth: 0, opacity: 0.6 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Category: Starters
+            {
+                type: 'text',
+                name: 'Starters Header',
+                content: 'STARTERS',
+                transform: { x: 874, y: 650, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#C9A962', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 28, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+            // Menu item
+            {
+                type: 'text',
+                name: 'Item 1',
+                content: 'Truffle Risotto                                    $28',
+                transform: { x: 874, y: 750, width: 1400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+        ],
+    },
+    // ========== A6 PORTRAIT TEMPLATES (1240 x 1748 px at 300dpi) ==========
+    // A6 Business Card Style
+    {
+        id: 'a6-card-minimal',
+        name: 'Minimal Card',
+        category: 'A6 Portrait',
+        width: 1240,
+        height: 1748,
+        background: { type: 'solid', color: '#F5F5F0' },
+        elements: [
+            // Accent bar
+            {
+                type: 'shape',
+                name: 'Accent Bar',
+                shapeType: 'rectangle',
+                transform: { x: 100, y: 874, width: 12, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2D3436', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Company name
+            {
+                type: 'text',
+                name: 'Company',
+                content: 'STUDIO',
+                transform: { x: 670, y: 500, width: 800, height: 70, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2D3436', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 56, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.0, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Tagline
+            {
+                type: 'text',
+                name: 'Tagline',
+                content: 'Creative Agency',
+                transform: { x: 670, y: 580, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#636E72', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Contact info
+            {
+                type: 'text',
+                name: 'Contact',
+                content: 'hello@studio.com\n+1 234 567 890',
+                transform: { x: 670, y: 1400, width: 600, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2D3436', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+        ],
+    },
+    // A6 Invitation Card
+    {
+        id: 'a6-invitation-elegant',
+        name: 'Elegant Invitation',
+        category: 'A6 Portrait',
+        width: 1240,
+        height: 1748,
+        background: { type: 'solid', color: '#1C1C2E' },
+        elements: [
+            // Decorative corner
+            {
+                type: 'shape',
+                name: 'Corner Decor TL',
+                shapeType: 'diamond',
+                transform: { x: 150, y: 150, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Corner Decor BR',
+                shapeType: 'diamond',
+                transform: { x: 1090, y: 1598, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // You're invited
+            {
+                type: 'text',
+                name: 'Youre Invited',
+                content: "You're Invited",
+                transform: { x: 620, y: 450, width: 800, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', opacity: 1 },
+                textStyle: { fontFamily: 'Great Vibes', fontSize: 48, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Event name
+            {
+                type: 'text',
+                name: 'Event Name',
+                content: 'WEDDING\nCELEBRATION',
+                transform: { x: 620, y: 700, width: 1000, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 52, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.1, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Divider
+            {
+                type: 'shape',
+                name: 'Divider',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 900, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            // Date and time
+            {
+                type: 'text',
+                name: 'Date Time',
+                content: 'Saturday, March 15th\n6:00 PM',
+                transform: { x: 620, y: 1050, width: 800, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#CCCCCC', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.6, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+            // Venue
+            {
+                type: 'text',
+                name: 'Venue',
+                content: 'The Grand Ballroom',
+                transform: { x: 620, y: 1250, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#888888', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+            // RSVP
+            {
+                type: 'text',
+                name: 'RSVP',
+                content: 'RSVP by March 1st',
+                transform: { x: 620, y: 1500, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 14,
             } as Partial<TextElement>,
         ],
     },
@@ -1805,6 +2757,74 @@ export function TemplatesPanel() {
                                                         <p className="text-black text-[6px] leading-none" style={{ fontFamily: 'Playfair Display' }}>MODERN</p>
                                                         <p className="text-black text-[6px] leading-none" style={{ fontFamily: 'Playfair Display' }}>ABSTRACT</p>
                                                         <p className="text-black/60 text-[3px] mt-0.5 tracking-widest font-sans">JULY 20 - AUG 30</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'party-event-neon' ? (
+                                            // Party Event Neon Preview
+                                            <div className="flex-1 relative overflow-hidden" style={{ background: 'radial-gradient(circle at center, #1a0a2e, #0d1b2a, #0a0a12)' }}>
+                                                {/* Decorative glow circles */}
+                                                <div className="absolute left-0 top-2 w-6 h-6 rounded-full bg-[#FF1493]/20" />
+                                                <div className="absolute right-1 top-4 w-5 h-5 rounded-full bg-[#00BFFF]/15" />
+                                                <div className="absolute left-1 bottom-4 w-7 h-7 rounded-full bg-[#8A2BE2]/20" />
+                                                {/* Full neon frame */}
+                                                <div className="absolute top-1 left-1.5 right-1.5 h-[1px] bg-white" style={{ boxShadow: '0 0 6px 2px #00BFFF, 0 0 12px 4px #00BFFF' }} />
+                                                <div className="absolute bottom-1 left-1.5 right-1.5 h-[1px] bg-white" style={{ boxShadow: '0 0 6px 2px #00BFFF, 0 0 12px 4px #00BFFF' }} />
+                                                <div className="absolute top-1 bottom-1 left-1.5 w-[1px] bg-white" style={{ boxShadow: '0 0 6px 2px #00BFFF, 0 0 12px 4px #00BFFF' }} />
+                                                <div className="absolute top-1 bottom-1 right-1.5 w-[1px] bg-white" style={{ boxShadow: '0 0 6px 2px #00BFFF, 0 0 12px 4px #00BFFF' }} />
+                                                {/* Text */}
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center px-1">
+                                                    <p className="text-[#FFD700] text-[3px] tracking-wider">★ EXCLUSIVE EVENT ★</p>
+                                                    <p className="text-white text-[5px] tracking-wider mt-0.5" style={{ fontFamily: 'serif' }}>BHAILU'S</p>
+                                                    <p className="text-[#FF6B9D] text-[2px] tracking-widest">PRESENTS</p>
+                                                    <p className="text-white text-[8px] font-black mt-0.5 leading-none" style={{ textShadow: '0 0 8px #00BFFF' }}>THE BIG BANG</p>
+                                                    <p className="text-white text-[11px] font-black tracking-[2px] leading-none" style={{ textShadow: '0 0 10px #FF1493' }}>PARTY</p>
+                                                    <p className="text-[#FFD700] text-[3px] font-bold mt-0.5">✨ SECURE YOUR SPOT ✨</p>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'certificate-achievement-1' ? (
+                                            // Certificate of Achievement Preview - Elegant Navy & Gold
+                                            <div className="flex-1 relative overflow-hidden bg-[#FDFBF7]">
+                                                {/* Outer border */}
+                                                <div className="absolute inset-[2px] border-2 border-[#1E3A5F]" />
+                                                {/* Inner border */}
+                                                <div className="absolute inset-[5px] border border-[#C9A227]" />
+                                                {/* Corner ornaments */}
+                                                <div className="absolute top-[2px] left-[2px] w-2 h-2 rounded-full bg-[#C9A227] flex items-center justify-center">
+                                                    <div className="w-1 h-1 rounded-full bg-[#1E3A5F]" />
+                                                </div>
+                                                <div className="absolute top-[2px] right-[2px] w-2 h-2 rounded-full bg-[#C9A227] flex items-center justify-center">
+                                                    <div className="w-1 h-1 rounded-full bg-[#1E3A5F]" />
+                                                </div>
+                                                <div className="absolute bottom-[2px] left-[2px] w-2 h-2 rounded-full bg-[#C9A227] flex items-center justify-center">
+                                                    <div className="w-1 h-1 rounded-full bg-[#1E3A5F]" />
+                                                </div>
+                                                <div className="absolute bottom-[2px] right-[2px] w-2 h-2 rounded-full bg-[#C9A227] flex items-center justify-center">
+                                                    <div className="w-1 h-1 rounded-full bg-[#1E3A5F]" />
+                                                </div>
+                                                {/* Header ribbon */}
+                                                <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-[#1E3A5F] px-2 py-[1px]">
+                                                    <p className="text-[#C9A227] text-[2px]">✦ OFFICIAL ✦</p>
+                                                </div>
+                                                {/* Content */}
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center px-2">
+                                                    {/* Title */}
+                                                    <p className="text-[#1E3A5F] text-[9px] italic" style={{ fontFamily: 'serif' }}>Certificate</p>
+                                                    {/* Decorative line */}
+                                                    <div className="flex items-center gap-0.5 mt-0.5">
+                                                        <div className="w-3 h-[0.5px] bg-[#C9A227]" />
+                                                        <div className="w-1 h-1 bg-[#C9A227] rotate-45" />
+                                                        <div className="w-3 h-[0.5px] bg-[#C9A227]" />
+                                                    </div>
+                                                    <p className="text-[#1E3A5F] text-[4px] italic mt-0.5" style={{ fontFamily: 'serif' }}>of Achievement</p>
+                                                    {/* Name */}
+                                                    <p className="text-[#1E3A5F] text-[6px] mt-1" style={{ fontFamily: 'cursive' }}>John Smith</p>
+                                                    <div className="w-10 h-[0.5px] bg-[#C9A227]/70 mt-0.5" />
+                                                    {/* Seal */}
+                                                    <div className="mt-1.5 w-5 h-5 rounded-full bg-[#C9A227] flex items-center justify-center">
+                                                        <div className="w-4 h-4 rounded-full bg-[#1E3A5F] flex items-center justify-center">
+                                                            <span className="text-[#C9A227] text-[5px]">★</span>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>
