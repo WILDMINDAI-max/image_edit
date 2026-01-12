@@ -2591,6 +2591,136 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
+    // Modern Event Flyer Template
+    {
+        id: 'modern-event-flyer',
+        name: 'Modern Event Flyer',
+        category: 'Events',
+        width: 1080,
+        height: 1920,
+        background: { type: 'solid', color: '#1a1a2e' },
+        elements: [
+            // Background Elements using Shapes
+            {
+                type: 'shape',
+                name: 'Circle Top Right',
+                shapeType: 'circle',
+                transform: { x: 900, y: 300, width: 600, height: 600, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#e94560', stroke: null, strokeWidth: 0, opacity: 0.2 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Circle Bottom Left',
+                shapeType: 'circle',
+                transform: { x: 200, y: 1600, width: 500, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0f3460', stroke: null, strokeWidth: 0, opacity: 0.3 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Date & Time Container
+            {
+                type: 'shape',
+                name: 'Date Container',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 400, width: 400, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#16213e', stroke: '#e94560', strokeWidth: 2, opacity: 1, cornerRadius: 10 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Date Text',
+                content: 'SATURDAY, NOV 18',
+                transform: { x: 540, y: 385, width: 350, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 3,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Time Text',
+                content: 'DOORS OPEN AT 9PM',
+                transform: { x: 540, y: 425, width: 350, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#e94560', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 3,
+            } as Partial<TextElement>,
+            // Main Title
+            {
+                type: 'text',
+                name: 'Main Title 1',
+                content: 'ELECTRIC',
+                transform: { x: 540, y: 700, width: 900, height: 180, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 140, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.9, letterSpacing: -2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main Title 2',
+                content: 'DREAMS',
+                transform: { x: 540, y: 840, width: 900, height: 180, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: 'transparent', stroke: '#e94560', strokeWidth: 3, opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 140, fontWeight: 900, fontStyle: 'italic', textAlign: 'center', lineHeight: 0.9, letterSpacing: -2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 4,
+            } as Partial<TextElement>,
+            // Lineup
+            {
+                type: 'text',
+                name: 'Featuring Label',
+                content: 'FEATURING LIVE PERFORMANCES BY',
+                transform: { x: 540, y: 1100, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 0.7 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 5,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Artist 1',
+                content: 'THE NEON COLLECTIVE',
+                transform: { x: 540, y: 1160, width: 800, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 5,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Artist 2',
+                content: '+ SPECIAL GUESTS',
+                transform: { x: 540, y: 1220, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#e94560', opacity: 1 },
+                textStyle: { fontFamily: 'Poppins', fontSize: 32, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 5,
+            } as Partial<TextElement>,
+            // Divider
+            {
+                type: 'shape',
+                name: 'Divider Line',
+                shapeType: 'rectangle',
+                transform: { x: 540, y: 1350, width: 100, height: 4, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', stroke: null, strokeWidth: 0, opacity: 0.5 },
+                zIndex: 6,
+            } as Partial<ShapeElement>,
+            // Location
+            {
+                type: 'text',
+                name: 'Venue',
+                content: 'METRO CITY HALL',
+                transform: { x: 540, y: 1450, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 7,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Address',
+                content: '123 MAIN STREET, METROPOLIS',
+                transform: { x: 540, y: 1490, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#ffffff', opacity: 0.6 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 7,
+            } as Partial<TextElement>,
+        ],
+    },
 ];
 
 export function TemplatesPanel() {
@@ -3174,6 +3304,22 @@ export function TemplatesPanel() {
                                                         <p className="text-[#111827] text-[10px] font-extrabold tracking-tight leading-none">NEXCORE</p>
                                                         <p className="text-gray-500 text-[4px] tracking-[1px] mt-0.5">FUTURE SYSTEMS</p>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'modern-event-flyer' ? (
+                                            // Modern Event Flyer Preview
+                                            <div className="flex-1 relative overflow-hidden bg-[#1a1a2e]">
+                                                {/* Circles */}
+                                                <div className="absolute right-0 top-0 w-24 h-24 bg-[#e94560]/20 rounded-full translate-x-1/3 -translate-y-1/3" />
+                                                <div className="absolute left-0 bottom-0 w-20 h-20 bg-[#0f3460]/30 rounded-full -translate-x-1/3 translate-y-1/3" />
+                                                {/* Content */}
+                                                <div className="absolute inset-0 flex flex-col items-center justify-center p-2">
+                                                    <div className="border border-[#e94560] rounded px-2 py-0.5 mb-2">
+                                                        <p className="text-white text-[4px] font-bold">NOV 18</p>
+                                                    </div>
+                                                    <p className="text-white text-[12px] font-black leading-none tracking-tighter">ELECTRIC</p>
+                                                    <p className="text-transparent text-[12px] font-black leading-none tracking-tighter italic" style={{ WebkitTextStroke: '0.5px #e94560' }}>DREAMS</p>
+                                                    <p className="text-white/70 text-[3px] mt-2 tracking-widest">LIVE MUSIC</p>
                                                 </div>
                                             </div>
                                         ) : (
