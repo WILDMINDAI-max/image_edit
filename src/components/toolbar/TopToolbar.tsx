@@ -2,11 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { useEditorStore, useZoom } from '@/store/editorStore';
-<<<<<<< HEAD
-import { useHistoryStore } from '@/store/historyStore';
-=======
 import { useHistoryStore, useHistoryShortcuts } from '@/store/historyStore';
->>>>>>> imageeditor/main
 import {
     ChevronDown,
     Undo2,
@@ -142,15 +138,8 @@ export function TopToolbar() {
     const openPreviewMode = useEditorStore((state) => state.openPreviewMode);
     const updatePage = useEditorStore((state) => state.updatePage);
 
-<<<<<<< HEAD
-    const undo = useHistoryStore((state) => state.undo);
-    const redo = useHistoryStore((state) => state.redo);
-    const canUndo = useHistoryStore((state) => state.past.length > 0);
-    const canRedo = useHistoryStore((state) => state.future.length > 0);
-=======
     // History shortcuts (Ctrl+Z, Ctrl+Y)
     const { undo, redo, canUndo, canRedo } = useHistoryShortcuts();
->>>>>>> imageeditor/main
 
     const [projectName, setProjectName] = useState(project?.name || 'Untitled Video Design');
     const [isResizeOpen, setIsResizeOpen] = useState(false);
