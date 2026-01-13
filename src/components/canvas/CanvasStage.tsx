@@ -5,6 +5,7 @@ import { fabric } from 'fabric';
 import { getFabricCanvas, resetFabricCanvas } from '@/engine/fabric/FabricCanvas';
 import { useEditorStore, useActivePage } from '@/store/editorStore';
 import { useCanvasStore } from '@/store/canvasStore';
+import { useHistoryStore } from '@/store/historyStore';
 import { CropOverlay } from './CropOverlay';
 import { Lock } from 'lucide-react';
 
@@ -147,11 +148,9 @@ export function CanvasStage({ className }: CanvasStageProps) {
     const calculateFitZoom = useCallback((canvasWidth: number, canvasHeight: number) => {
         if (!containerRef.current) return 100;
 
-        const containerRect = containerRef.current.getBoundingClientRect();
-        const padding = 40; // Padding around the canvas
-
-        const availableWidth = containerRect.width - padding * 2;
-        const availableHeight = containerRect.height - padding * 2;
+        // Use clientWidth/Height to exclude scrollbars if present
+        const availableWidth = containerRef.current.clientWidth - 160; // 80px (p-20) * 2
+        const availableHeight = containerRef.current.clientHeight - 160;
 
         if (availableWidth <= 0 || availableHeight <= 0) return 100;
 
@@ -230,12 +229,25 @@ export function CanvasStage({ className }: CanvasStageProps) {
     }, [setZoom]);
 
     // Auto-fit zoom when page dimensions change or Fit button is clicked
+    // UPDATED: Only triggers if isFitMode is true or the user explicitly clicks Fit (fitTrigger)
+    // Auto-fit zoom when page dimensions change or Fit button is clicked
+    // UPDATED: Only triggers if isFitMode is true or the user explicitly clicks Fit (fitTrigger)
     useEffect(() => {
-        if (!activePage || containerSize.width === 0) return;
+        if (!activePage || !containerRef.current) return;
 
-        const fitZoom = calculateFitZoom(activePage.width, activePage.height);
-        setZoom(fitZoom, true); // Pass true to indicate this is a "fit" zoom
-    }, [activePage?.width, activePage?.height, containerSize, fitTrigger, calculateFitZoom, setZoom]);
+        // If we am NOT in fit mode and this wasn't triggered by a Fit button click, don't auto-reset zoom
+        // This allows manual zoom (In/Out/Pinch) to persist without being overridden
+        const isExplicitFit = fitTrigger > 0;
+        const prevFitTrigger = (containerRef.current as any)._lastFitTrigger || 0;
+        const fitButtonClicked = fitTrigger !== prevFitTrigger;
+        (containerRef.current as any)._lastFitTrigger = fitTrigger;
+
+        if (useEditorStore.getState().isFitMode || fitButtonClicked) {
+            console.log('[CanvasStage] Calculating Fit zoom...', { isFitMode: useEditorStore.getState().isFitMode, fitButtonClicked });
+            const fitZoom = calculateFitZoom(activePage.width, activePage.height);
+            setZoom(fitZoom, true);
+        }
+    }, [activePage?.width, activePage?.height, fitTrigger, calculateFitZoom, setZoom]);
 
     // Initialize Fabric.js canvas
     useEffect(() => {
@@ -353,12 +365,12 @@ export function CanvasStage({ className }: CanvasStageProps) {
 
 
         fabricCanvas.onObjectModified = updateStoreFromFabric;
-        fabricCanvas.onObjectUpdating = updateStoreFromFabric;
+        fabricCanvas.onHistoryPush = (label) => {
+            useHistoryStore.getState().pushState(label);
+        };
 
         // Handle text content changes
         fabricCanvas.onTextChanged = (id: string, newText: string) => {
-            console.log('[CanvasStage] Text changed for element:', id, 'new text:', newText);
-
             const state = useEditorStore.getState();
             if (!state.project) return;
 
@@ -380,8 +392,9 @@ export function CanvasStage({ className }: CanvasStageProps) {
                 return el;
             });
 
-            console.log('[CanvasStage] Updating store with new text content');
             state.updatePage(activePageId, { elements: updatedElements });
+            // Manual text changes should also be recorded in history
+            useHistoryStore.getState().pushState('Edit Text');
         };
 
         setIsInitialized(true);
@@ -393,9 +406,13 @@ export function CanvasStage({ className }: CanvasStageProps) {
     }, []);
 
     // Load page when it changes (page ID or dimensions change)
+    // Removed activePage.updatedAt and activePage.elements check to prevent full reload on property changes
+    // The "Reconciler" effect below handles property updates in-place
     useEffect(() => {
         if (!isInitialized || !activePage) return;
 
+        // Use a ref to track the last loaded page ID to strictly prevent reload unless ID changes
+        // or dimensions change (which require resize)
         const fabricCanvas = getFabricCanvas();
         fabricCanvas.loadPage(activePage).then(() => {
             // Update workingScale state after page is loaded to trigger re-render
@@ -424,47 +441,118 @@ export function CanvasStage({ className }: CanvasStageProps) {
         fabricCanvas.render();
     }, [activePage?.background, isInitialized]);
 
-    // Sync element properties (visibility, locked) from store to Fabric
-    // This allows sidebar toggles to update the canvas
+    // Sync element properties (visibility, locked, styles, text) from store to Fabric
+    // This acts as a "Reconciler" to update the canvas without clearing/reloading
     useEffect(() => {
         if (!isInitialized || !activePage) return;
 
         const fabricCanvas = getFabricCanvas();
+        const canvas = fabricCanvas.getCanvas();
+        if (!canvas) return;
+
         let needsRender = false;
 
+        // 1. Update existing objects and Add new ones
         activePage.elements.forEach(element => {
             const fabricObject = fabricCanvas.getObjectById(element.id);
+
             if (fabricObject) {
-                // Sync visibility
+                // UPDATE EXISTING OBJECT
+                let changed = false;
+
+                // Sync Visibility
                 if (fabricObject.visible !== element.visible) {
                     fabricObject.visible = element.visible;
-                    needsRender = true;
+                    changed = true;
                 }
 
-                // Sync locked status
+                // Sync Locked Status
                 const isLocked = element.locked;
-                // Check if lock state matches (checking just one property is enough to detect change)
                 if (fabricObject.lockMovementX !== isLocked) {
                     fabricObject.lockMovementX = isLocked;
                     fabricObject.lockMovementY = isLocked;
                     fabricObject.lockRotation = isLocked;
                     fabricObject.lockScalingX = isLocked;
                     fabricObject.lockScalingY = isLocked;
+                    fabricObject.hasControls = !isLocked;
+                    changed = true;
+                }
 
-                    // Also update visually if needed (e.g. selection handles)
-                    if (isLocked) {
-                        fabricObject.hasControls = false;
-                    } else {
-                        // Restore controls only if it's selected (Fabric handles this logic mostly, but good to be safe)
-                        fabricObject.hasControls = true;
-                    }
+                // Sync Transform (Check diffs to avoid jitter during drag)
+                // We trust the store as the source of truth, but if the diff is tiny (floating point), skip
+                // Ideally, during a drag, the store shouldn't update, so this is for Undo/Redo/Sidebar
+                const diff = (a: number | undefined, b: number) => Math.abs((a || 0) - b) > 0.01;
+
+                // For position, we need to handle grouping logic if inside group?
+                // For now, assume flat structure or Fabric handles relative coords if we set properties?
+                // Fabric's object commands usually work globally if not grouped, or relative if grouped?
+                // Actually, our store stores absolute coordinates (usually).
+                // If the object is in a group (ActiveSelection), Fabric manages it differently.
+                // But for sidebar updates (single selection), it's fine.
+
+                if (diff(fabricObject.left, element.transform.x)) { fabricObject.set('left', element.transform.x); changed = true; }
+                if (diff(fabricObject.top, element.transform.y)) { fabricObject.set('top', element.transform.y); changed = true; }
+                if (diff(fabricObject.angle, element.transform.rotation)) { fabricObject.set('angle', element.transform.rotation); changed = true; }
+                // Use scaleX/scaleY directly
+                // Note: Fabric objects might have width/height + scale. Store has width/height + scale.
+                // We sync properties directly.
+                if (diff(fabricObject.scaleX, element.transform.scaleX)) { fabricObject.set('scaleX', element.transform.scaleX); changed = true; }
+                if (diff(fabricObject.scaleY, element.transform.scaleY)) { fabricObject.set('scaleY', element.transform.scaleY); changed = true; }
+
+
+                // Sync Styles
+                if (fabricObject.opacity !== element.style.opacity) { fabricObject.set('opacity', element.style.opacity); changed = true; }
+                const newFill = element.style.fill as string || '';
+                const newStroke = element.style.stroke as string || undefined;
+                if (fabricObject.fill !== newFill) { fabricObject.set('fill', newFill); changed = true; }
+                if (fabricObject.stroke !== newStroke) { fabricObject.set('stroke', newStroke); changed = true; }
+                if (fabricObject.strokeWidth !== element.style.strokeWidth) { fabricObject.set('strokeWidth', element.style.strokeWidth); changed = true; }
+
+                // Sync Text Properties
+                if (element.type === 'text' && fabricObject instanceof fabric.Textbox) {
+                    const textEl = element as any;
+                    if (fabricObject.text !== textEl.content) { fabricObject.set('text', textEl.content); changed = true; }
+                    if (fabricObject.fontFamily !== textEl.textStyle.fontFamily) { fabricObject.set('fontFamily', textEl.textStyle.fontFamily); changed = true; }
+                    if (fabricObject.fontSize !== textEl.textStyle.fontSize) { fabricObject.set('fontSize', textEl.textStyle.fontSize); changed = true; }
+                    if (fabricObject.fontWeight !== textEl.textStyle.fontWeight) { fabricObject.set('fontWeight', textEl.textStyle.fontWeight); changed = true; }
+                    if (fabricObject.fontStyle !== textEl.textStyle.fontStyle) { fabricObject.set('fontStyle', textEl.textStyle.fontStyle); changed = true; }
+                    if (fabricObject.textAlign !== textEl.textStyle.textAlign) { fabricObject.set('textAlign', textEl.textStyle.textAlign); changed = true; }
+                }
+
+                if (changed) {
+                    fabricObject.setCoords();
                     needsRender = true;
                 }
+
+            } else {
+                // ADD NEW OBJECT (e.g. from Undo/Redo or "Add Text")
+                // Only add if it's strictly not there.
+                console.log('[CanvasStage] Reconciler: Adding missing object', element.id);
+                fabricCanvas.addElement(element).then(() => {
+                    // Force render after async add
+                    fabricCanvas.render();
+                });
+                // We don't set needsRender here because addElement is async/handles it.
+            }
+        });
+
+        // 2. Remove deleted objects (e.g. from Undo/Redo)
+        // Find objects in Fabric that are NOT in the store elements list
+        // (and have an ID, implying they are managed objects)
+        const fabricObjects = canvas.getObjects();
+        const elementIds = new Set(activePage.elements.map(e => e.id));
+
+        fabricObjects.forEach(obj => {
+            const id = (obj as any).data?.id;
+            if (id && !elementIds.has(id)) {
+                console.log('[CanvasStage] Reconciler: Removing deleted object', id);
+                canvas.remove(obj);
+                needsRender = true;
             }
         });
 
         if (needsRender) {
-            fabricCanvas.render();
+            canvas.requestRenderAll();
         }
     }, [activePage?.elements, isInitialized]);
 
@@ -527,45 +615,125 @@ export function CanvasStage({ className }: CanvasStageProps) {
         }
     }, [selectedIds, isInitialized]);
 
-    // Note: Visual zoom is handled by CSS transform on the wrapper div
-    // Fabric.js setZoom would cause double-scaling, so we don't use it
-    // The canvas operates in logical coordinates (page width/height)
-    // useEffect(() => {
-    //     if (!isInitialized) return;
-    //     const fabricCanvas = getFabricCanvas();
-    //     fabricCanvas.setZoom(zoom);
-    // }, [zoom, isInitialized]);
+    // Keyboard Shortcuts: Zoom to Selection (z), Select All (Ctrl+A), Delete
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Ignore if user is typing in an input, textarea, or contentEditable element
+            const activeEl = document.activeElement;
+            const isInput = activeEl instanceof HTMLInputElement ||
+                activeEl instanceof HTMLTextAreaElement ||
+                (activeEl as HTMLElement)?.isContentEditable;
+
+            if (isInput) return;
+
+            // 'z' key: Zoom to Selection
+            if (e.key.toLowerCase() === 'z' && !e.ctrlKey && !e.metaKey && !e.altKey && !e.shiftKey) {
+                const fabricCanvas = getFabricCanvas();
+                const bounds = fabricCanvas.getSelectionBounds();
+
+                if (bounds && containerRef.current) {
+                    const container = containerRef.current;
+                    const viewportWidth = container.clientWidth;
+                    const viewportHeight = container.clientHeight;
+                    // Padding around the selection (e.g. 50px)
+                    const padding = 50;
+                    const availableWidth = viewportWidth - (padding * 2);
+                    const availableHeight = viewportHeight - (padding * 2);
+
+                    // Calculate zoom to fit
+                    const scaleX = availableWidth / bounds.width;
+                    const scaleY = availableHeight / bounds.height;
+                    let targetZoom = Math.min(scaleX, scaleY) * 100;
+
+                    // Clamp zoom
+                    targetZoom = Math.min(Math.max(targetZoom, 10), 500);
+
+                    // Apply zoom
+                    useEditorStore.getState().setZoom(targetZoom, false); // false = not "Fit to Screen" mode
+
+                    // Scroll to center the selection
+                    // We need to wait for the zoom to apply and layout to update
+                    requestAnimationFrame(() => {
+                        if (!containerRef.current) return;
+
+                        // Calculate center of bounds in logical coords
+                        const centerX = bounds.left + bounds.width / 2;
+                        const centerY = bounds.top + bounds.height / 2;
+
+                        // Convert to new zoomed coords
+                        const zoomFactor = targetZoom / 100;
+                        const zoomedX = centerX * zoomFactor;
+                        const zoomedY = centerY * zoomFactor;
+
+                        // Container padding (p-20 = 80px)
+                        const containerPadding = 80;
+
+                        // Scroll position = (zoomed Center) + containerPadding - (viewport / 2)
+                        const scrollLeft = zoomedX + containerPadding - (viewportWidth / 2);
+                        const scrollTop = zoomedY + containerPadding - (viewportHeight / 2);
+
+                        containerRef.current.scrollTo({
+                            left: scrollLeft,
+                            top: scrollTop,
+                            behavior: 'smooth'
+                        });
+                    });
+                }
+            }
+
+            // Ctrl+A: Select All
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                e.preventDefault(); // Prevent default text selection
+                useCanvasStore.getState().selectAll();
+            }
+
+            // Delete / Backspace: Delete Selection
+            // Check for Backspace specifically to ensure we don't accidentally navigate back
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                const selectedIds = useCanvasStore.getState().selectedIds;
+                if (selectedIds.length > 0) {
+                    e.preventDefault(); // Prevent browser back navigation on Backspace
+                    useCanvasStore.getState().removeElement(selectedIds);
+                }
+            }
+
+            // Esc: Deselect All
+            if (e.key === 'Escape') {
+                useCanvasStore.getState().deselect();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isInitialized]);
+
+    // NEW: Apply zoom using Fabric.js native zoom for crisp vector rendering
+    useEffect(() => {
+        if (!isInitialized || !activePage) return;
+
+        const fabricCanvas = getFabricCanvas();
+        // Use the centralized setZoom method which handles dimensions and Retina scaling
+        fabricCanvas.setZoom(zoom);
+
+    }, [zoom, isInitialized, activePage?.width, activePage?.height]);
 
     // Calculate displayed canvas dimensions
-    // For virtual canvas, we need to account for workingScale
     const logicalWidth = activePage?.width || 1080;
     const logicalHeight = activePage?.height || 1080;
-
-    // Use workingScale from state (updated after loadPage completes)
-    // This ensures React re-renders with correct dimensions after resize
-    const workingScale = workingScaleState;
-    const workingWidth = logicalWidth * workingScale;
-    const workingHeight = logicalHeight * workingScale;
-
-    // Combined display scale = user zoom * 1 (the canvas is already at working size)
-    // We want the visual size to be based on logical dimensions at user zoom
     const userZoom = zoom / 100;
-    // Scale from working dimensions to logical display size
     const displayWidth = logicalWidth * userZoom;
     const displayHeight = logicalHeight * userZoom;
-    // CSS transform scale to apply to the working canvas to match display size
-    const cssScale = displayWidth / workingWidth;
 
     return (
         <div
             ref={containerRef}
-            className={`relative bg-[#F0F1F5] overflow-hidden ${className}`}
+            className={`relative bg-[#F0F1F5] overflow-auto custom-scrollbar ${className}`}
         >
-            {/* Centered canvas wrapper */}
+            {/* Scrollable centering container */}
             <div
-                className="absolute inset-0 flex items-center justify-center"
+                className="min-w-full min-h-full flex items-center justify-center p-20"
                 style={{
-                    padding: '20px',
+                    // Use flexbox centering
                 }}
             >
                 <div
@@ -573,20 +741,11 @@ export function CanvasStage({ className }: CanvasStageProps) {
                     style={{
                         width: displayWidth,
                         height: displayHeight,
-                        maxWidth: '100%',
-                        maxHeight: '100%',
+                        // No maxWidth/maxHeight here to allow the canvas to expand the scrollable area
                     }}
                 >
-                    <div
-                        style={{
-                            width: workingWidth,
-                            height: workingHeight,
-                            transform: `scale(${cssScale})`,
-                            transformOrigin: 'top left',
-                        }}
-                    >
-                        <canvas ref={canvasRef} />
-                    </div>
+                    {/* Fabric canvas element */}
+                    <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
 
                     {/* Crop Overlay */}
                     <CropOverlay

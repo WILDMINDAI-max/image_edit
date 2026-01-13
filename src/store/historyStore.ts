@@ -3,6 +3,7 @@
 
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
+import { useEffect } from 'react';
 import { Project } from '@/types/project';
 import { useEditorStore } from './editorStore';
 
@@ -44,10 +45,10 @@ export type HistoryStore = HistoryState & HistoryActions;
 
 export const useHistoryStore = create<HistoryStore>()(
     immer((set, get) => ({
-        // Initial state
+        // Initial state - Strictly limited to 10 steps as requested
         past: [],
         future: [],
-        maxHistorySize: 50,
+        maxHistorySize: 10,
         isUndoing: false,
         isRedoing: false,
 
@@ -68,13 +69,13 @@ export const useHistoryStore = create<HistoryStore>()(
             };
 
             set((state) => {
+                // If we're at the limit, remove the oldest entry
+                if (state.past.length >= state.maxHistorySize) {
+                    state.past.shift();
+                }
+
                 // Add current state to past
                 state.past.push(entry);
-
-                // Trim history if it exceeds max size
-                if (state.past.length > state.maxHistorySize) {
-                    state.past = state.past.slice(-state.maxHistorySize);
-                }
 
                 // Clear future on new action
                 state.future = [];
@@ -83,8 +84,8 @@ export const useHistoryStore = create<HistoryStore>()(
 
         // Navigation
         undo: () => {
-            const { past } = get();
-            if (past.length === 0) return;
+            const { past, isUndoing, isRedoing } = get();
+            if (past.length === 0 || isUndoing || isRedoing) return;
 
             const editorStore = useEditorStore.getState();
             const currentProject = editorStore.project;
@@ -94,33 +95,42 @@ export const useHistoryStore = create<HistoryStore>()(
                 state.isUndoing = true;
             });
 
-            // Save current state to future
-            const currentEntry: HistoryEntry = {
-                id: crypto.randomUUID(),
-                timestamp: Date.now(),
-                label: 'Current',
-                projectSnapshot: JSON.stringify(currentProject),
-            };
+            try {
+                // Get the state we want to restore
+                const previousEntry = past[past.length - 1];
+                const previousProject: Project = JSON.parse(previousEntry.projectSnapshot);
 
-            // Get the previous state
-            const previousEntry = past[past.length - 1];
-            const previousProject: Project = JSON.parse(previousEntry.projectSnapshot);
+                // Save current state to future BEFORE restoring
+                const currentEntry: HistoryEntry = {
+                    id: crypto.randomUUID(),
+                    timestamp: Date.now(),
+                    label: 'Current',
+                    projectSnapshot: JSON.stringify(currentProject),
+                };
 
-            // Restore previous state
-            editorStore.loadProject(previousProject);
+                set((state) => {
+                    state.future.unshift(currentEntry);
+                    // Trim future if it exceeds limit
+                    if (state.future.length > state.maxHistorySize) {
+                        state.future.pop();
+                    }
+                    state.past.pop();
+                });
 
-            set((state) => {
-                // Move current to future
-                state.future.unshift(currentEntry);
-                // Remove from past
-                state.past.pop();
-                state.isUndoing = false;
-            });
+                // Restore previous state in editorStore
+                editorStore.loadProject(previousProject);
+            } catch (error) {
+                console.error('[HistoryStore] Undo failed:', error);
+            } finally {
+                set((state) => {
+                    state.isUndoing = false;
+                });
+            }
         },
 
         redo: () => {
-            const { future } = get();
-            if (future.length === 0) return;
+            const { future, isUndoing, isRedoing } = get();
+            if (future.length === 0 || isUndoing || isRedoing) return;
 
             const editorStore = useEditorStore.getState();
             const currentProject = editorStore.project;
@@ -130,28 +140,37 @@ export const useHistoryStore = create<HistoryStore>()(
                 state.isRedoing = true;
             });
 
-            // Save current state to past
-            const currentEntry: HistoryEntry = {
-                id: crypto.randomUUID(),
-                timestamp: Date.now(),
-                label: 'Current',
-                projectSnapshot: JSON.stringify(currentProject),
-            };
+            try {
+                // Get the state we want to restore
+                const nextEntry = future[0];
+                const nextProject: Project = JSON.parse(nextEntry.projectSnapshot);
 
-            // Get the next state
-            const nextEntry = future[0];
-            const nextProject: Project = JSON.parse(nextEntry.projectSnapshot);
+                // Save current state to past BEFORE restoring
+                const currentEntry: HistoryEntry = {
+                    id: crypto.randomUUID(),
+                    timestamp: Date.now(),
+                    label: 'Current',
+                    projectSnapshot: JSON.stringify(currentProject),
+                };
 
-            // Restore next state
-            editorStore.loadProject(nextProject);
+                set((state) => {
+                    state.past.push(currentEntry);
+                    // Trim past if it exceeds limit
+                    if (state.past.length > state.maxHistorySize) {
+                        state.past.shift();
+                    }
+                    state.future.shift();
+                });
 
-            set((state) => {
-                // Move current to past
-                state.past.push(currentEntry);
-                // Remove from future
-                state.future.shift();
-                state.isRedoing = false;
-            });
+                // Restore next state in editorStore
+                editorStore.loadProject(nextProject);
+            } catch (error) {
+                console.error('[HistoryStore] Redo failed:', error);
+            } finally {
+                set((state) => {
+                    state.isRedoing = false;
+                });
+            }
         },
 
         // Utility
@@ -175,7 +194,9 @@ export const useHistoryStore = create<HistoryStore>()(
         },
 
         jumpToState: (entryId: string) => {
-            const { past } = get();
+            const { past, isUndoing, isRedoing } = get();
+            if (isUndoing || isRedoing) return;
+
             const entryIndex = past.findIndex(e => e.id === entryId);
             if (entryIndex === -1) return;
 
@@ -186,32 +207,37 @@ export const useHistoryStore = create<HistoryStore>()(
             const currentProject = editorStore.project;
             if (!currentProject) return;
 
-            // Save current and all states after target to future
-            const currentEntry: HistoryEntry = {
-                id: crypto.randomUUID(),
-                timestamp: Date.now(),
-                label: 'Current',
-                projectSnapshot: JSON.stringify(currentProject),
-            };
+            try {
+                const currentEntry: HistoryEntry = {
+                    id: crypto.randomUUID(),
+                    timestamp: Date.now(),
+                    label: 'Current',
+                    projectSnapshot: JSON.stringify(currentProject),
+                };
 
-            const statesAfter = past.slice(entryIndex + 1);
+                const statesAfter = past.slice(entryIndex + 1);
 
-            // Restore target state
-            editorStore.loadProject(project);
+                editorStore.loadProject(project);
 
-            set((state) => {
-                state.future = [currentEntry, ...statesAfter.reverse(), ...state.future];
-                state.past = past.slice(0, entryIndex);
-            });
+                set((state) => {
+                    state.future = [currentEntry, ...statesAfter.reverse(), ...state.future].slice(0, state.maxHistorySize);
+                    state.past = past.slice(0, entryIndex);
+                });
+            } catch (error) {
+                console.error('[HistoryStore] Jump failed:', error);
+            }
         },
 
         // Configuration
         setMaxHistorySize: (size: number) => {
             set((state) => {
-                state.maxHistorySize = Math.max(10, Math.min(200, size));
+                state.maxHistorySize = Math.max(1, size);
                 // Trim if necessary
                 if (state.past.length > state.maxHistorySize) {
                     state.past = state.past.slice(-state.maxHistorySize);
+                }
+                if (state.future.length > state.maxHistorySize) {
+                    state.future = state.future.slice(0, state.maxHistorySize);
                 }
             });
         },
@@ -220,10 +246,43 @@ export const useHistoryStore = create<HistoryStore>()(
 
 // Hook for keyboard shortcuts
 export const useHistoryShortcuts = () => {
-    const undo = useHistoryStore((state) => state.undo);
-    const redo = useHistoryStore((state) => state.redo);
-    const canUndo = useHistoryStore((state) => state.canUndo);
-    const canRedo = useHistoryStore((state) => state.canRedo);
+    const { undo, redo, canUndo, canRedo } = useHistoryStore();
+
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            // Check if user is typing in an input or textarea
+            if (
+                e.target instanceof HTMLInputElement ||
+                e.target instanceof HTMLTextAreaElement ||
+                (e.target as HTMLElement).isContentEditable
+            ) {
+                // Allow Z/Y if combined with Ctrl/Cmd, but be careful with native undo
+                // Usually best to let native work in inputs
+                return;
+            }
+
+            const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+            const isCtrl = isMac ? e.metaKey : e.ctrlKey;
+
+            if (isCtrl && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                if (e.shiftKey) {
+                    // Ctrl+Shift+Z = Redo
+                    redo();
+                } else {
+                    // Ctrl+Z = Undo
+                    undo();
+                }
+            } else if (isCtrl && e.key.toLowerCase() === 'y') {
+                // Ctrl+Y = Redo
+                e.preventDefault();
+                redo();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [undo, redo]);
 
     return { undo, redo, canUndo: canUndo(), canRedo: canRedo() };
 };

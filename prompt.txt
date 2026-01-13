@@ -1,0 +1,106 @@
+make the preview viewer in the center vector based... currently i see the text and zoom it... it becomes blur... check and fix it please
+
+
+canvas stage
+
+
+
+
+zoom in, zoom out, fit, all messed up... check the entire zoom function and impliment again... make sure canvas is vector based.... so we can infinite zoom in and out
+
+
+canvasstage , fabric canvas 
+
+
+
+
+User uploaded image 1
+make the infinite zoom in and out of canvas, when click fit, it shoud fit the area
+
+fabric canvas , canvas stage
+
+
+
+
+
+
+when i click preview button, zoom in, zoom out and fit button shoud work ... it should be on the top right corner
+
+User uploaded image 1
+in preview mode why canvas area looks blurry... put this zoom in, zoom out and Fit function in Preview mode also... make things clear, not blury
+  
+
+
+preview mode
+
+
+
+
+
+
+create undoo and redoo function... only 10 step back and 10 step forward... 
+
+toptoolbar,canvasstage,editor store,history store
+
+
+
+
+
+when i select multiple objects and move it works, but when i select 1 object and move its not working
+
+
+canvas stage , fabric canvas
+
+
+
+when i click on any text and try to edit it, and enter one word, i instantly come out of editing mode.... check the text edit mode please
+
+fabric canvas
+
+
+
+
+when i select any single or multiple object in canvas, and press "z" on keyboard, then that should zoom to frame .... when i select ctrl+a then all the objects in canvas should select, and when i select any single or multiple object and press "delete" key on keyboard then that object should delete...
+
+
+
+canvas stage , fabric canvas 
+
+
+
+when press "Esc" key, all selected objects should deselect,
+
+
+canvas stage 
+
+
+when i select any object on canvas and change any property like color or line stroke or anything , it instantly deselect that object.... actualy what i want is object shoud be in edit state continiously, for example, i can change the color by draging the cursor continiously, or apply any effect on text layer and still i can continue applying new effects and check, last effect shoud be applied
+
+
+canvas stage
+
+
+template adddd 
+
+temppanel
+
+==============================================================================
+handler 
+
+
+when i select any object and zoom in or zoom out or any state, i want selection area should look same, same size corner rounds, rotation everything same as referance image
+
+fabriccanvas
+
+when canvas zoom out selection area looking big, and when zoom in selection area looking proper small.... make sure zoom in or zoom out, selection area looking fixed small size
+
+fabriccanvas
+
+
+
+ still same problem, selection area looking big... make it small in any situation, zoom in or zoom out
+ fabric canvas
+
+
+
+
