@@ -49,10 +49,7 @@ export class FabricCanvas {
     public onObjectAdded?: (id: string) => void;
     public onObjectRemoved?: (id: string) => void;
     public onTextChanged?: (id: string, newText: string) => void;
-<<<<<<< HEAD
-=======
     public onHistoryPush?: (label: string) => void;
->>>>>>> imageeditor/main
 
     constructor() {
         this.objectIdMap = new Map();
@@ -216,14 +213,11 @@ export class FabricCanvas {
                     }
                 });
             }
-<<<<<<< HEAD
-=======
 
             // Trigger history push AFTER updating all objects in the store
             const transformType = e.action || 'transformation';
             const label = transformType.charAt(0).toUpperCase() + transformType.slice(1);
             this.onHistoryPush?.(label);
->>>>>>> imageeditor/main
         });
 
         // Object updating events (during transform) - THROTTLED for performance
@@ -235,20 +229,14 @@ export class FabricCanvas {
             }
             lastUpdateTime = now;
 
-<<<<<<< HEAD
-=======
             // Disable real-time store updates during scaling/rotating to prevent re-render loops
             // The store will be updated on 'object:modified' (mouse up)
             /*
->>>>>>> imageeditor/main
             const obj = e.target as fabric.Object & { data?: { id: string } };
             if (obj && obj.data?.id) {
                 this.onObjectUpdating?.(obj.data.id);
             }
-<<<<<<< HEAD
-=======
             */
->>>>>>> imageeditor/main
         };
 
         this.canvas.on('object:scaling', (e) => {
@@ -268,24 +256,16 @@ export class FabricCanvas {
             // Set dragging flag for performance optimization
             this.isDragging = true;
 
-<<<<<<< HEAD
-            // Throttled callback to update store (reduces React re-renders)
-            const now = performance.now();
-=======
             // Disable real-time store updates during movement to prevent re-render loops
             // The store will be updated on 'object:modified' (mouse up)
             /*
->>>>>>> imageeditor/main
             if (now - lastUpdateTime >= UPDATE_THROTTLE_MS) {
                 lastUpdateTime = now;
                 if (obj.data?.id) {
                     this.onObjectUpdating?.(obj.data.id);
                 }
             }
-<<<<<<< HEAD
-=======
             */
->>>>>>> imageeditor/main
 
             // Apply smart guides snapping ONLY on small canvases (workingScale === 1)
             // On large canvases, skip this entirely for performance
@@ -334,21 +314,8 @@ export class FabricCanvas {
             }
         });
 
-<<<<<<< HEAD
-        // Text editing events - capture text content changes
-        this.canvas.on('text:changed' as any, (e: fabric.IEvent<Event>) => {
-            const obj = e.target as fabric.IText & { data?: { id: string } };
-            if (obj && obj.data?.id && obj.text !== undefined) {
-                console.log('[FabricCanvas] text:changed event for:', obj.data.id, 'new text:', obj.text);
-                this.onTextChanged?.(obj.data.id, obj.text);
-            }
-        });
-
-        // Also capture when text editing is exited (in case text:changed didn't fire)
-=======
         // Text editing events - capture text content changes ONLY when editing is exited
         // This prevents real-time store updates from triggering canvas re-syncs during typing
->>>>>>> imageeditor/main
         this.canvas.on('text:editing:exited' as any, (e: fabric.IEvent<Event>) => {
             const obj = e.target as fabric.IText & { data?: { id: string } };
             if (obj && obj.data?.id && obj.text !== undefined) {
@@ -370,13 +337,8 @@ export class FabricCanvas {
         fabric.Object.prototype.cornerColor = '#ffffff';
         fabric.Object.prototype.cornerStyle = 'circle';
         fabric.Object.prototype.borderColor = '#2563eb';
-<<<<<<< HEAD
-        fabric.Object.prototype.borderScaleFactor = 2;
-        fabric.Object.prototype.padding = 10;
-=======
         fabric.Object.prototype.borderScaleFactor = 1.5; // Reduced default
         fabric.Object.prototype.padding = 5; // Reduced padding
->>>>>>> imageeditor/main
         fabric.Object.prototype.cornerStrokeColor = '#2563eb';
 
         // Helper to get inverse scale for controls (keeps controls same visual size regardless of zoom)
@@ -384,29 +346,17 @@ export class FabricCanvas {
             const canvas = fabricCanvasInstance.getCanvas();
             if (!canvas) return 1;
             const zoom = canvas.getZoom();
-<<<<<<< HEAD
-            // Inverse scale: when zoom is 0.5, controls should be 2x larger
-            // Cap at 2.5x to prevent oversized controls on very large canvases
-            const inverseScale = 1 / zoom;
-            return Math.min(inverseScale, 2.5);
-=======
             // Inverse scale ensures consistent screen size
             // Strictly cap at 2.0x to prevent oversized controls on resize/zoom out
             const inverseScale = 1 / zoom;
             return Math.min(inverseScale, 2.0);
->>>>>>> imageeditor/main
         };
 
         // Render function for circular corner controls (tl, tr, bl, br)
         const renderCircleControl = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-<<<<<<< HEAD
-            const size = 18 * scale; // Scale with inverse zoom
-            const strokeWidth = 2.5 * scale;
-=======
             const size = 9 * scale; // Aggressively reduced base size to 9
             const strokeWidth = 1 * scale; // Thin stroke
->>>>>>> imageeditor/main
 
             ctx.save();
             ctx.translate(left, top);
@@ -423,17 +373,10 @@ export class FabricCanvas {
         // Render function for horizontal pill-shaped side controls (mt, mb)
         const renderPillControlH = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-<<<<<<< HEAD
-            const width = 24 * scale;
-            const height = 8 * scale;
-            const radius = 4 * scale;
-            const strokeWidth = 2.5 * scale;
-=======
             const width = 18 * scale; // Reduced from 24
             const height = 6 * scale; // Reduced from 8
             const radius = 3 * scale;
             const strokeWidth = 1 * scale;
->>>>>>> imageeditor/main
 
             ctx.save();
             ctx.translate(left, top);
@@ -455,17 +398,10 @@ export class FabricCanvas {
         // Render function for vertical pill-shaped side controls (ml, mr)
         const renderPillControlV = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-<<<<<<< HEAD
-            const width = 8 * scale;
-            const height = 24 * scale;
-            const radius = 4 * scale;
-            const strokeWidth = 2.5 * scale;
-=======
             const width = 6 * scale; // Reduced
             const height = 18 * scale; // Reduced
             const radius = 3 * scale;
             const strokeWidth = 1 * scale;
->>>>>>> imageeditor/main
 
             ctx.save();
             ctx.translate(left, top);
@@ -551,9 +487,6 @@ export class FabricCanvas {
     }
 
     /**
-<<<<<<< HEAD
-     * Resize the canvas (uses virtual canvas for large sizes)
-=======
      * Get bounding box of current selection in logical coordinates
      */
     public getSelectionBounds(): { left: number; top: number; width: number; height: number } | null {
@@ -640,7 +573,6 @@ export class FabricCanvas {
 
     /**
      * Resize the logical dimensions of the canvas
->>>>>>> imageeditor/main
      * @param width Logical (target) width
      * @param height Logical (target) height
      */
@@ -651,25 +583,10 @@ export class FabricCanvas {
         this.logicalWidth = width;
         this.logicalHeight = height;
 
-<<<<<<< HEAD
-        // Calculate working dimensions that fit within browser limits
-        const working = this.calculateWorkingDimensions(width, height);
-        this.workingScale = working.scale;
-
-        console.log(`[FabricCanvas] resize: logical=${width}x${height}, working=${working.width}x${working.height}, scale=${working.scale.toFixed(4)}`);
-
-        // Set canvas to working dimensions
-        this.canvas.setDimensions({ width: working.width, height: working.height });
-
-        // Use Fabric's zoom to handle the scale - elements stay in logical coordinates
-        // but render at working scale
-        this.canvas.setZoom(working.scale);
-=======
         console.log(`[FabricCanvas] resize: logical=${width}x${height}`);
 
         // We don't perform fit-to-screen or zoom logic here anymore.
         // Instead, we let the UI component (CanvasStage) drive the zoom/dimensions via setZoom().
->>>>>>> imageeditor/main
         this.canvas.renderAll();
     }
 
@@ -2572,18 +2489,6 @@ export class FabricCanvas {
     }
 
     /**
-<<<<<<< HEAD
-     * Set zoom level
-     */
-    public setZoom(zoom: number): void {
-        if (!this.canvas) return;
-        this.canvas.setZoom(zoom / 100);
-        this.canvas.renderAll();
-    }
-
-    /**
-=======
->>>>>>> imageeditor/main
      * Pan canvas
      */
     public pan(deltaX: number, deltaY: number): void {
