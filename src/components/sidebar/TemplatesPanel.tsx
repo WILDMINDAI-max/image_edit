@@ -1358,240 +1358,160 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
-    // Party Event Poster - Neon Frame Design
+    // Event Flyer - Modern Geometric (Bauhaus Style)
     {
-        id: 'party-event-neon',
-        name: 'Party Event Neon',
+        id: 'event-flyer-geometric',
+        name: 'Event Flyer',
         category: 'Events',
         width: 1080,
         height: 1350,
-        background: {
-            type: 'gradient',
-            gradientType: 'radial',
-            radialPosition: 'center',
-            colorStops: [
-                { offset: 0, color: '#1a0a2e' },
-                { offset: 0.5, color: '#0d1b2a' },
-                { offset: 1, color: '#0a0a12' }
-            ]
-        },
+        background: { type: 'solid', color: '#F4F4F5' }, // Light gray background
         elements: [
-            // Decorative gradient circles for party feel
+            // === GEOMETRIC SHAPES ===
+            // Large Red Circle
             {
                 type: 'shape',
-                name: 'Glow Circle 1',
+                name: 'Geo Red Circle',
                 shapeType: 'circle',
-                transform: { x: 200, y: 300, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF1493', stroke: null, strokeWidth: 0, opacity: 0.15 },
+                transform: { x: 900, y: 300, width: 600, height: 600, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#EF4444', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 1,
             } as Partial<ShapeElement>,
+            // Blue Rectangle Sidebar
             {
                 type: 'shape',
-                name: 'Glow Circle 2',
-                shapeType: 'circle',
-                transform: { x: 880, y: 500, width: 350, height: 350, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.12 },
-                zIndex: 1,
-            } as Partial<ShapeElement>,
-            {
-                type: 'shape',
-                name: 'Glow Circle 3',
-                shapeType: 'circle',
-                transform: { x: 300, y: 1000, width: 500, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#8A2BE2', stroke: null, strokeWidth: 0, opacity: 0.18 },
-                zIndex: 1,
-            } as Partial<ShapeElement>,
-            // FULL NEON FRAME - using layered shapes for reliable glow effect
-            // Top frame glow layer (outer glow)
-            {
-                type: 'shape',
-                name: 'Neon Frame Top Glow',
+                name: 'Geo Blue Rect',
                 shapeType: 'rectangle',
-                transform: { x: 540, y: 80, width: 930, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
-                zIndex: 8,
+                transform: { x: 100, y: 675, width: 200, height: 1350, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 2,
             } as Partial<ShapeElement>,
-            // Top frame core (white line)
+            // Yellow Accent Bar
             {
                 type: 'shape',
-                name: 'Neon Frame Top',
+                name: 'Geo Yellow Bar',
                 shapeType: 'rectangle',
-                transform: { x: 540, y: 80, width: 920, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 10,
+                transform: { x: 640, y: 880, width: 880, height: 40, rotation: -5, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F59E0B', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
             } as Partial<ShapeElement>,
-            // Bottom frame glow layer
-            {
-                type: 'shape',
-                name: 'Neon Frame Bottom Glow',
-                shapeType: 'rectangle',
-                transform: { x: 540, y: 1270, width: 930, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
-                zIndex: 8,
-            } as Partial<ShapeElement>,
-            // Bottom frame core
-            {
-                type: 'shape',
-                name: 'Neon Frame Bottom',
-                shapeType: 'rectangle',
-                transform: { x: 540, y: 1270, width: 920, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 10,
-            } as Partial<ShapeElement>,
-            // Left frame glow layer
-            {
-                type: 'shape',
-                name: 'Neon Frame Left Glow',
-                shapeType: 'rectangle',
-                transform: { x: 80, y: 675, width: 20, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
-                zIndex: 8,
-            } as Partial<ShapeElement>,
-            // Left frame core
-            {
-                type: 'shape',
-                name: 'Neon Frame Left',
-                shapeType: 'rectangle',
-                transform: { x: 80, y: 675, width: 3, height: 1190, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 10,
-            } as Partial<ShapeElement>,
-            // Right frame glow layer
-            {
-                type: 'shape',
-                name: 'Neon Frame Right Glow',
-                shapeType: 'rectangle',
-                transform: { x: 1000, y: 675, width: 20, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00BFFF', stroke: null, strokeWidth: 0, opacity: 0.3 },
-                zIndex: 8,
-            } as Partial<ShapeElement>,
-            // Right frame core
-            {
-                type: 'shape',
-                name: 'Neon Frame Right',
-                shapeType: 'rectangle',
-                transform: { x: 1000, y: 675, width: 3, height: 1190, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
-                zIndex: 10,
-            } as Partial<ShapeElement>,
-            // Event Type Badge
+
+            // === MAIN CONTENT ===
+            // Date (On Blue Bar - Rotated)
             {
                 type: 'text',
-                name: 'Event Badge',
-                content: '★ EXCLUSIVE EVENT ★',
-                transform: { x: 540, y: 140, width: 500, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFD700', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 14, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 20,
-            } as Partial<TextElement>,
-            // Brand name
-            {
-                type: 'text',
-                name: 'Brand Name',
-                content: "BHAILU'S",
-                transform: { x: 540, y: 220, width: 700, height: 70, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Date Vertical',
+                content: 'JULY 24TH . 2026',
+                transform: { x: 100, y: 675, width: 800, height: 50, rotation: -90, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 48, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                textStyle: { fontFamily: 'Outfit', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+
+            // Main Title
+            {
+                type: 'text',
+                name: 'Title Main',
+                content: 'SUMMER\nSOUNDS',
+                transform: { x: 640, y: 400, width: 800, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#18181B', opacity: 1 },
+                textStyle: { fontFamily: 'Outfit', fontSize: 160, fontWeight: 900, fontStyle: 'normal', textAlign: 'left', lineHeight: 0.85, letterSpacing: 0.5, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+
+            // === SPECIAL GUEST ===
+            // Photo Placeholder
+            {
+                type: 'shape',
+                name: 'Guest Photo Layout',
+                shapeType: 'circle',
+                transform: { x: 640, y: 950, width: 300, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4D4D8', stroke: '#18181B', strokeWidth: 4, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Guest Label',
+                content: 'SPECIAL GUEST',
+                transform: { x: 640, y: 1140, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F59E0B', opacity: 1 },
+                textStyle: { fontFamily: 'Outfit', fontSize: 24, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+
+            // === TICKET BADGE ===
+            {
+                type: 'shape',
+                name: 'Ticket Badge BG',
+                shapeType: 'circle',
+                transform: { x: 950, y: 1200, width: 140, height: 140, rotation: 15, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#18181B', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 20,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Ticket Price',
+                content: '$25',
+                transform: { x: 950, y: 1200, width: 100, height: 50, rotation: 15, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Outfit', fontSize: 48, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 21,
             } as Partial<TextElement>,
-            // Presents
-            {
-                type: 'text',
-                name: 'Presents',
-                content: 'PRESENTS',
-                transform: { x: 540, y: 280, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF6B9D', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 10, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 22,
-            } as Partial<TextElement>,
-            // THE BIG BANG
-            {
-                type: 'text',
-                name: 'Main Title 1',
-                content: 'THE BIG BANG',
-                transform: { x: 540, y: 420, width: 900, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1, shadow: { color: '#00BFFF', blur: 30, offsetX: 0, offsetY: 0 } },
-                textStyle: { fontFamily: 'Poppins', fontSize: 80, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 23,
-            } as Partial<TextElement>,
-            // PARTY (with glow effect)
-            {
-                type: 'text',
-                name: 'Main Title 2',
-                content: 'PARTY',
-                transform: { x: 540, y: 560, width: 900, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1, shadow: { color: '#FF1493', blur: 40, offsetX: 0, offsetY: 0 } },
-                textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 24,
-            } as Partial<TextElement>,
-            // Decorative line
+
+            // === MUSIC GENRES ===
             {
                 type: 'shape',
-                name: 'Divider Line',
+                name: 'Genre Tag 1',
                 shapeType: 'rectangle',
-                transform: { x: 540, y: 680, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFD700', stroke: null, strokeWidth: 0, opacity: 0.8 },
-                zIndex: 15,
+                transform: { x: 550, y: 150, width: 160, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#18181B', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 12,
             } as Partial<ShapeElement>,
-            // CTA
             {
                 type: 'text',
-                name: 'CTA Text',
-                content: '✨ SECURE YOUR SPOT ✨',
-                transform: { x: 540, y: 740, width: 700, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFD700', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 25,
-            } as Partial<TextElement>,
-            // Feature
-            {
-                type: 'text',
-                name: 'Feature Text',
-                content: 'UNLIMITED FOOD & MOCKTAIL',
-                transform: { x: 540, y: 820, width: 800, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 0.9 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 26, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 26,
-            } as Partial<TextElement>,
-            // Date
-            {
-                type: 'text',
-                name: 'Date',
-                content: '10TH OF JANUARY',
-                transform: { x: 540, y: 940, width: 600, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF6B9D', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 42, fontWeight: 700, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 27,
-            } as Partial<TextElement>,
-            // Time
-            {
-                type: 'text',
-                name: 'Time',
-                content: 'STARTING AT 3 PM',
-                transform: { x: 540, y: 1010, width: 500, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'Genre Text 1',
+                content: 'HOUSE',
+                transform: { x: 550, y: 150, width: 160, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 22, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 5, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 28,
+                textStyle: { fontFamily: 'Outfit', fontSize: 20, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 13,
             } as Partial<TextElement>,
-            // Location
+
+            {
+                type: 'shape',
+                name: 'Genre Tag 2',
+                shapeType: 'rectangle',
+                transform: { x: 730, y: 150, width: 160, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#18181B', strokeWidth: 2, opacity: 1 },
+                zIndex: 12,
+            } as Partial<ShapeElement>,
             {
                 type: 'text',
-                name: 'Location',
-                content: 'AHMEDABAD CITY',
-                transform: { x: 540, y: 1070, width: 500, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 0.7 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 10, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 29,
+                name: 'Genre Text 2',
+                content: 'TECHNO',
+                transform: { x: 730, y: 150, width: 160, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#18181B', opacity: 1 },
+                textStyle: { fontFamily: 'Outfit', fontSize: 20, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 13,
             } as Partial<TextElement>,
-            // Contact Info
+
+            // === QR CODE ===
+            {
+                type: 'shape',
+                name: 'QR Box',
+                shapeType: 'rectangle',
+                transform: { x: 300, y: 1250, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: '#18181B', strokeWidth: 2, opacity: 1 },
+                zIndex: 25,
+            } as Partial<ShapeElement>,
             {
                 type: 'text',
-                name: 'Contact',
-                content: 'FOR MORE DETAILS: +91 7600686748',
-                transform: { x: 540, y: 1180, width: 600, height: 35, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 0.6 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 30,
+                name: 'QR Label',
+                content: 'SCAN',
+                transform: { x: 300, y: 1310, width: 80, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#18181B', opacity: 1 },
+                textStyle: { fontFamily: 'Outfit', fontSize: 12, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 26,
             } as Partial<TextElement>,
         ],
     },
@@ -1977,249 +1897,467 @@ const TEMPLATES: TemplateData[] = [
             { type: 'text', name: 'About Text', content: 'Passionate UX designer with 6+ years of experience creating user-centered digital products. I combine creativity with data-driven insights to deliver exceptional user experiences.', transform: { x: 1540, y: 1300, width: 900, height: 150, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 41 } as Partial<TextElement>,
         ],
     },
-    // A4 Gradient Poster Template - ENHANCED
+    // A4 Gradient Poster Template - ENHANCED CYBER MESH
     {
         id: 'a4-poster-gradient',
         name: 'Gradient Poster',
         category: 'A4 Portrait',
         width: 2480,
         height: 3508,
-        background: { type: 'solid', color: '#0D0D0D' },
+        background: { type: 'solid', color: '#050510' }, // Deeper space blue-black
         elements: [
-            // Gradient circles
-            { type: 'shape', name: 'Gradient Top', shapeType: 'circle', transform: { x: 300, y: 400, width: 1000, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 0.35 }, zIndex: 1 } as Partial<ShapeElement>,
-            { type: 'shape', name: 'Gradient Mid', shapeType: 'circle', transform: { x: 2100, y: 1200, width: 800, height: 800, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#8B5CF6', stroke: null, strokeWidth: 0, opacity: 0.3 }, zIndex: 1 } as Partial<ShapeElement>,
-            { type: 'shape', name: 'Gradient Bottom', shapeType: 'circle', transform: { x: 2100, y: 3000, width: 1200, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', stroke: null, strokeWidth: 0, opacity: 0.4 }, zIndex: 2 } as Partial<ShapeElement>,
-            { type: 'shape', name: 'Gradient Left', shapeType: 'circle', transform: { x: -200, y: 2500, width: 900, height: 900, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#00D4FF', stroke: null, strokeWidth: 0, opacity: 0.25 }, zIndex: 1 } as Partial<ShapeElement>,
-            // Top bar accent
-            { type: 'shape', name: 'Top Bar', shapeType: 'rectangle', transform: { x: 1240, y: 80, width: 2200, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 0.8 }, zIndex: 3 } as Partial<ShapeElement>,
-            // Event tag
-            { type: 'text', name: 'Event Tag', content: '✦ ANNUAL EVENT ✦', transform: { x: 1240, y: 200, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
-            // Main headline
-            { type: 'text', name: 'Headline', content: 'DESIGN\nFESTIVAL', transform: { x: 1240, y: 700, width: 2200, height: 500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 200, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.95, letterSpacing: -6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
-            // Year with outline effect
-            { type: 'text', name: 'Year', content: '2026', transform: { x: 1240, y: 1100, width: 800, height: 140, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 800, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 30, textDecoration: 'none', textTransform: 'none' }, zIndex: 11 } as Partial<TextElement>,
-            // Tagline
-            { type: 'text', name: 'Tagline', content: '"Where Creativity Meets Innovation"', transform: { x: 1240, y: 1280, width: 1400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#AAAAAA', opacity: 0.9 }, textStyle: { fontFamily: 'Inter', fontSize: 28, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' }, zIndex: 12 } as Partial<TextElement>,
-            // Divider
-            { type: 'shape', name: 'Divider', shapeType: 'rectangle', transform: { x: 1240, y: 1400, width: 400, height: 3, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.3 }, zIndex: 5 } as Partial<ShapeElement>,
-            // Featured speakers header
-            { type: 'text', name: 'Speakers Header', content: 'FEATURED SPEAKERS', transform: { x: 1240, y: 1520, width: 1000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 13 } as Partial<TextElement>,
-            // Speakers
-            { type: 'text', name: 'Speaker 1', content: '• Sarah Chen - Creative Director, Adobe', transform: { x: 1240, y: 1620, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 14 } as Partial<TextElement>,
-            { type: 'text', name: 'Speaker 2', content: '• Marcus Thompson - UX Lead, Google', transform: { x: 1240, y: 1690, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 15 } as Partial<TextElement>,
-            { type: 'text', name: 'Speaker 3', content: '• Elena Rodriguez - Brand Designer, Apple', transform: { x: 1240, y: 1760, width: 1600, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#CCCCCC', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 16 } as Partial<TextElement>,
-            // Workshops section
-            { type: 'text', name: 'Workshops Header', content: '20+ WORKSHOPS • 50+ SPEAKERS • 3 DAYS', transform: { x: 1240, y: 1920, width: 1800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 26, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 17 } as Partial<TextElement>,
-            // Ticket info box
-            { type: 'shape', name: 'Ticket Box', shapeType: 'rounded-rectangle', transform: { x: 1240, y: 2150, width: 1000, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FF006E', stroke: null, strokeWidth: 0, opacity: 1, cornerRadius: 20 }, zIndex: 6 } as Partial<ShapeElement>,
-            { type: 'text', name: 'Ticket CTA', content: 'GET YOUR TICKETS NOW', transform: { x: 1240, y: 2130, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 18 } as Partial<TextElement>,
-            { type: 'text', name: 'Ticket Price', content: 'Early Bird: $199 | Regular: $299', transform: { x: 1240, y: 2180, width: 800, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 0.9 }, textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 19 } as Partial<TextElement>,
-            // Date and venue
-            { type: 'text', name: 'Date', content: 'MARCH 15-17, 2026', transform: { x: 1240, y: 2900, width: 1000, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Poppins', fontSize: 42, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 20 } as Partial<TextElement>,
-            { type: 'text', name: 'Location', content: 'JAVITS CENTER • NEW YORK CITY', transform: { x: 1240, y: 2980, width: 1200, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#888888', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 22, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 21 } as Partial<TextElement>,
-            // Website
-            { type: 'text', name: 'Website', content: 'www.designfestival.com', transform: { x: 1240, y: 3100, width: 800, height: 32, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' }, zIndex: 22 } as Partial<TextElement>,
-            // Bottom bar
-            { type: 'shape', name: 'Bottom Bar', shapeType: 'rectangle', transform: { x: 1240, y: 3428, width: 2200, height: 6, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#3A86FF', stroke: null, strokeWidth: 0, opacity: 0.8 }, zIndex: 3 } as Partial<ShapeElement>,
-            // Sponsors section
-            { type: 'text', name: 'Sponsors', content: 'PRESENTED BY: ADOBE • FIGMA • SKETCH • WEBFLOW', transform: { x: 1240, y: 3350, width: 1800, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#555555', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 23 } as Partial<TextElement>,
+            // === BACKDROP & TEXTURE ===
+            // Grid Overlay
+            { type: 'shape', name: 'Grid Lines V1', shapeType: 'rectangle', transform: { x: 620, y: 1754, width: 2, height: 3508, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.05 }, zIndex: 0 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Grid Lines V2', shapeType: 'rectangle', transform: { x: 1240, y: 1754, width: 2, height: 3508, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.1 }, zIndex: 0 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Grid Lines V3', shapeType: 'rectangle', transform: { x: 1860, y: 1754, width: 2, height: 3508, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.05 }, zIndex: 0 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Grid Lines H1', shapeType: 'rectangle', transform: { x: 1240, y: 877, width: 2480, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.05 }, zIndex: 0 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Grid Lines H2', shapeType: 'rectangle', transform: { x: 1240, y: 1754, width: 2480, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.1 }, zIndex: 0 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Grid Lines H3', shapeType: 'rectangle', transform: { x: 1240, y: 2631, width: 2480, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 0.05 }, zIndex: 0 } as Partial<ShapeElement>,
+
+            // Complex Mesh Gradient Blobs
+            { type: 'shape', name: 'Gradient Cyber 1', shapeType: 'circle', transform: { x: 200, y: 200, width: 1500, height: 1500, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#F72585', stroke: null, strokeWidth: 0, opacity: 0.25 }, zIndex: 1 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Cyber 2', shapeType: 'circle', transform: { x: 2280, y: 1000, width: 1200, height: 1200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4361EE', stroke: null, strokeWidth: 0, opacity: 0.3 }, zIndex: 1 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Cyber 3', shapeType: 'circle', transform: { x: 1240, y: 2400, width: 1800, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4CC9F0', stroke: null, strokeWidth: 0, opacity: 0.2 }, zIndex: 1 } as Partial<ShapeElement>,
+            { type: 'shape', name: 'Gradient Cyber 4', shapeType: 'circle', transform: { x: 400, y: 3200, width: 1000, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#7209B7', stroke: null, strokeWidth: 0, opacity: 0.35 }, zIndex: 1 } as Partial<ShapeElement>,
+
+            // === HEADER SECTION ===
+            // Rotated Accent Text
+            { type: 'text', name: 'Rotated Text Left', content: 'VOL. 4 // 2026', transform: { x: 100, y: 1754, width: 800, height: 30, rotation: -90, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4CC9F0', opacity: 0.8 }, textStyle: { fontFamily: 'JetBrains Mono', fontSize: 24, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
+
+            // Main Headline - Mixed Styles
+            { type: 'text', name: 'Headline Solid', content: 'FUTURE', transform: { x: 1240, y: 600, width: 2200, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Montserrat', fontSize: 280, fontWeight: 900, fontStyle: 'italic', textAlign: 'center', lineHeight: 0.9, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 10 } as Partial<TextElement>,
+            { type: 'text', name: 'Headline Outline', content: 'DESIGN', transform: { x: 1240, y: 880, width: 2200, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 }, textStyle: { fontFamily: 'Montserrat', fontSize: 280, fontWeight: 900, fontStyle: 'italic', textAlign: 'center', lineHeight: 0.9, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 11 } as Partial<TextElement>,
+
+            // Subhead box
+            { type: 'shape', name: 'Subhead Box', shapeType: 'rectangle', transform: { x: 1240, y: 1080, width: 800, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#F72585', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 9 } as Partial<ShapeElement>,
+            { type: 'text', name: 'Subhead', content: 'IMMERSIVE DIGITAL EXPERIENCE', transform: { x: 1240, y: 1080, width: 800, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Chakra Petch', fontSize: 26, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 12 } as Partial<TextElement>,
+
+            // === CONTENT GRID ===
+            // Schedule Section (Left)
+            { type: 'text', name: 'Schedule Header', content: 'SCHEDULE', transform: { x: 620, y: 1400, width: 400, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4CC9F0', opacity: 1 }, textStyle: { fontFamily: 'Chakra Petch', fontSize: 36, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 13 } as Partial<TextElement>,
+            { type: 'shape', name: 'Schedule Line', shapeType: 'rectangle', transform: { x: 620, y: 1430, width: 100, height: 4, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#F72585', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 13 } as Partial<ShapeElement>,
+
+            { type: 'text', name: 'Day 1', content: 'DAY 01 > WORKSHOPS\nMARCH 15 . 09:00 - 18:00', transform: { x: 620, y: 1520, width: 600, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 14 } as Partial<TextElement>,
+            { type: 'text', name: 'Day 2', content: 'DAY 02 > TALKS + PANELS\nMARCH 16 . 10:00 - 20:00', transform: { x: 620, y: 1620, width: 600, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 14 } as Partial<TextElement>,
+
+            // Speakers Section (Right)
+            { type: 'text', name: 'Speakers Header', content: 'SPEAKERS', transform: { x: 1860, y: 1400, width: 400, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4CC9F0', opacity: 1 }, textStyle: { fontFamily: 'Chakra Petch', fontSize: 36, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 13 } as Partial<TextElement>,
+            { type: 'shape', name: 'Speakers Line', shapeType: 'rectangle', transform: { x: 1860, y: 1430, width: 100, height: 4, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#F72585', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 13 } as Partial<ShapeElement>,
+
+            { type: 'text', name: 'Speaker List', content: 'ALEX RIVERA . NEXT_LAB\nSARAH K . POLYGON\nDAVID WU . NEURAL_NET\nELENA V . CYBER_SYS', transform: { x: 1860, y: 1580, width: 600, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 0.9 }, textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.8, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 14 } as Partial<TextElement>,
+
+            // === FOOTER SECTION ===
+            // Ticket/QR Area
+            { type: 'shape', name: 'Ticket QR Box', shapeType: 'rectangle', transform: { x: 1240, y: 2200, width: 1600, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#0A0A15', stroke: '#4CC9F0', strokeWidth: 2, opacity: 0.8 }, zIndex: 5 } as Partial<ShapeElement>,
+
+            // Pseudo QR Code (Grid of squares)
+            { type: 'shape', name: 'QR Frame', shapeType: 'rectangle', transform: { x: 800, y: 2200, width: 250, height: 250, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 6 } as Partial<ShapeElement>,
+            { type: 'text', name: 'QR Label', content: 'SCAN FOR TICKETS', transform: { x: 800, y: 2360, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#000000', opacity: 1 }, textStyle: { fontFamily: 'JetBrains Mono', fontSize: 16, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' }, zIndex: 7 } as Partial<TextElement>,
+
+            // Ticket Details
+            { type: 'text', name: 'Venue Large', content: 'TOKYO . SHIBUYA', transform: { x: 1450, y: 2150, width: 800, height: 60, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#FFFFFF', opacity: 1 }, textStyle: { fontFamily: 'Montserrat', fontSize: 64, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 7 } as Partial<TextElement>,
+            { type: 'text', name: 'Venue Small', content: 'HALL A . LEVEL 4 . GATE 7', transform: { x: 1450, y: 2220, width: 800, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#4361EE', opacity: 1 }, textStyle: { fontFamily: 'JetBrains Mono', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 7 } as Partial<TextElement>,
+
+            // Sponsor Grid at Bottom
+            { type: 'text', name: 'Sponsors', content: 'POWERED BY:  NVIDIA  .  UNITY  .  UNREAL ENGINE  .  BLENDER', transform: { x: 1240, y: 3200, width: 2000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: '#8888AA', opacity: 1 }, textStyle: { fontFamily: 'Chakra Petch', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' }, zIndex: 20 } as Partial<TextElement>,
+
+            // Bottom Accent
+            { type: 'shape', name: 'Bottom Accent', shapeType: 'rectangle', transform: { x: 1240, y: 3450, width: 2480, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' }, style: { fill: 'url(#gradient)', stroke: null, strokeWidth: 0, opacity: 1 }, zIndex: 25 } as Partial<ShapeElement>,
         ],
     },
     // ========== A5 PORTRAIT TEMPLATES (1748 x 2480 px at 300dpi) ==========
-    // A5 Event Flyer
-    {
-        id: 'a5-event-flyer',
-        name: 'Event Flyer',
-        category: 'A5 Portrait',
-        width: 1748,
-        height: 2480,
-        background: { type: 'solid', color: '#1C1C1C' },
-        elements: [
-            // Neon accent circles
-            {
-                type: 'shape',
-                name: 'Neon Circle 1',
-                shapeType: 'circle',
-                transform: { x: 300, y: 400, width: 300, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00F5FF', stroke: null, strokeWidth: 0, opacity: 0.3 },
-                zIndex: 1,
-            } as Partial<ShapeElement>,
-            {
-                type: 'shape',
-                name: 'Neon Circle 2',
-                shapeType: 'circle',
-                transform: { x: 1500, y: 2000, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF00FF', stroke: null, strokeWidth: 0, opacity: 0.25 },
-                zIndex: 2,
-            } as Partial<ShapeElement>,
-            // Event title
-            {
-                type: 'text',
-                name: 'Event Title',
-                content: 'NIGHT\nPARTY',
-                transform: { x: 874, y: 900, width: 1400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 120, fontWeight: 900, fontStyle: 'normal', textAlign: 'center', lineHeight: 0.95, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 10,
-            } as Partial<TextElement>,
-            // Date badge
-            {
-                type: 'shape',
-                name: 'Date Badge',
-                shapeType: 'rounded-rectangle',
-                transform: { x: 874, y: 1300, width: 400, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FF00FF', stroke: null, strokeWidth: 0, opacity: 1, cornerRadius: 40 },
-                zIndex: 5,
-            } as Partial<ShapeElement>,
-            {
-                type: 'text',
-                name: 'Date',
-                content: 'FEB 14',
-                transform: { x: 874, y: 1300, width: 300, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 11,
-            } as Partial<TextElement>,
-            // DJ name
-            {
-                type: 'text',
-                name: 'DJ Name',
-                content: 'FEATURING DJ SPARK',
-                transform: { x: 874, y: 1500, width: 1000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#00F5FF', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 12,
-            } as Partial<TextElement>,
-            // Venue
-            {
-                type: 'text',
-                name: 'Venue',
-                content: 'SKYLINE CLUB',
-                transform: { x: 874, y: 2200, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#888888', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 13,
-            } as Partial<TextElement>,
-        ],
-    },
+
     // A5 Restaurant Menu
+    // A5 Restaurant Menu - Modern Minimalist
     {
         id: 'a5-menu-elegant',
         name: 'Elegant Menu',
         category: 'A5 Portrait',
         width: 1748,
         height: 2480,
-        background: { type: 'solid', color: '#0A0A0A' },
+        background: { type: 'solid', color: '#FFFBF0' }, // Warm Cream
         elements: [
-            // Gold border frame
+            // Frame/Border (Very minimal)
             {
                 type: 'shape',
-                name: 'Border Frame',
+                name: 'Border Inner',
                 shapeType: 'rectangle',
-                transform: { x: 874, y: 1240, width: 1648, height: 2380, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: null, stroke: '#C9A962', strokeWidth: 4, opacity: 1 },
+                transform: { x: 874, y: 1240, width: 1600, height: 2332, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#2C3333', strokeWidth: 2, opacity: 0.1 },
                 zIndex: 1,
             } as Partial<ShapeElement>,
-            // Restaurant name
+
+            // Header Section
             {
                 type: 'text',
-                name: 'Restaurant Name',
-                content: 'LA MAISON',
-                transform: { x: 874, y: 300, width: 1200, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#C9A962', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 64, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.0, letterSpacing: 12, textDecoration: 'none', textTransform: 'uppercase' },
+                name: 'Menu Title',
+                content: 'SEASONAL\nMENU',
+                transform: { x: 874, y: 300, width: 1000, height: 250, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 100, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.1, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 10,
             } as Partial<TextElement>,
-            // Tagline
             {
                 type: 'text',
-                name: 'Tagline',
-                content: 'Fine Dining Experience',
-                transform: { x: 874, y: 400, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#888888', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 11,
+                name: 'Sub Title',
+                content: 'EST. 2024 . PARIS',
+                transform: { x: 874, y: 450, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 0.6 },
+                textStyle: { fontFamily: 'Lato', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
             } as Partial<TextElement>,
-            // Decorative divider
+
+            // Divider
             {
                 type: 'shape',
-                name: 'Divider',
+                name: 'Header Line',
                 shapeType: 'rectangle',
-                transform: { x: 874, y: 500, width: 400, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#C9A962', stroke: null, strokeWidth: 0, opacity: 0.6 },
-                zIndex: 2,
+                transform: { x: 874, y: 520, width: 100, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', stroke: null, strokeWidth: 0, opacity: 0.5 },
+                zIndex: 5,
             } as Partial<ShapeElement>,
-            // Category: Starters
+
+            // === STARTERS ===
             {
                 type: 'text',
-                name: 'Starters Header',
+                name: 'Section Starters',
                 content: 'STARTERS',
-                transform: { x: 874, y: 650, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#C9A962', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 28, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 12,
+                transform: { x: 874, y: 650, width: 400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 42, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
             } as Partial<TextElement>,
-            // Menu item
+
+            // Item 1
             {
                 type: 'text',
-                name: 'Item 1',
-                content: 'Truffle Risotto                                    $28',
-                transform: { x: 874, y: 750, width: 1400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 13,
+                name: 'Starter 1 Name',
+                content: 'French Onion Soup',
+                transform: { x: 200, y: 750, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Starter 1 Price',
+                content: '$14',
+                transform: { x: 1548, y: 750, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Starter 1 Desc',
+                content: 'Caramelized onions, beef broth, gruyère crouton',
+                transform: { x: 200, y: 790, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#555555', opacity: 0.8 },
+                textStyle: { fontFamily: 'Lato', fontSize: 20, fontWeight: 300, fontStyle: 'italic', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Item 2
+            {
+                type: 'text',
+                name: 'Starter 2 Name',
+                content: 'Truffle Arancini',
+                transform: { x: 200, y: 880, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Starter 2 Price',
+                content: '$16',
+                transform: { x: 1548, y: 880, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Starter 2 Desc',
+                content: 'Wild mushroom risotto balls, truffle aioli, parmesan',
+                transform: { x: 200, y: 920, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#555555', opacity: 0.8 },
+                textStyle: { fontFamily: 'Lato', fontSize: 20, fontWeight: 300, fontStyle: 'italic', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // === MAINS ===
+            {
+                type: 'text',
+                name: 'Section Mains',
+                content: 'MAINS',
+                transform: { x: 874, y: 1100, width: 400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 42, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+
+            // Main 1
+            {
+                type: 'text',
+                name: 'Main 1 Name',
+                content: 'Pan Seared Scallops',
+                transform: { x: 200, y: 1200, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 1 Price',
+                content: '$32',
+                transform: { x: 1548, y: 1200, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 1 Desc',
+                content: 'Cauliflower purée, crispy pancetta, sage butter',
+                transform: { x: 200, y: 1240, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#555555', opacity: 0.8 },
+                textStyle: { fontFamily: 'Lato', fontSize: 20, fontWeight: 300, fontStyle: 'italic', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Main 2
+            {
+                type: 'text',
+                name: 'Main 2 Name',
+                content: 'Herb Crusted Lamb',
+                transform: { x: 200, y: 1330, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 2 Price',
+                content: '$38',
+                transform: { x: 1548, y: 1330, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 2 Desc',
+                content: 'Fondant potatoes, seasonal greens, rosemary jus',
+                transform: { x: 200, y: 1370, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#555555', opacity: 0.8 },
+                textStyle: { fontFamily: 'Lato', fontSize: 20, fontWeight: 300, fontStyle: 'italic', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Main 3
+            {
+                type: 'text',
+                name: 'Main 3 Name',
+                content: 'Wild Mushroom Risotto',
+                transform: { x: 200, y: 1460, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 3 Price',
+                content: '$26',
+                transform: { x: 1548, y: 1460, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Main 3 Desc',
+                content: 'Arborio rice, porcini mushrooms, truffle oil, parmesan crisp',
+                transform: { x: 200, y: 1500, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#555555', opacity: 0.8 },
+                textStyle: { fontFamily: 'Lato', fontSize: 20, fontWeight: 300, fontStyle: 'italic', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // === DESSERT ===
+            {
+                type: 'text',
+                name: 'Section Dessert',
+                content: 'DESSERT',
+                transform: { x: 874, y: 1700, width: 400, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 42, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+
+            // Dessert 1
+            {
+                type: 'text',
+                name: 'Dessert 1 Name',
+                content: 'Dark Chocolate Torte',
+                transform: { x: 200, y: 1800, width: 600, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Playfair Display', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Dessert 1 Price',
+                content: '$12',
+                transform: { x: 1548, y: 1800, width: 100, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'right', originY: 'center' },
+                style: { fill: '#2C3333', opacity: 1 },
+                textStyle: { fontFamily: 'Lato', fontSize: 32, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Footer
+            {
+                type: 'text',
+                name: 'Footer Note',
+                content: 'A discretionary service charge of 12.5% will be added to your bill.',
+                transform: { x: 874, y: 2200, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#888888', opacity: 0.6 },
+                textStyle: { fontFamily: 'Lato', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 10,
             } as Partial<TextElement>,
         ],
     },
     // ========== A6 PORTRAIT TEMPLATES (1240 x 1748 px at 300dpi) ==========
     // A6 Business Card Style
+    // A6 Business Card Style - Cyberpunk Neon
+    // A6 Business Card Style - Swiss International
+    // A6 Business Card Style - Swiss Grid (Classic International Style)
     {
         id: 'a6-card-minimal',
-        name: 'Minimal Card',
+        name: 'Swiss Grid',
         category: 'A6 Portrait',
         width: 1240,
         height: 1748,
-        background: { type: 'solid', color: '#F5F5F0' },
+        background: { type: 'solid', color: '#F4F4F4' }, // Off-White/Light Grey
         elements: [
-            // Accent bar
+            // Top Accent Bar (Red)
             {
                 type: 'shape',
-                name: 'Accent Bar',
+                name: 'Top Bar',
                 shapeType: 'rectangle',
-                transform: { x: 100, y: 874, width: 12, height: 1000, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#2D3436', stroke: null, strokeWidth: 0, opacity: 1 },
+                transform: { x: 620, y: 100, width: 1240, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D90429', stroke: null, strokeWidth: 0, opacity: 1 },
                 zIndex: 1,
             } as Partial<ShapeElement>,
-            // Company name
+
+            // Grid Lines - Vertical
+            {
+                type: 'shape',
+                name: 'Grid V1',
+                shapeType: 'rectangle',
+                transform: { x: 100, y: 874, width: 2, height: 1748, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 0.2 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Grid V2',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 874, width: 2, height: 1748, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 0.2 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+
+            // Grid Lines - Horizontal
+            {
+                type: 'shape',
+                name: 'Grid H1',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 600, width: 1240, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 0.2 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+
+            {
+                type: 'shape',
+                name: 'Grid H2',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 1200, width: 1240, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', stroke: null, strokeWidth: 0, opacity: 0.2 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+
+            // Main Title - Massive Helvetica Style
             {
                 type: 'text',
-                name: 'Company',
-                content: 'STUDIO',
-                transform: { x: 670, y: 500, width: 800, height: 70, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#2D3436', opacity: 1 },
-                textStyle: { fontFamily: 'Poppins', fontSize: 56, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.0, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                name: 'Title Word 1',
+                content: 'HELVETIC',
+                transform: { x: 120, y: 400, width: 1100, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 200, fontWeight: 900, fontStyle: 'normal', textAlign: 'left', lineHeight: 0.85, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 10,
             } as Partial<TextElement>,
-            // Tagline
             {
                 type: 'text',
-                name: 'Tagline',
-                content: 'Creative Agency',
-                transform: { x: 670, y: 580, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#636E72', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                name: 'Title Word 2',
+                content: 'MUSEUM',
+                transform: { x: 120, y: 550, width: 1100, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 200, fontWeight: 900, fontStyle: 'normal', textAlign: 'left', lineHeight: 0.85, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+
+            // Accent Circle
+            {
+                type: 'shape',
+                name: 'Red Circle',
+                shapeType: 'circle',
+                transform: { x: 900, y: 900, width: 400, height: 400, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D90429', stroke: null, strokeWidth: 0, opacity: 0.9 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+
+            // Content Block 1
+            {
+                type: 'text',
+                name: 'Block 1 Title',
+                content: 'EXHIBITION N°. 05',
+                transform: { x: 640, y: 640, width: 500, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 32, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 11,
             } as Partial<TextElement>,
-            // Contact info
             {
                 type: 'text',
-                name: 'Contact',
-                content: 'hello@studio.com\n+1 234 567 890',
-                transform: { x: 670, y: 1400, width: 600, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#2D3436', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 12,
+                name: 'Block 1 Text',
+                content: 'Experience the raw power of modernist design principles applied to contemporary digital art forms.',
+                transform: { x: 640, y: 720, width: 500, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Rotated Text
+            {
+                type: 'text',
+                name: 'Rotated Date',
+                content: 'FEB 28 — MAR 15',
+                transform: { x: 120, y: 1400, width: 800, height: 60, rotation: -90, scaleX: 1, scaleY: 1, originX: 'left', originY: 'center' },
+                style: { fill: '#D90429', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 64, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Footer
+            {
+                type: 'text',
+                name: 'Footer Museum',
+                content: 'KUNSTHAUS ZÜRICH',
+                transform: { x: 620, y: 1650, width: 1000, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#000000', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 8, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 11,
             } as Partial<TextElement>,
         ],
     },
@@ -2230,83 +2368,496 @@ const TEMPLATES: TemplateData[] = [
         category: 'A6 Portrait',
         width: 1240,
         height: 1748,
-        background: { type: 'solid', color: '#1C1C2E' },
+        background: { type: 'solid', color: '#0F3D3E' }, // Deep Teal
         elements: [
-            // Decorative corner
+            // === DECORATIVE BORDER ===
+            // Outer Gold Border
             {
                 type: 'shape',
-                name: 'Corner Decor TL',
-                shapeType: 'diamond',
-                transform: { x: 150, y: 150, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
-                zIndex: 2,
+                name: 'Border Outer',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 874, width: 1140, height: 1648, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#D4AF37', strokeWidth: 4, opacity: 1 },
+                zIndex: 1,
             } as Partial<ShapeElement>,
+            // Inner Thin Border
             {
                 type: 'shape',
-                name: 'Corner Decor BR',
-                shapeType: 'diamond',
-                transform: { x: 1090, y: 1598, width: 80, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
-                zIndex: 2,
+                name: 'Border Inner',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 874, width: 1100, height: 1608, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: null, stroke: '#D4AF37', strokeWidth: 1, opacity: 0.6 },
+                zIndex: 1,
             } as Partial<ShapeElement>,
-            // You're invited
+
+            // === HEADER ===
             {
                 type: 'text',
-                name: 'Youre Invited',
-                content: "You're Invited",
-                transform: { x: 620, y: 450, width: 800, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#D4AF37', opacity: 1 },
-                textStyle: { fontFamily: 'Great Vibes', fontSize: 48, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                name: 'Header Top',
+                content: 'TOGETHER WITH FAMILIES',
+                transform: { x: 620, y: 300, width: 800, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F0E6D2', opacity: 0.8 },
+                textStyle: { fontFamily: 'Montserrat', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 10,
             } as Partial<TextElement>,
-            // Event name
+
+            // === MAIN TITLE ===
             {
                 type: 'text',
-                name: 'Event Name',
-                content: 'WEDDING\nCELEBRATION',
-                transform: { x: 620, y: 700, width: 1000, height: 200, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#FFFFFF', opacity: 1 },
-                textStyle: { fontFamily: 'Playfair Display', fontSize: 52, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.1, letterSpacing: 6, textDecoration: 'none', textTransform: 'uppercase' },
+                name: 'Main Invitation',
+                content: 'We Invite You',
+                transform: { x: 620, y: 400, width: 800, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', opacity: 1 },
+                textStyle: { fontFamily: 'Pinyon Script', fontSize: 72, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
                 zIndex: 11,
             } as Partial<TextElement>,
-            // Divider
-            {
-                type: 'shape',
-                name: 'Divider',
-                shapeType: 'rectangle',
-                transform: { x: 620, y: 900, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
-                zIndex: 3,
-            } as Partial<ShapeElement>,
-            // Date and time
+
+            // === NAMES ===
             {
                 type: 'text',
-                name: 'Date Time',
-                content: 'Saturday, March 15th\n6:00 PM',
-                transform: { x: 620, y: 1050, width: 800, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#CCCCCC', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.6, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
+                name: 'Couple Names',
+                content: 'Alexander\n&\nSophia',
+                transform: { x: 620, y: 650, width: 1000, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 96, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
                 zIndex: 12,
             } as Partial<TextElement>,
+
+            // === DIVIDER ===
+            {
+                type: 'shape',
+                name: 'Divider Line',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 880, width: 150, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 0.8 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'shape',
+                name: 'Divider Diamond',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 880, width: 12, height: 12, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#D4AF37', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 6,
+            } as Partial<ShapeElement>,
+
+            // === DETAILS ===
+            {
+                type: 'text',
+                name: 'Event Details Type',
+                content: 'TO CELEBRATE THEIR WEDDING',
+                transform: { x: 620, y: 950, width: 800, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F0E6D2', opacity: 0.7 },
+                textStyle: { fontFamily: 'Montserrat', fontSize: 20, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 13,
+            } as Partial<TextElement>,
+
+            // Date
+            {
+                type: 'text',
+                name: 'Date Line',
+                content: 'SATURDAY, OCTOBER 24TH',
+                transform: { x: 620, y: 1100, width: 1000, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 42, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 14,
+            } as Partial<TextElement>,
+
+            // Time
+            {
+                type: 'text',
+                name: 'Time Line',
+                content: 'AT FOUR O\'CLOCK IN THE AFTERNOON',
+                transform: { x: 620, y: 1170, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F0E6D2', opacity: 0.9 },
+                textStyle: { fontFamily: 'Montserrat', fontSize: 22, fontWeight: 300, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+
             // Venue
             {
                 type: 'text',
-                name: 'Venue',
-                content: 'The Grand Ballroom',
-                transform: { x: 620, y: 1250, width: 800, height: 36, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
-                style: { fill: '#888888', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 300, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'none' },
-                zIndex: 13,
+                name: 'Venue Name',
+                content: 'THE GRAND ROSE GARDEN',
+                transform: { x: 620, y: 1350, width: 1000, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Cinzel', fontSize: 36, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 1, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 16,
             } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Venue Address',
+                content: '123 ELEGANT AVENUE, BEVERLY HILLS, CA',
+                transform: { x: 620, y: 1400, width: 1000, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#F0E6D2', opacity: 0.7 },
+                textStyle: { fontFamily: 'Montserrat', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 17,
+            } as Partial<TextElement>,
+
             // RSVP
             {
                 type: 'text',
-                name: 'RSVP',
-                content: 'RSVP by March 1st',
-                transform: { x: 620, y: 1500, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                name: 'RSVP Bottom',
+                content: 'RECEPTION TO FOLLOW',
+                transform: { x: 620, y: 1550, width: 600, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
                 style: { fill: '#D4AF37', opacity: 1 },
-                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
-                zIndex: 14,
+                textStyle: { fontFamily: 'Montserrat', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 18,
+            } as Partial<TextElement>,
+        ],
+    },
+    // Modern Resume Template
+    {
+        id: 'modern-resume-1',
+        name: 'Creative Resume',
+        category: 'Resume',
+        width: 1080,
+        height: 1920,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // Left Sidebar Background
+            {
+                type: 'shape',
+                name: 'Sidebar BG',
+                shapeType: 'rectangle',
+                transform: { x: 180, y: 960, width: 360, height: 1920, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E293B', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+
+            // === SIDEBAR CONTENT ===
+            // Photo Placeholder
+            {
+                type: 'shape',
+                name: 'Photo Circle',
+                shapeType: 'circle',
+                transform: { x: 180, y: 250, width: 240, height: 240, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#334155', stroke: '#F8FAFC', strokeWidth: 4, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Photo Text',
+                content: 'PHOTO',
+                transform: { x: 180, y: 250, width: 160, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#94A3B8', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 6,
+            } as Partial<TextElement>,
+
+            // Contact Section
+            {
+                type: 'text',
+                name: 'Contact Header',
+                content: 'CONTACT',
+                transform: { x: 180, y: 500, width: 300, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Contact Divider',
+                shapeType: 'rectangle',
+                transform: { x: 180, y: 530, width: 80, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Email',
+                content: 'hello@johndoe.com',
+                transform: { x: 180, y: 580, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Phone',
+                content: '+1 (555) 123-4567',
+                transform: { x: 180, y: 620, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Website',
+                content: 'www.johndoe.com',
+                transform: { x: 180, y: 660, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Location',
+                content: 'New York, USA',
+                transform: { x: 180, y: 700, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Skills Section
+            {
+                type: 'text',
+                name: 'Skills Header',
+                content: 'SKILLS',
+                transform: { x: 180, y: 850, width: 300, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Skills Divider',
+                shapeType: 'rectangle',
+                transform: { x: 180, y: 880, width: 80, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            // Skill 1
+            {
+                type: 'text',
+                name: 'Skill 1',
+                content: 'Project Management',
+                transform: { x: 180, y: 930, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Skill 2
+            {
+                type: 'text',
+                name: 'Skill 2',
+                content: 'Strategic Planning',
+                transform: { x: 180, y: 970, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Skill 3
+            {
+                type: 'text',
+                name: 'Skill 3',
+                content: 'Digital Marketing',
+                transform: { x: 180, y: 1010, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Skill 4
+            {
+                type: 'text',
+                name: 'Skill 4',
+                content: 'Data Analysis',
+                transform: { x: 180, y: 1050, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#E2E8F0', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // Education Section
+            {
+                type: 'text',
+                name: 'Edu Header',
+                content: 'EDUCATION',
+                transform: { x: 180, y: 1200, width: 300, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Edu Divider',
+                shapeType: 'rectangle',
+                transform: { x: 180, y: 1230, width: 80, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 10,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Degree',
+                content: 'MBA Marketing',
+                transform: { x: 180, y: 1280, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 18, fontWeight: 700, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'University',
+                content: 'Harvard University',
+                transform: { x: 180, y: 1310, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#94A3B8', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'italic', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Year',
+                content: '2018 - 2020',
+                transform: { x: 180, y: 1340, width: 300, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+
+            // === MAIN CONTENT ===
+            // Name Header Layer
+            {
+                type: 'text',
+                name: 'Name',
+                content: 'JOHN DOE',
+                transform: { x: 720, y: 200, width: 620, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E293B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 84, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job Title',
+                content: 'MARKETING DIRECTOR',
+                transform: { x: 720, y: 260, width: 620, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 24, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 4, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+
+            // Profile Summary
+            {
+                type: 'text',
+                name: 'Profile Title',
+                content: 'PROFILE',
+                transform: { x: 720, y: 380, width: 620, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Profile Underline',
+                shapeType: 'rectangle',
+                transform: { x: 440, y: 410, width: 60, height: 4, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 20,
+            } as Partial<ShapeElement>,
+            {
+                type: 'text',
+                name: 'Profile Content',
+                content: 'Innovative and results-driven Marketing Director with over 10 years of experience leading comprehensive marketing strategies. Skilled in digital transformation, brand management, and market expansion. Proven track record of increasing revenue and improving brand visibility through creative campaigns.',
+                transform: { x: 720, y: 500, width: 620, height: 160, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#334155', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 16, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+
+            // Experience Section
+            {
+                type: 'text',
+                name: 'Experience Title',
+                content: 'EXPERIENCE',
+                transform: { x: 720, y: 650, width: 620, height: 40, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#0F172A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 28, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            {
+                type: 'shape',
+                name: 'Exp Underline',
+                shapeType: 'rectangle',
+                transform: { x: 470, y: 680, width: 60, height: 4, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#38BDF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 20,
+            } as Partial<ShapeElement>,
+
+            // Job 1
+            {
+                type: 'text',
+                name: 'Job 1 Title',
+                content: 'Marketing Director',
+                transform: { x: 720, y: 730, width: 620, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E293B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 1 Company',
+                content: 'Global Tech Solutions | 2020 - Present',
+                transform: { x: 720, y: 760, width: 620, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 1 Desc',
+                content: '• Lead a team of 15 marketing professionals\n• Increased annual revenue by 25% through targeted ad campaigns\n• Launched 3 major product lines successfully\n• Managed a $2M annual marketing budget',
+                transform: { x: 720, y: 840, width: 620, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#334155', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+
+            // Job 2
+            {
+                type: 'text',
+                name: 'Job 2 Title',
+                content: 'Senor Brand Manager',
+                transform: { x: 720, y: 960, width: 620, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E293B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 2 Company',
+                content: 'Creative Media Corp | 2016 - 2020',
+                transform: { x: 720, y: 990, width: 620, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 2 Desc',
+                content: '• Developed brand strategy for 5 key accounts\n• Oversaw social media growth of 200%\n• Collaborated with cross-functional teams for product launches',
+                transform: { x: 720, y: 1060, width: 620, height: 90, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#334155', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+
+            // Job 3
+            {
+                type: 'text',
+                name: 'Job 3 Title',
+                content: 'Marketing Specialist',
+                transform: { x: 720, y: 1160, width: 620, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E293B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 20, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 3 Company',
+                content: 'StartUp Inc | 2014 - 2016',
+                transform: { x: 720, y: 1190, width: 620, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#64748B', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
+            } as Partial<TextElement>,
+            {
+                type: 'text',
+                name: 'Job 3 Desc',
+                content: '• Managed email marketing campaigns\n• Conducted market research and competitor analysis\n• Assisted in event planning and execution',
+                transform: { x: 720, y: 1260, width: 620, height: 90, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#334155', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 21,
             } as Partial<TextElement>,
         ],
     },
@@ -2826,6 +3377,304 @@ export function TemplatesPanel() {
                                                             <span className="text-[#C9A227] text-[5px]">★</span>
                                                         </div>
                                                     </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'modern-resume-1' ? (
+                                            // Modern Resume Preview
+                                            <div className="flex-1 relative overflow-hidden bg-white">
+                                                {/* Left Sidebar */}
+                                                <div className="absolute left-0 top-0 bottom-0 w-[30%] bg-[#1E293B] flex flex-col items-center pt-2">
+                                                    {/* Photo */}
+                                                    <div className="w-8 h-8 rounded-full bg-[#334155] border border-[#F8FAFC] mb-2 text-center flex items-center justify-center">
+                                                        <span className="text-[3px] text-white">IMG</span>
+                                                    </div>
+                                                    {/* Lines */}
+                                                    <div className="w-[80%] space-y-1">
+                                                        <div className="h-[1px] w-full bg-[#38BDF8]/50" />
+                                                        <div className="h-[1px] w-full bg-white/20" />
+                                                        <div className="h-[1px] w-full bg-white/20" />
+                                                    </div>
+                                                </div>
+                                                {/* Right Content */}
+                                                <div className="absolute right-0 top-0 bottom-0 w-[70%] px-2 pt-3 flex flex-col">
+                                                    {/* Name */}
+                                                    <div className="w-3/4 h-2 bg-[#1E293B] mb-0.5" />
+                                                    <div className="w-1/2 h-1 bg-[#38BDF8] mb-3" />
+                                                    {/* Section */}
+                                                    <div className="w-1/3 h-1 bg-[#0F172A] mb-0.5" />
+                                                    <div className="w-full h-[0.5px] bg-gray-300 mb-0.5" />
+                                                    <div className="w-full h-[0.5px] bg-gray-300 mb-0.5" />
+                                                    <div className="w-4/5 h-[0.5px] bg-gray-300" />
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'a4-resume-modern' ? (
+                                            // A4 Modern Resume Preview
+                                            <div className="flex-1 relative overflow-hidden bg-white">
+                                                {/* Left Sidebar */}
+                                                <div className="absolute left-0 top-0 bottom-0 w-[33%] bg-[#1A1A2E] flex flex-col items-center pt-3">
+                                                    {/* Photo */}
+                                                    <div className="w-8 h-8 rounded-full bg-[#16213E] border border-[#4ECCA3] mb-2 flex items-center justify-center">
+                                                        <span className="text-[3px] text-[#4ECCA3]">IMG</span>
+                                                    </div>
+                                                    {/* Name in Sidebar for this template style */}
+                                                    <div className="w-[80%] flex flex-col items-center gap-1 mb-2">
+                                                        <div className="h-[2px] w-full bg-white/90 rounded-sm" />
+                                                        <div className="h-[1px] w-2/3 bg-[#4ECCA3] rounded-sm" />
+                                                    </div>
+                                                    {/* Contact Lines */}
+                                                    <div className="w-[80%] space-y-1 mt-1">
+                                                        <div className="h-[0.5px] w-full bg-white/30" />
+                                                        <div className="h-[0.5px] w-full bg-white/30" />
+                                                        <div className="h-[0.5px] w-full bg-white/30" />
+                                                    </div>
+                                                </div>
+                                                {/* Right Content */}
+                                                <div className="absolute right-0 top-0 bottom-0 w-[67%] px-2 pt-4 flex flex-col">
+                                                    {/* Experience Section */}
+                                                    <div className="flex items-center gap-1 mb-1">
+                                                        <div className="w-0.5 h-2 bg-[#4ECCA3]" />
+                                                        <div className="w-16 h-1.5 bg-[#1A1A2E] rounded-[1px]" />
+                                                    </div>
+                                                    <div className="ml-1.5 space-y-0.5 mb-3">
+                                                        <div className="w-full h-[0.5px] bg-gray-300" />
+                                                        <div className="w-full h-[0.5px] bg-gray-300" />
+                                                        <div className="w-2/3 h-[0.5px] bg-gray-300" />
+                                                    </div>
+
+                                                    {/* Education Section */}
+                                                    <div className="flex items-center gap-1 mb-1">
+                                                        <div className="w-0.5 h-2 bg-[#4ECCA3]" />
+                                                        <div className="w-12 h-1.5 bg-[#1A1A2E] rounded-[1px]" />
+                                                    </div>
+                                                    <div className="ml-1.5 space-y-0.5">
+                                                        <div className="w-full h-[0.5px] bg-gray-300" />
+                                                        <div className="w-2/3 h-[0.5px] bg-gray-300" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'a4-poster-gradient' ? (
+                                            // A4 Gradient Poster Preview - Matched to Canvas
+                                            <div className="flex-1 relative overflow-hidden bg-[#050510]">
+                                                {/* Background Circles - Scaled down */}
+                                                <div className="absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-[#F72585] rounded-full mix-blend-screen opacity-20"></div>
+                                                <div className="absolute top-[10%] -right-[10%] w-[40%] h-[40%] bg-[#4361EE] rounded-full mix-blend-screen opacity-20"></div>
+                                                <div className="absolute bottom-[0%] left-[0%] w-[40%] h-[40%] bg-[#7209B7] rounded-full mix-blend-screen opacity-25"></div>
+
+                                                {/* Grid Overlay */}
+                                                <div className="absolute inset-0" style={{ backgroundImage: 'linear-gradient(#FFFFFF08 1px, transparent 1px), linear-gradient(90deg, #FFFFFF08 1px, transparent 1px)', backgroundSize: '25% 15%' }}></div>
+
+                                                {/* Headline Section */}
+                                                <div className="absolute inset-x-2 top-[15%] flex flex-col items-center">
+                                                    <p className="text-white text-[10px] font-black italic leading-[0.85]" style={{ fontFamily: 'Montserrat' }}>FUTURE</p>
+                                                    <p className="text-white text-[10px] font-black italic leading-[0.85]" style={{ fontFamily: 'Montserrat' }}>DESIGN</p>
+
+                                                    {/* Subhead Pink Box */}
+                                                    <div className="mt-1.5 text-white font-bold text-[1.5px] bg-[#F72585] px-1 py-0.5 tracking-widest">
+                                                        IMMERSIVE DIGITAL EXPERIENCE
+                                                    </div>
+                                                </div>
+
+                                                {/* Middle Columns */}
+                                                <div className="absolute top-[35%] left-3 right-3 flex justify-between">
+                                                    <div className="flex flex-col gap-0.5">
+                                                        <div className="text-[#4CC9F0] text-[2px] font-bold tracking-wider mb-0.5">SCHEDULE</div>
+                                                        <div className="text-white/60 text-[1.5px] leading-tight font-mono">DAY 01 . WRK<br />DAY 02 . TLK</div>
+                                                    </div>
+                                                    <div className="flex flex-col gap-0.5 items-end text-right">
+                                                        <div className="text-[#4CC9F0] text-[2px] font-bold tracking-wider mb-0.5">SPEAKERS</div>
+                                                        <div className="text-white/60 text-[1.5px] leading-tight font-mono">ALEX R.<br />SARAH K.</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Tokyo Box - Matched to Screenshot */}
+                                                <div className="absolute left-[20%] right-[20%] top-[60%] h-5 border border-[#4CC9F0]/60 p-0.5 flex items-center bg-[#0A0A15]/50">
+                                                    {/* White Square Placeholder */}
+                                                    <div className="w-3.5 h-3.5 bg-white mr-1 flex-shrink-0"></div>
+                                                    {/* Text */}
+                                                    <div className="flex flex-col justify-center">
+                                                        <div className="text-white text-[2px] font-bold tracking-wide leading-tight">TOKYO . SHIBUYA</div>
+                                                        <div className="text-[#4361EE] text-[1.2px] font-mono leading-tight mt-[0.5px]">HALL A . LEVEL 4</div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Bottom Footer */}
+                                                <div className="absolute bottom-2 w-full text-center">
+                                                    <div className="text-[#8888AA] text-[1.5px] tracking-[1px] uppercase">POWERED BY . NVIDIA . UNITY</div>
+                                                </div>
+
+                                                {/* Side Text */}
+                                                <div className="absolute left-1 top-1/2 -rotate-90 text-[#4CC9F0] text-[2px] font-mono tracking-widest opacity-60">VOL.4 // 2026</div>
+                                            </div>
+                                        ) : template.id === 'event-flyer-geometric' ? (
+                                            // Event Flyer - Modern Geometric Preview
+                                            <div className="flex-1 relative overflow-hidden bg-[#F4F4F5]">
+                                                {/* Blue Sidebar - Left Aligned */}
+                                                <div className="absolute left-0 top-0 w-[24%] h-full bg-[#3B82F6]"></div>
+
+                                                {/* Date on Blue Bar */}
+                                                <div className="absolute top-1/2 left-[12%] -translate-x-1/2 -translate-y-1/2 -rotate-90 w-[200px] text-center">
+                                                    <span className="text-white text-[6px] font-bold tracking-[2px]">JULY 24TH . 2026</span>
+                                                </div>
+
+                                                {/* Red Circle - Top Right */}
+                                                {/* Red Circle - Top Right - Full Circle Visible */}
+                                                <div className="absolute -top-[-5%] right-[0%] w-[48%] pt-[48%] bg-[#EF4444] rounded-full z-0 h-0"></div>
+
+                                                {/* Tags - Overlapping */}
+                                                <div className="absolute top-[18%] left-[28%] flex gap-1 z-10">
+                                                    <div className="bg-[#18181B] px-1 py-[0.5px]">
+                                                        <span className="text-white text-[2.5px] font-bold uppercase tracking-wider block">HOUSE</span>
+                                                    </div>
+                                                    <div className="bg-white border-[0.5px] border-[#18181B] px-1 py-[0.5px]">
+                                                        <span className="text-[#18181B] text-[2.5px] font-bold uppercase tracking-wider block">TECHNO</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Main Title - Centered Relative to White Space */}
+                                                <div className="absolute top-[28%] left-[28%] z-10">
+                                                    <div className="flex flex-col leading-[0.85]">
+                                                        <span className="text-[#18181B] text-[14px] font-black tracking-tighter" style={{ fontFamily: 'Outfit' }}>SUMMER</span>
+                                                        <span className="text-[#18181B] text-[14px] font-black tracking-tighter" style={{ fontFamily: 'Outfit' }}>SOUNDS</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Yellow Bar - Behind Guest */}
+                                                <div className="absolute top-[56%] left-[60%] -translate-x-1/2 w-[70%] h-[3%] bg-[#F59E0B] -rotate-[5deg] z-0"></div>
+
+                                                {/* Guest Placeholder - Centered */}
+                                                <div className="absolute top-[60%] left-[60%] -translate-x-1/2 -translate-y-1/2 w-[22px] h-[22px] rounded-full bg-[#D4D4D8] border-[1px] border-[#18181B] z-20"></div>
+                                                <div className="absolute top-[75%] left-[60%] -translate-x-1/2 text-center w-full z-10">
+                                                    <div className="text-[#F59E0B] text-[2.5px] font-bold tracking-widest uppercase">SPECIAL GUEST</div>
+                                                </div>
+
+                                                {/* Bottom Elements */}
+                                                {/* Scan Box */}
+                                                <div className="absolute bottom-[8%] left-[30%] flex flex-col items-center gap-[2px]">
+                                                    <div className="w-[8px] h-[8px] border border-[#18181B] bg-white"></div>
+                                                    <span className="text-[#18181B] text-[1.5px] font-bold tracking-widest uppercase">SCAN</span>
+                                                </div>
+
+                                                {/* Ticket Badge */}
+                                                <div className="absolute bottom-[12%] right-[8%] w-[14px] h-[14px] bg-[#18181B] rounded-full flex items-center justify-center rotate-12 z-20">
+                                                    <span className="text-white text-[4px] font-bold rotate-[-12deg]">$25</span>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'a5-menu-elegant' ? (
+                                            // A5 Elegant Menu Preview - Modern Minimalist
+                                            <div className="flex-1 relative overflow-hidden bg-[#FFFBF0] flex flex-col items-center pt-4">
+                                                {/* Border */}
+                                                <div className="absolute inset-1 border-[0.5px] border-[#2C3333]/10 pointer-events-none"></div>
+
+                                                {/* Header */}
+                                                <div className="flex flex-col items-center mb-2 z-10">
+                                                    <span className="text-[#2C3333] text-[8px] font-bold tracking-[2px] leading-tight" style={{ fontFamily: 'serif' }}>SEASONAL</span>
+                                                    <span className="text-[#2C3333] text-[8px] font-bold tracking-[2px] leading-tight" style={{ fontFamily: 'serif' }}>MENU</span>
+                                                    <div className="w-4 h-[0.5px] bg-[#2C3333]/50 mt-1"></div>
+                                                </div>
+
+                                                {/* Sections */}
+                                                <div className="w-full px-3 flex flex-col gap-2 z-10">
+                                                    {/* Starters */}
+                                                    <div className="flex flex-col items-center mb-0.5">
+                                                        <span className="text-[#2C3333] text-[3px] font-bold tracking-widest mb-1">STARTERS</span>
+                                                        <div className="w-full flex justify-between items-baseline mb-[1px]">
+                                                            <span className="text-[#2C3333] text-[2.5px] font-bold">French Onion Soup</span>
+                                                            <span className="text-[#2C3333] text-[2.5px]">$14</span>
+                                                        </div>
+                                                        <div className="w-full text-left leading-[0.8]">
+                                                            <span className="text-[#555555] text-[2px] italic">Caramelized onions, beef broth...</span>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Mains */}
+                                                    <div className="flex flex-col items-center mt-1">
+                                                        <span className="text-[#2C3333] text-[3px] font-bold tracking-widest mb-1">MAINS</span>
+                                                        <div className="w-full flex justify-between items-baseline mb-[1px]">
+                                                            <span className="text-[#2C3333] text-[2.5px] font-bold">Pan Seared Scallops</span>
+                                                            <span className="text-[#2C3333] text-[2.5px]">$32</span>
+                                                        </div>
+                                                        <div className="w-full text-left leading-[0.8]">
+                                                            <span className="text-[#555555] text-[2px] italic">Cauliflower purée, crispy pancetta...</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Footer Line */}
+                                                <div className="absolute bottom-2 w-full text-center z-10">
+                                                    <span className="text-[#888888] text-[1.5px]">EST. 2024 . PARIS</span>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'a6-card-minimal' ? (
+                                            // Swiss Grid Preview - Classic International
+                                            <div className="flex-1 relative overflow-hidden bg-[#F4F4F4] flex flex-col items-center">
+                                                {/* Red Top Bar */}
+                                                <div className="absolute top-[6%] left-0 right-0 h-[11%] bg-[#D90429]"></div>
+
+                                                {/* Grid Lines */}
+                                                <div className="absolute top-[35%] left-0 right-0 h-[0.5px] bg-black/20"></div>
+                                                <div className="absolute top-[68%] left-0 right-0 h-[0.5px] bg-black/20"></div>
+                                                <div className="absolute left-[50%] top-[35%] bottom-0 w-[0.5px] bg-black/20"></div>
+
+                                                {/* Main Title - Massive */}
+                                                <div className="absolute top-[18%] left-2 flex flex-col leading-[0.85]">
+                                                    <span className="text-black text-[10px] font-black tracking-tight" style={{ fontFamily: 'Inter' }}>HELVETIC</span>
+                                                    <span className="text-black text-[10px] font-black tracking-tight" style={{ fontFamily: 'Inter' }}>MUSEUM</span>
+                                                </div>
+
+                                                {/* Red Circle Accent */}
+                                                <div className="absolute bottom-[15%] right-[8%] w-[25%] pt-[25%] bg-[#D90429] rounded-full opacity-90"></div>
+
+                                                {/* Details Text Left */}
+                                                <div className="absolute top-[38%] left-2 w-[45%]">
+                                                    <span className="text-black text-[2px] font-bold block mb-[1px]">EXHIBITION</span>
+                                                    <span className="text-black text-[1.5px] leading-tight block">Raw power of modernist design principles.</span>
+                                                </div>
+
+                                                {/* Rotated Date */}
+                                                <div className="absolute bottom-2 left-2 origin-bottom-left rotate-[-90deg]">
+                                                    <span className="text-[#D90429] text-[4px] font-bold tracking-widest whitespace-nowrap">FEB 28 - MAR 15</span>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'a6-invitation-elegant' ? (
+                                            // Elegant Invitation Preview - Deep Teal & Gold
+                                            <div className="flex-1 relative overflow-hidden bg-[#0F3D3E] flex flex-col items-center">
+                                                {/* Borders */}
+                                                <div className="absolute inset-2 border-[0.5px] border-[#D4AF37]"></div>
+                                                <div className="absolute inset-3 border-[0.25px] border-[#D4AF37]/60"></div>
+
+                                                {/* Header */}
+                                                <div className="absolute top-[18%] w-full text-center">
+                                                    <span className="text-[#F0E6D2] text-[1.5px] tracking-[0.5px] block opacity-80" style={{ fontFamily: 'Montserrat' }}>TOGETHER WITH FAMILIES</span>
+                                                </div>
+
+                                                {/* Main Title - Script */}
+                                                <div className="absolute top-[25%] w-full text-center">
+                                                    <span className="text-[#D4AF37] text-[6px] leading-none" style={{ fontFamily: 'Pinyon Script' }}>We Invite You</span>
+                                                </div>
+
+                                                {/* Names */}
+                                                <div className="absolute top-[45%] w-full text-center flex flex-col items-center">
+                                                    <span className="text-white text-[5px] leading-tight uppercase tracking-widest block" style={{ fontFamily: 'Cinzel' }}>ALEXANDER</span>
+                                                    <span className="text-white text-[3px] leading-tight py-0.5 block" style={{ fontFamily: 'Cinzel' }}>&</span>
+                                                    <span className="text-white text-[5px] leading-tight uppercase tracking-widest block" style={{ fontFamily: 'Cinzel' }}>SOPHIA</span>
+                                                </div>
+
+                                                {/* Divider */}
+                                                <div className="absolute top-[65%] w-full flex items-center justify-center gap-1">
+                                                    <div className="w-3 h-[0.25px] bg-[#D4AF37]/80"></div>
+                                                    <div className="w-1 h-1 bg-[#D4AF37] rotate-45 transform scale-50"></div>
+                                                    <div className="w-3 h-[0.25px] bg-[#D4AF37]/80"></div>
+                                                </div>
+
+                                                {/* Date & Time */}
+                                                <div className="absolute top-[72%] w-full text-center flex flex-col gap-[1px]">
+                                                    <span className="text-white text-[2px] font-bold tracking-wider uppercase" style={{ fontFamily: 'Cinzel' }}>OCTOBER 24TH</span>
+                                                    <span className="text-[#F0E6D2] text-[1.5px] tracking-wide uppercase opacity-90" style={{ fontFamily: 'Montserrat' }}>AT FOUR O'CLOCK</span>
+                                                </div>
+
+                                                {/* RSVP */}
+                                                <div className="absolute bottom-[10%] text-center">
+                                                    <span className="text-[#D4AF37] text-[1.5px] font-bold tracking-widest uppercase" style={{ fontFamily: 'Montserrat' }}>RECEPTION TO FOLLOW</span>
                                                 </div>
                                             </div>
                                         ) : (
