@@ -49,7 +49,6 @@ export class FabricCanvas {
     public onObjectAdded?: (id: string) => void;
     public onObjectRemoved?: (id: string) => void;
     public onTextChanged?: (id: string, newText: string) => void;
-    public onHistoryPush?: (label: string) => void;
 
     constructor() {
         this.objectIdMap = new Map();
@@ -213,11 +212,6 @@ export class FabricCanvas {
                     }
                 });
             }
-
-            // Trigger history push AFTER updating all objects in the store
-            const transformType = e.action || 'transformation';
-            const label = transformType.charAt(0).toUpperCase() + transformType.slice(1);
-            this.onHistoryPush?.(label);
         });
 
         // Object updating events (during transform) - THROTTLED for performance
@@ -229,14 +223,10 @@ export class FabricCanvas {
             }
             lastUpdateTime = now;
 
-            // Disable real-time store updates during scaling/rotating to prevent re-render loops
-            // The store will be updated on 'object:modified' (mouse up)
-            /*
             const obj = e.target as fabric.Object & { data?: { id: string } };
             if (obj && obj.data?.id) {
                 this.onObjectUpdating?.(obj.data.id);
             }
-            */
         };
 
         this.canvas.on('object:scaling', (e) => {
@@ -256,16 +246,14 @@ export class FabricCanvas {
             // Set dragging flag for performance optimization
             this.isDragging = true;
 
-            // Disable real-time store updates during movement to prevent re-render loops
-            // The store will be updated on 'object:modified' (mouse up)
-            /*
+            // Throttled callback to update store (reduces React re-renders)
+            const now = performance.now();
             if (now - lastUpdateTime >= UPDATE_THROTTLE_MS) {
                 lastUpdateTime = now;
                 if (obj.data?.id) {
                     this.onObjectUpdating?.(obj.data.id);
                 }
             }
-            */
 
             // Apply smart guides snapping ONLY on small canvases (workingScale === 1)
             // On large canvases, skip this entirely for performance
@@ -314,8 +302,16 @@ export class FabricCanvas {
             }
         });
 
-        // Text editing events - capture text content changes ONLY when editing is exited
-        // This prevents real-time store updates from triggering canvas re-syncs during typing
+        // Text editing events - capture text content changes
+        this.canvas.on('text:changed' as any, (e: fabric.IEvent<Event>) => {
+            const obj = e.target as fabric.IText & { data?: { id: string } };
+            if (obj && obj.data?.id && obj.text !== undefined) {
+                console.log('[FabricCanvas] text:changed event for:', obj.data.id, 'new text:', obj.text);
+                this.onTextChanged?.(obj.data.id, obj.text);
+            }
+        });
+
+        // Also capture when text editing is exited (in case text:changed didn't fire)
         this.canvas.on('text:editing:exited' as any, (e: fabric.IEvent<Event>) => {
             const obj = e.target as fabric.IText & { data?: { id: string } };
             if (obj && obj.data?.id && obj.text !== undefined) {
@@ -337,8 +333,8 @@ export class FabricCanvas {
         fabric.Object.prototype.cornerColor = '#ffffff';
         fabric.Object.prototype.cornerStyle = 'circle';
         fabric.Object.prototype.borderColor = '#2563eb';
-        fabric.Object.prototype.borderScaleFactor = 1.5; // Reduced default
-        fabric.Object.prototype.padding = 5; // Reduced padding
+        fabric.Object.prototype.borderScaleFactor = 2;
+        fabric.Object.prototype.padding = 10;
         fabric.Object.prototype.cornerStrokeColor = '#2563eb';
 
         // Helper to get inverse scale for controls (keeps controls same visual size regardless of zoom)
@@ -346,17 +342,17 @@ export class FabricCanvas {
             const canvas = fabricCanvasInstance.getCanvas();
             if (!canvas) return 1;
             const zoom = canvas.getZoom();
-            // Inverse scale ensures consistent screen size
-            // Strictly cap at 2.0x to prevent oversized controls on resize/zoom out
+            // Inverse scale: when zoom is 0.5, controls should be 2x larger
+            // Cap at 2.5x to prevent oversized controls on very large canvases
             const inverseScale = 1 / zoom;
-            return Math.min(inverseScale, 2.0);
+            return Math.min(inverseScale, 2.5);
         };
 
         // Render function for circular corner controls (tl, tr, bl, br)
         const renderCircleControl = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-            const size = 9 * scale; // Aggressively reduced base size to 9
-            const strokeWidth = 1 * scale; // Thin stroke
+            const size = 18 * scale; // Scale with inverse zoom
+            const strokeWidth = 2.5 * scale;
 
             ctx.save();
             ctx.translate(left, top);
@@ -373,10 +369,10 @@ export class FabricCanvas {
         // Render function for horizontal pill-shaped side controls (mt, mb)
         const renderPillControlH = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-            const width = 18 * scale; // Reduced from 24
-            const height = 6 * scale; // Reduced from 8
-            const radius = 3 * scale;
-            const strokeWidth = 1 * scale;
+            const width = 24 * scale;
+            const height = 8 * scale;
+            const radius = 4 * scale;
+            const strokeWidth = 2.5 * scale;
 
             ctx.save();
             ctx.translate(left, top);
@@ -398,10 +394,10 @@ export class FabricCanvas {
         // Render function for vertical pill-shaped side controls (ml, mr)
         const renderPillControlV = (ctx: CanvasRenderingContext2D, left: number, top: number, styleOverride: any, fabricObject: fabric.Object) => {
             const scale = getControlScale();
-            const width = 6 * scale; // Reduced
-            const height = 18 * scale; // Reduced
-            const radius = 3 * scale;
-            const strokeWidth = 1 * scale;
+            const width = 8 * scale;
+            const height = 24 * scale;
+            const radius = 4 * scale;
+            const strokeWidth = 2.5 * scale;
 
             ctx.save();
             ctx.translate(left, top);
@@ -487,92 +483,7 @@ export class FabricCanvas {
     }
 
     /**
-     * Get bounding box of current selection in logical coordinates
-     */
-    public getSelectionBounds(): { left: number; top: number; width: number; height: number } | null {
-        if (!this.canvas) return null;
-
-        const activeObject = this.canvas.getActiveObject();
-        if (!activeObject) return null;
-
-        // Get bounding rect in canvas coordinates
-        const rect = activeObject.getBoundingRect();
-
-        // Convert to logical coordinates (unscaled)
-        const zoom = this.canvas.getZoom(); // This should be userZoom for display
-        // However, getBoundingRect() returns coordinates in scene space (if canvas zoom is 1)?
-        // Fabric's getBoundingRect() accounts for object transforms.
-        // If canvas has zoom, it might affect it.
-        // Actually, our FabricCanvas.setZoom sets the canvas zoom.
-        // So rect is in zoomed coordinates. We need to divide by zoom to get logical coords.
-
-        return {
-            left: rect.left / zoom,
-            top: rect.top / zoom,
-            width: rect.width / zoom,
-            height: rect.height / zoom
-        };
-    }
-
-    /**
-     * Get the current zoom level (user zoom * working scale)
-     */
-    public getZoom(): number {
-        return this.canvas?.getZoom() || 1;
-    }
-
-    /**
-     * Set the user zoom level
-     * Handles updating dimensions and internal Fabric zoom
-     */
-    /**
-     * Set the user zoom level
-     * Handles updating dimensions and internal Fabric zoom
-     */
-    public setZoom(zoomPercent: number): void {
-        if (!this.canvas) return;
-
-        const userScale = zoomPercent / 100;
-
-        // Calculate the physical display size (CSS size)
-        const displayWidth = Math.round(this.logicalWidth * userScale);
-        const displayHeight = Math.round(this.logicalHeight * userScale);
-
-        console.log(`[FabricCanvas] setZoom: level=${zoomPercent}%, display=${displayWidth}x${displayHeight}`);
-
-        // Update canvas element size
-        // Fabric.js automatically handles devicePixelRatio if enableRetinaScaling is true (default)
-        // It will set the internal resolution to displayWidth * dpr
-        this.canvas.setDimensions({
-            width: displayWidth,
-            height: displayHeight
-        });
-
-        // Set Fabric zoom to match the user scale
-        // This ensures elements defined in logical coordinates are rendered at correct size
-        this.canvas.setZoom(userScale);
-
-        // Update border thickness relative to zoom to keep it constant on screen (e.g. 1.5px screen width)
-        // Cap it STRICTLY to avoid thick borders. Max 3 logical pixels.
-        const constantBorderWidth = Math.min(1.5 / userScale, 3);
-
-        // Update selection border width for all objects (if newly selected)
-        fabric.Object.prototype.borderScaleFactor = constantBorderWidth;
-
-        // Force update for current selection
-        const activeObject = this.canvas.getActiveObject();
-        if (activeObject) {
-            activeObject.set({ borderScaleFactor: constantBorderWidth });
-
-            // If active selection (group), update internal objects too? No, borderScaleFactor applies to the group box.
-            // But good to be safe.
-        }
-
-        this.canvas.renderAll();
-    }
-
-    /**
-     * Resize the logical dimensions of the canvas
+     * Resize the canvas (uses virtual canvas for large sizes)
      * @param width Logical (target) width
      * @param height Logical (target) height
      */
@@ -583,10 +494,18 @@ export class FabricCanvas {
         this.logicalWidth = width;
         this.logicalHeight = height;
 
-        console.log(`[FabricCanvas] resize: logical=${width}x${height}`);
+        // Calculate working dimensions that fit within browser limits
+        const working = this.calculateWorkingDimensions(width, height);
+        this.workingScale = working.scale;
 
-        // We don't perform fit-to-screen or zoom logic here anymore.
-        // Instead, we let the UI component (CanvasStage) drive the zoom/dimensions via setZoom().
+        console.log(`[FabricCanvas] resize: logical=${width}x${height}, working=${working.width}x${working.height}, scale=${working.scale.toFixed(4)}`);
+
+        // Set canvas to working dimensions
+        this.canvas.setDimensions({ width: working.width, height: working.height });
+
+        // Use Fabric's zoom to handle the scale - elements stay in logical coordinates
+        // but render at working scale
+        this.canvas.setZoom(working.scale);
         this.canvas.renderAll();
     }
 
@@ -973,6 +892,12 @@ export class FabricCanvas {
 
                     this.canvas!.add(img);
                     this.objectIdMap.set(element.id, img);
+
+                    // Apply mask if exists (after adding to canvas and objectIdMap)
+                    if (element.mask) {
+                        this.applyImageMask(element.id, element.mask);
+                    }
+
                     console.log('[FabricCanvas] Image added to canvas for element:', element.id);
 
                     resolve(img);
@@ -1026,6 +951,70 @@ export class FabricCanvas {
 
         img.filters = filters;
         img.applyFilters();
+    }
+
+    /**
+     * Apply a shape mask to an image element
+     * Uses Fabric.js clipPath to clip the image into a shape
+     */
+    public applyImageMask(imageId: string, maskData: { shapeId: string; svgPath: string; shapeName: string }): void {
+        if (!this.canvas) return;
+
+        const img = this.objectIdMap.get(imageId) as fabric.Image;
+        if (!img) {
+            console.error('[FabricCanvas] applyImageMask: Image not found:', imageId);
+            return;
+        }
+
+        console.log('[FabricCanvas] Applying mask to image:', imageId, 'shape:', maskData.shapeId);
+
+        // Get image dimensions (scaled)
+        const imgWidth = (img.width || 100) * (img.scaleX || 1);
+        const imgHeight = (img.height || 100) * (img.scaleY || 1);
+
+        // Create clipPath from SVG path
+        // SVG paths are normalized to 100x100, so we scale to fit image dimensions
+        const clipPath = new fabric.Path(maskData.svgPath, {
+            // Scale the path to match image dimensions
+            scaleX: imgWidth / 100 / (img.scaleX || 1),
+            scaleY: imgHeight / 100 / (img.scaleY || 1),
+            // Center the path on the image
+            originX: 'center',
+            originY: 'center',
+            left: 0,
+            top: 0,
+            // Make it absolute so it moves with the image
+            absolutePositioned: false,
+        });
+
+        // Apply clipPath to image
+        img.clipPath = clipPath;
+        img.dirty = true;
+        this.canvas.renderAll();
+
+        console.log('[FabricCanvas] Mask applied successfully');
+    }
+
+    /**
+     * Remove mask from an image element
+     */
+    public removeImageMask(imageId: string): void {
+        if (!this.canvas) return;
+
+        const img = this.objectIdMap.get(imageId) as fabric.Image;
+        if (!img) {
+            console.error('[FabricCanvas] removeImageMask: Image not found:', imageId);
+            return;
+        }
+
+        console.log('[FabricCanvas] Removing mask from image:', imageId);
+
+        // Remove clipPath
+        img.clipPath = undefined;
+        img.dirty = true;
+        this.canvas.renderAll();
+
+        console.log('[FabricCanvas] Mask removed successfully');
     }
 
     /**
@@ -2044,6 +2033,25 @@ export class FabricCanvas {
                     data: { id: element.id, type: 'image' },
                 });
 
+                // Apply mask if exists (fix for grouped images losing mask on load/export)
+                if (element.mask) {
+                    // Create clipPath from SVG path
+                    // Scale mask to match image's natural dimensions (Fabric handles the rest)
+                    const maskScaleX = (img.width || 100) / 100;
+                    const maskScaleY = (img.height || 100) / 100;
+
+                    const clipPath = new fabric.Path(element.mask.svgPath, {
+                        scaleX: maskScaleX,
+                        scaleY: maskScaleY,
+                        originX: 'center',
+                        originY: 'center',
+                        left: 0,
+                        top: 0,
+                        absolutePositioned: false,
+                    });
+                    img.clipPath = clipPath;
+                }
+
                 resolve(img);
             }, { crossOrigin: 'anonymous' });
         });
@@ -2486,6 +2494,15 @@ export class FabricCanvas {
     public toJSON(): object {
         if (!this.canvas) return {};
         return this.canvas.toJSON(['data']);
+    }
+
+    /**
+     * Set zoom level
+     */
+    public setZoom(zoom: number): void {
+        if (!this.canvas) return;
+        this.canvas.setZoom(zoom / 100);
+        this.canvas.renderAll();
     }
 
     /**

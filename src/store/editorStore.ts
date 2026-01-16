@@ -4,7 +4,6 @@
 import { create } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import { Project, Page, createDefaultProject, createDefaultPage, PagePreset } from '@/types/project';
-import { useHistoryStore } from './historyStore';
 
 export type SidebarPanel =
     | 'library'
@@ -15,6 +14,7 @@ export type SidebarPanel =
     | 'uploads'
     | 'layers'
     | 'animations'
+    | 'mask'
     | null;
 
 export type RightPanel = 'properties' | 'colors' | 'filters' | 'textEffects' | 'fonts' | null;
@@ -97,6 +97,7 @@ interface EditorActions {
     openPropertiesPanel: () => void;
     openFiltersPanel: () => void;
     openFontsPanel: () => void;
+    openMaskPanel: () => void;
     closeRightPanel: () => void;
 
     // Modal actions
@@ -188,7 +189,6 @@ export const useEditorStore = create<EditorStore>()(
                     state.hasUnsavedChanges = true;
                 }
             });
-            useHistoryStore.getState().pushState('Rename Project');
         },
 
         // Page actions
@@ -202,7 +202,6 @@ export const useEditorStore = create<EditorStore>()(
                     state.hasUnsavedChanges = true;
                 }
             });
-            useHistoryStore.getState().pushState('Add Page');
         },
 
         removePage: (pageId: string) => {
@@ -220,7 +219,6 @@ export const useEditorStore = create<EditorStore>()(
                     }
                 }
             });
-            useHistoryStore.getState().pushState('Remove Page');
         },
 
         duplicatePage: (pageId: string) => {
@@ -243,7 +241,6 @@ export const useEditorStore = create<EditorStore>()(
                     }
                 }
             });
-            useHistoryStore.getState().pushState('Duplicate Page');
         },
 
         setActivePage: (pageId: string) => {
@@ -263,7 +260,6 @@ export const useEditorStore = create<EditorStore>()(
                     state.hasUnsavedChanges = true;
                 }
             });
-            useHistoryStore.getState().pushState('Reorder Pages');
         },
 
         updatePage: (pageId: string, updates: Partial<Page>) => {
@@ -278,10 +274,6 @@ export const useEditorStore = create<EditorStore>()(
                     }
                 }
             });
-            // Background changes should be pushed to history
-            if (updates.background) {
-                useHistoryStore.getState().pushState('Update Background');
-            }
         },
 
         updatePageThumbnail: (pageId: string, thumbnail: string) => {
@@ -430,6 +422,12 @@ export const useEditorStore = create<EditorStore>()(
         openFontsPanel: () => {
             set((state) => {
                 state.activeRightPanel = 'fonts';
+            });
+        },
+
+        openMaskPanel: () => {
+            set((state) => {
+                state.activeSidebarPanel = 'mask';
             });
         },
 

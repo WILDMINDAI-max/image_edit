@@ -366,6 +366,13 @@ export interface ColorReplaceEffect {
     blendMode: 'hue' | 'multiply' | 'screen' | 'overlay'; // How to blend the color
 }
 
+// Image mask data for clipping images into shapes (Canva-style)
+export interface MaskData {
+    shapeId: string; // Reference to shape from MASK_SHAPES catalog
+    svgPath: string; // SVG path for the mask (normalized to 100x100)
+    shapeName: string; // Human-readable name
+}
+
 export interface ImageElement extends BaseElement {
     type: 'image';
     src: string;
@@ -373,6 +380,7 @@ export interface ImageElement extends BaseElement {
     filters: ImageFilter;
     crop: CropData | null;
     colorReplace: ColorReplaceEffect | null;
+    mask: MaskData | null; // Shape mask for clipping image
     crossOrigin: 'anonymous' | 'use-credentials' | null;
     // Background mode tracking
     isBackground?: boolean; // True if image is set as canvas background
