@@ -892,6 +892,12 @@ export class FabricCanvas {
 
                     this.canvas!.add(img);
                     this.objectIdMap.set(element.id, img);
+
+                    // Apply mask if exists (after adding to canvas and objectIdMap)
+                    if (element.mask) {
+                        this.applyImageMask(element.id, element.mask);
+                    }
+
                     console.log('[FabricCanvas] Image added to canvas for element:', element.id);
 
                     resolve(img);
@@ -945,6 +951,70 @@ export class FabricCanvas {
 
         img.filters = filters;
         img.applyFilters();
+    }
+
+    /**
+     * Apply a shape mask to an image element
+     * Uses Fabric.js clipPath to clip the image into a shape
+     */
+    public applyImageMask(imageId: string, maskData: { shapeId: string; svgPath: string; shapeName: string }): void {
+        if (!this.canvas) return;
+
+        const img = this.objectIdMap.get(imageId) as fabric.Image;
+        if (!img) {
+            console.error('[FabricCanvas] applyImageMask: Image not found:', imageId);
+            return;
+        }
+
+        console.log('[FabricCanvas] Applying mask to image:', imageId, 'shape:', maskData.shapeId);
+
+        // Get image dimensions (scaled)
+        const imgWidth = (img.width || 100) * (img.scaleX || 1);
+        const imgHeight = (img.height || 100) * (img.scaleY || 1);
+
+        // Create clipPath from SVG path
+        // SVG paths are normalized to 100x100, so we scale to fit image dimensions
+        const clipPath = new fabric.Path(maskData.svgPath, {
+            // Scale the path to match image dimensions
+            scaleX: imgWidth / 100 / (img.scaleX || 1),
+            scaleY: imgHeight / 100 / (img.scaleY || 1),
+            // Center the path on the image
+            originX: 'center',
+            originY: 'center',
+            left: 0,
+            top: 0,
+            // Make it absolute so it moves with the image
+            absolutePositioned: false,
+        });
+
+        // Apply clipPath to image
+        img.clipPath = clipPath;
+        img.dirty = true;
+        this.canvas.renderAll();
+
+        console.log('[FabricCanvas] Mask applied successfully');
+    }
+
+    /**
+     * Remove mask from an image element
+     */
+    public removeImageMask(imageId: string): void {
+        if (!this.canvas) return;
+
+        const img = this.objectIdMap.get(imageId) as fabric.Image;
+        if (!img) {
+            console.error('[FabricCanvas] removeImageMask: Image not found:', imageId);
+            return;
+        }
+
+        console.log('[FabricCanvas] Removing mask from image:', imageId);
+
+        // Remove clipPath
+        img.clipPath = undefined;
+        img.dirty = true;
+        this.canvas.renderAll();
+
+        console.log('[FabricCanvas] Mask removed successfully');
     }
 
     /**
@@ -1962,6 +2032,25 @@ export class FabricCanvas {
                     originY: 'center',
                     data: { id: element.id, type: 'image' },
                 });
+
+                // Apply mask if exists (fix for grouped images losing mask on load/export)
+                if (element.mask) {
+                    // Create clipPath from SVG path
+                    // Scale mask to match image's natural dimensions (Fabric handles the rest)
+                    const maskScaleX = (img.width || 100) / 100;
+                    const maskScaleY = (img.height || 100) / 100;
+
+                    const clipPath = new fabric.Path(element.mask.svgPath, {
+                        scaleX: maskScaleX,
+                        scaleY: maskScaleY,
+                        originX: 'center',
+                        originY: 'center',
+                        left: 0,
+                        top: 0,
+                        absolutePositioned: false,
+                    });
+                    img.clipPath = clipPath;
+                }
 
                 resolve(img);
             }, { crossOrigin: 'anonymous' });

@@ -14,6 +14,7 @@ export type SidebarPanel =
     | 'uploads'
     | 'layers'
     | 'animations'
+    | 'mask'
     | null;
 
 export type RightPanel = 'properties' | 'colors' | 'filters' | 'textEffects' | 'fonts' | null;
@@ -96,6 +97,7 @@ interface EditorActions {
     openPropertiesPanel: () => void;
     openFiltersPanel: () => void;
     openFontsPanel: () => void;
+    openMaskPanel: () => void;
     closeRightPanel: () => void;
 
     // Modal actions
@@ -420,6 +422,12 @@ export const useEditorStore = create<EditorStore>()(
         openFontsPanel: () => {
             set((state) => {
                 state.activeRightPanel = 'fonts';
+            });
+        },
+
+        openMaskPanel: () => {
+            set((state) => {
+                state.activeSidebarPanel = 'mask';
             });
         },
 

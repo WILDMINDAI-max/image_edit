@@ -40,6 +40,7 @@ import {
     Palette,
     ChevronDown,
     Sparkles,
+    Shapes,
 } from 'lucide-react';
 
 export function ContextToolbar() {
@@ -61,6 +62,7 @@ export function ContextToolbar() {
     const setRightPanel = useEditorStore((state) => state.setRightPanel);
     const openColorsPanel = useEditorStore((state) => state.openColorsPanel);
     const openFiltersPanel = useEditorStore((state) => state.openFiltersPanel);
+    const openMaskPanel = useEditorStore((state) => state.openMaskPanel);
 
     // List type state for text elements
     const [listType, setListType] = useState<'none' | 'bullet' | 'numbered'>('none');
@@ -240,6 +242,8 @@ export function ContextToolbar() {
         });
     };
 
+
+
     if (selectedElements.length === 0) {
         return (
             <div className="h-12 bg-[#F8F9FA] border-b border-gray-200 flex items-center px-4 gap-4">
@@ -269,6 +273,7 @@ export function ContextToolbar() {
     const isShape = element?.type === 'shape';
     const isSticker = element?.type === 'sticker';
     const textElement = isText ? (element as TextElement) : null;
+    const imageElement = isImage ? (element as ImageElement) : null;
     const shapeElement = isShape ? (element as ShapeElement) : null;
     const stickerElement = isSticker ? (element as StickerElement) : null;
     // Ensure lineElement has a valid lineStyle with defaults
@@ -759,6 +764,22 @@ export function ContextToolbar() {
                         <SlidersHorizontal size={16} />
                         <span className="text-xs font-medium">Filters</span>
                     </button>
+                    <div className="w-px h-6 bg-gray-200" />
+
+                    {/* Mask Image Button */}
+                    <button
+                        onClick={openMaskPanel}
+                        className={`p-2 rounded transition-all flex items-center gap-1.5 ${imageElement?.mask
+                            ? 'bg-blue-100 text-blue-600'
+                            : 'text-gray-500 hover:text-blue-600 hover:bg-blue-50'
+                            }`}
+                        title="Mask Image"
+                    >
+                        <Shapes size={16} />
+                        <span className="text-xs font-medium">Mask</span>
+                    </button>
+
+
                     <div className="w-px h-6 bg-gray-200" />
 
                     {/* Alignment - Button with popup for all options */}
