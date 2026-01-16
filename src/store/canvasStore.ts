@@ -305,7 +305,6 @@ export const useCanvasStore = create<CanvasStore>()(
                 filters: { ...createDefaultImageFilter(), ...options?.filters },
                 crop: null,
                 colorReplace: null,
-                mask: null,
                 crossOrigin: 'anonymous',
                 locked: false,
                 visible: true,

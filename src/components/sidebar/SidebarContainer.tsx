@@ -21,7 +21,6 @@ import { PhotosPanel } from './PhotosPanel';
 import { LayersPanel } from './LayersPanel';
 import { AnimationsPanel } from './AnimationsPanel';
 import { LibraryPanel } from './LibraryPanel';
-import { MaskPanel } from './MaskPanel';
 
 interface SidebarTab {
     id: SidebarPanel;
@@ -66,8 +65,6 @@ export function SidebarContainer() {
                 return <LayersPanel />;
             case 'animations':
                 return <AnimationsPanel />;
-            case 'mask':
-                return <MaskPanel />;
             default:
                 return null;
         }
