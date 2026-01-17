@@ -51,7 +51,7 @@ export function TextEffectsPanel({ onClose }: TextEffectsProps) {
     const updateEffect = (updates: Partial<TextEffect>) => {
         if (!textElement) return;
         const newEffect = { ...currentEffect, ...updates };
-        updateElement(textElement.id, { effect: newEffect } as Partial<TextElement>);
+        updateElement(textElement.id, { effect: newEffect } as Partial<TextElement>, 'Change text effect');
 
         // Sync to Fabric.js
         const fabricCanvas = getFabricCanvas();

@@ -138,10 +138,13 @@ export function CanvasStage({ className }: CanvasStageProps) {
     const zoom = useEditorStore((state) => state.zoom);
     const setZoom = useEditorStore((state) => state.setZoom);
     const fitTrigger = useEditorStore((state) => state.fitTrigger);
+    const isFitMode = useEditorStore((state) => state.isFitMode);
     const snapToGuides = useEditorStore((state) => state.snapToGuides);
     const isExportModalOpen = useEditorStore((state) => state.isExportModalOpen);
+    const canvasLoadRevision = useEditorStore((state) => state.canvasLoadRevision);
     const select = useCanvasStore((state) => state.select);
     const deselect = useCanvasStore((state) => state.deselect);
+    const pushToHistory = useCanvasStore((state) => state.pushToHistory);
 
     // Calculate the scale to fit canvas within container
     const calculateFitZoom = useCallback((canvasWidth: number, canvasHeight: number) => {
@@ -229,13 +232,136 @@ export function CanvasStage({ className }: CanvasStageProps) {
         };
     }, [setZoom]);
 
-    // Auto-fit zoom when page dimensions change or Fit button is clicked
+    // Manual triggers for Fit to Screen (button clicks)
+    // This ignores isFitMode flag because it's a direct user action
     useEffect(() => {
         if (!activePage || containerSize.width === 0) return;
 
         const fitZoom = calculateFitZoom(activePage.width, activePage.height);
         setZoom(fitZoom, true); // Pass true to indicate this is a "fit" zoom
-    }, [activePage?.width, activePage?.height, containerSize, fitTrigger, calculateFitZoom, setZoom]);
+    }, [fitTrigger]); // Only dependency is the trigger
+
+    // Responsive Auto-Fit
+    // This respects isFitMode - only refits if we are already in fit mode
+    useEffect(() => {
+        if (!activePage || containerSize.width === 0) return;
+
+        // Only auto-update zoom if we are effectively in "fit mode"
+        if (isFitMode) {
+            const fitZoom = calculateFitZoom(activePage.width, activePage.height);
+            setZoom(fitZoom, true);
+        }
+    }, [activePage?.width, activePage?.height, containerSize, isFitMode, calculateFitZoom, setZoom]);
+
+    // Zoom to Selection Logic
+    const zoomToSelectionTrigger = useEditorStore((state) => state.zoomToSelectionTrigger);
+
+    // Ref to hold pending scroll target after zoom update
+    const pendingScrollRef = useRef<{ x: number, y: number } | null>(null);
+
+    useEffect(() => {
+        if (!activePage || containerSize.width === 0) return;
+
+        const fabricCanvas = getFabricCanvas();
+        const bounds = fabricCanvas.getSelectionBounds();
+
+        if (!bounds) return;
+
+        // Calculate zoom to fit selection with padding
+        // Increased padding to avoid edge-to-edge look
+        const padding = Math.min(containerSize.width, containerSize.height) * 0.2; // 20% padding
+        const availableWidth = containerSize.width - padding;
+        const availableHeight = containerSize.height - padding;
+
+        if (availableWidth <= 0 || availableHeight <= 0) return;
+
+        const scaleX = availableWidth / bounds.width;
+        const scaleY = availableHeight / bounds.height;
+
+        // Use exact scale to fit, capped at reasonable limits
+        // User requested less aggressive zoom: capped at 200%
+        let targetScale = Math.min(scaleX, scaleY);
+        let targetZoom = Math.round(targetScale * 100);
+
+        targetZoom = Math.max(10, Math.min(200, targetZoom));
+
+        // Store target center relative to logical coordinates
+        const centerX = bounds.x + bounds.width / 2;
+        const centerY = bounds.y + bounds.height / 2;
+
+        pendingScrollRef.current = { x: centerX, y: centerY };
+
+        // Set zoom - this will trigger re-render
+        setZoom(targetZoom, false);
+    }, [zoomToSelectionTrigger]); // Only trigger when the counter changes
+
+    // Apply pending scroll after zoom update (layout effect ensures it runs after DOM update)
+    useEffect(() => {
+        if (pendingScrollRef.current && containerRef.current) {
+            const { x, y } = pendingScrollRef.current;
+
+            // Calculate new scroll position
+            // Center point in working coordinates relative to container
+            // workingWidth = logicalWidth * userZoom
+            // The canvas is centered in the container using margin: auto
+            // But if it overflows, we need to scroll.
+
+            const userZoom = zoom / 100;
+            const container = containerRef.current;
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+
+            // We need to scroll the wrapper div (overflow-auto one, which is the parent of the one with margin:auto?)
+            // Wait, looking at JSX:
+            // <div className="absolute inset-0 overflow-auto flex custom-scrollbar" ... >
+            //    <div style={{ width: displayWidth, height: displayHeight, margin: 'auto' }} ... >
+
+            // The scrollable element is the OUTER one.
+            // Let's find it. containerRef is on the wrapper:
+            // <div ref={containerRef} className="relative ...">
+            //    <div className="absolute inset-0 overflow-auto ..."> <-- This is the scrollable one! 
+
+            // Ah, containerRef is on the root div (relative, overflow-hidden).
+            // The scrollable div is the child. We need a ref to the scrollable child.
+
+            // Let's modify the JSX to add a ref to the scrollable div.
+            // OR use containerRef.current.firstElementChild as HTMLElement
+
+            const scrollableDiv = container.firstElementChild as HTMLElement;
+            if (scrollableDiv) {
+                // Calculate position in displayed pixels
+                // The canvas logic:
+                // Canvas is centered or top-left aligned in scrollableDiv content
+                // Scrollable content size is displayWidth x displayHeight + padding
+
+                // If displayWidth > containerWidth, margin is 0 (or auto does nothing useful for scroll), so 0.0 is top-left.
+                // If displayWidth < containerWidth, margin auto centers it. We don't need to scroll.
+
+                // Let's assume we scroll if needed.
+
+                // Target pixel coordinates on the SCALED canvas (DOM size)
+                const targetPixelX = x * userZoom;
+                const targetPixelY = y * userZoom;
+
+                // We want this pixel to be at center of container
+                // The canvas wrapper has 20px padding (margin applied via padding in parent flex)
+                // scrollLeft = (TargetX on Canvas) + (Canvas Left Offset) - (Half Container Width)
+                const canvasLeftOffset = 20;
+                const canvasTopOffset = 20;
+
+                const scrollLeft = (targetPixelX + canvasLeftOffset) - (containerWidth / 2);
+                const scrollTop = (targetPixelY + canvasTopOffset) - (containerHeight / 2);
+
+                scrollableDiv.scrollTo({
+                    left: Math.max(0, scrollLeft),
+                    top: Math.max(0, scrollTop),
+                    behavior: 'smooth'
+                });
+            }
+
+            pendingScrollRef.current = null;
+        }
+    }, [zoom]); // Run when zoom changes (state update propagates)
 
     // Initialize Fabric.js canvas
     useEffect(() => {
@@ -351,9 +477,13 @@ export function CanvasStage({ className }: CanvasStageProps) {
             state.updatePage(activePageId, { elements: updatedElements });
         };
 
+        const handleObjectModified = (id: string) => {
+            pushToHistory('Modify object'); // Capture state BEFORE update
+            updateStoreFromFabric(id);
+        };
 
-        fabricCanvas.onObjectModified = updateStoreFromFabric;
-        fabricCanvas.onObjectUpdating = updateStoreFromFabric;
+        fabricCanvas.onObjectModified = handleObjectModified;
+        // fabricCanvas.onObjectUpdating = updateStoreFromFabric; // Disabled to ensure history captures start state
 
         // Handle text content changes
         fabricCanvas.onTextChanged = (id: string, newText: string) => {
@@ -381,6 +511,7 @@ export function CanvasStage({ className }: CanvasStageProps) {
             });
 
             console.log('[CanvasStage] Updating store with new text content');
+            pushToHistory('Update text content'); // Capture state BEFORE update
             state.updatePage(activePageId, { elements: updatedElements });
         };
 
@@ -401,7 +532,7 @@ export function CanvasStage({ className }: CanvasStageProps) {
             // Update workingScale state after page is loaded to trigger re-render
             setWorkingScaleState(fabricCanvas.getWorkingScale());
         });
-    }, [activePage?.id, activePage?.width, activePage?.height, isInitialized]);
+    }, [activePage?.id, activePage?.width, activePage?.height, isInitialized, canvasLoadRevision]);
 
     // Re-sync canvas state when export modal closes
     // Export modal calls loadPage independently, so we need to refresh our state after it closes
@@ -530,11 +661,12 @@ export function CanvasStage({ className }: CanvasStageProps) {
     // Note: Visual zoom is handled by CSS transform on the wrapper div
     // Fabric.js setZoom would cause double-scaling, so we don't use it
     // The canvas operates in logical coordinates (page width/height)
-    // useEffect(() => {
-    //     if (!isInitialized) return;
-    //     const fabricCanvas = getFabricCanvas();
-    //     fabricCanvas.setZoom(zoom);
-    // }, [zoom, isInitialized]);
+    // However, we DO need to tell Fabric about the visual zoom so it can scale CONTROLS correctly
+    useEffect(() => {
+        if (!isInitialized) return;
+        const fabricCanvas = getFabricCanvas();
+        fabricCanvas.setVisualZoom(zoom / 100);
+    }, [zoom, isInitialized]);
 
     // Calculate displayed canvas dimensions
     // For virtual canvas, we need to account for workingScale
@@ -561,9 +693,9 @@ export function CanvasStage({ className }: CanvasStageProps) {
             ref={containerRef}
             className={`relative bg-[#F0F1F5] overflow-hidden ${className}`}
         >
-            {/* Centered canvas wrapper */}
+            {/* Centered canvas wrapper - UPDATED for scrolling support */}
             <div
-                className="absolute inset-0 flex items-center justify-center"
+                className="absolute inset-0 overflow-auto flex custom-scrollbar"
                 style={{
                     padding: '20px',
                 }}
@@ -573,8 +705,7 @@ export function CanvasStage({ className }: CanvasStageProps) {
                     style={{
                         width: displayWidth,
                         height: displayHeight,
-                        maxWidth: '100%',
-                        maxHeight: '100%',
+                        margin: 'auto', // Safe centering (centers if small, top-left if overflows)
                     }}
                 >
                     <div

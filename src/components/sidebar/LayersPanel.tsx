@@ -217,7 +217,7 @@ export function LayersPanel() {
 
     const saveName = () => {
         if (editingId && editingName.trim()) {
-            updateElement(editingId, { name: editingName.trim() });
+            updateElement(editingId, { name: editingName.trim() }, 'Rename layer');
         }
         setEditingId(null);
         setEditingName('');

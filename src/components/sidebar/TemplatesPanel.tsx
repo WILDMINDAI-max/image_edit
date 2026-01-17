@@ -2861,6 +2861,287 @@ const TEMPLATES: TemplateData[] = [
             } as Partial<TextElement>,
         ],
     },
+    // Letterhead Template - Professional Corporate Design
+    {
+        id: 'letterhead-corporate-1',
+        name: 'Letterhead',
+        category: 'Business',
+        width: 1240,
+        height: 1754, // A4 aspect ratio
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // === HEADER SECTION ===
+            // Header Background - Full width at top
+            {
+                type: 'shape',
+                name: 'Header BG',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 90, width: 1240, height: 180, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A8A', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 1,
+            } as Partial<ShapeElement>,
+            // Header Accent Stripe
+            {
+                type: 'shape',
+                name: 'Header Accent',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 180, width: 1240, height: 8, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Logo Placeholder Circle
+            {
+                type: 'shape',
+                name: 'Logo BG',
+                shapeType: 'circle',
+                transform: { x: 140, y: 90, width: 100, height: 100, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            // Logo Icon (Diamond shape as placeholder)
+            {
+                type: 'shape',
+                name: 'Logo Icon',
+                shapeType: 'rectangle',
+                transform: { x: 140, y: 90, width: 45, height: 45, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A8A', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 4,
+            } as Partial<ShapeElement>,
+            // Logo Inner
+            {
+                type: 'shape',
+                name: 'Logo Inner',
+                shapeType: 'rectangle',
+                transform: { x: 140, y: 90, width: 25, height: 25, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 5,
+            } as Partial<ShapeElement>,
+            // Company Name
+            {
+                type: 'text',
+                name: 'Company Name',
+                content: 'NEXUS INNOVATIONS',
+                transform: { x: 520, y: 65, width: 600, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#FFFFFF', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 34, fontWeight: 700, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 10,
+            } as Partial<TextElement>,
+            // Company Tagline
+            {
+                type: 'text',
+                name: 'Tagline',
+                content: 'Transforming Ideas Into Reality',
+                transform: { x: 430, y: 110, width: 400, height: 30, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#93C5FD', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'italic', textAlign: 'left', lineHeight: 1.2, letterSpacing: 1, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 11,
+            } as Partial<TextElement>,
+            // Header Contact - Right Side
+            {
+                type: 'text',
+                name: 'Header Contact',
+                content: '📞 +1 (555) 123-4567\n✉️ info@nexusinnovations.com\n🌐 www.nexusinnovations.com',
+                transform: { x: 1050, y: 80, width: 280, height: 80, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#DBEAFE', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 11, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1.8, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 12,
+            } as Partial<TextElement>,
+
+            // === DOCUMENT INFO SECTION ===
+            // Date Field
+            {
+                type: 'text',
+                name: 'Date',
+                content: 'January 11, 2026',
+                transform: { x: 1050, y: 260, width: 200, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#6B7280', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 13, fontWeight: 400, fontStyle: 'normal', textAlign: 'right', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 15,
+            } as Partial<TextElement>,
+
+            // === RECIPIENT SECTION ===
+            {
+                type: 'text',
+                name: 'Recipient',
+                content: 'To,\nRecipient Name\nCompany/Organization\n123 Business Street\nCity, State 12345',
+                transform: { x: 225, y: 350, width: 350, height: 120, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#374151', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.7, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 16,
+            } as Partial<TextElement>,
+
+            // === SUBJECT LINE ===
+            {
+                type: 'text',
+                name: 'Subject',
+                content: 'Subject: Your Subject Line Here',
+                transform: { x: 350, y: 470, width: 600, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A8A', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 15, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 17,
+            } as Partial<TextElement>,
+
+            // === LETTER BODY ===
+            {
+                type: 'text',
+                name: 'Salutation',
+                content: 'Dear Sir/Madam,',
+                transform: { x: 170, y: 530, width: 240, height: 28, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1F2937', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 18,
+            } as Partial<TextElement>,
+            // Letter Body Content
+            {
+                type: 'text',
+                name: 'Letter Body',
+                content: 'I am writing to you regarding [purpose of the letter]. We are pleased to present our proposal for your consideration.\n\nAt Nexus Innovations, we pride ourselves on delivering exceptional solutions that drive growth and innovation. Our team of experts is dedicated to understanding your unique needs and providing tailored services that exceed expectations.\n\nWe would welcome the opportunity to discuss this matter further at your earliest convenience. Please do not hesitate to contact us should you require any additional information.\n\nThank you for your time and consideration.',
+                transform: { x: 620, y: 720, width: 1040, height: 300, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#374151', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.9, letterSpacing: 0.2, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 19,
+            } as Partial<TextElement>,
+
+            // === CLOSING ===
+            {
+                type: 'text',
+                name: 'Closing',
+                content: 'Yours sincerely,',
+                transform: { x: 175, y: 930, width: 250, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1F2937', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 400, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.4, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 20,
+            } as Partial<TextElement>,
+            // Signature Line
+            {
+                type: 'shape',
+                name: 'Signature Line',
+                shapeType: 'rectangle',
+                transform: { x: 200, y: 1020, width: 200, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#9CA3AF', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 21,
+            } as Partial<ShapeElement>,
+            // Signatory Name
+            {
+                type: 'text',
+                name: 'Signatory Name',
+                content: 'John Anderson\nChief Executive Officer',
+                transform: { x: 200, y: 1070, width: 250, height: 50, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1F2937', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 14, fontWeight: 600, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.6, letterSpacing: 0, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 22,
+            } as Partial<TextElement>,
+
+            // === FOOTER SECTION ===
+            // Footer Divider
+            {
+                type: 'shape',
+                name: 'Footer Divider',
+                shapeType: 'rectangle',
+                transform: { x: 620, y: 1660, width: 1140, height: 2, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A8A', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 25,
+            } as Partial<ShapeElement>,
+            // Footer Address
+            {
+                type: 'text',
+                name: 'Footer Address',
+                content: '📍 1234 Innovation Drive, Suite 500, Tech City, TC 98765  |  📞 +1 (555) 123-4567  |  ✉️ info@nexusinnovations.com',
+                transform: { x: 620, y: 1695, width: 1000, height: 24, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#6B7280', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 11, fontWeight: 400, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.4, letterSpacing: 0.3, textDecoration: 'none', textTransform: 'none' },
+                zIndex: 26,
+            } as Partial<TextElement>,
+            // Footer Tagline
+            {
+                type: 'text',
+                name: 'Footer Tagline',
+                content: 'Excellence • Innovation • Integrity',
+                transform: { x: 620, y: 1725, width: 300, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#3B82F6', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 10, fontWeight: 500, fontStyle: 'normal', textAlign: 'center', lineHeight: 1.2, letterSpacing: 2, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 27,
+            } as Partial<TextElement>,
+
+            // === DECORATIVE ELEMENTS ===
+            // Side Accent Bar
+            {
+                type: 'shape',
+                name: 'Side Accent',
+                shapeType: 'rectangle',
+                transform: { x: 25, y: 877, width: 8, height: 1754, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#1E3A8A', stroke: null, strokeWidth: 0, opacity: 0.1 },
+                zIndex: 0,
+            } as Partial<ShapeElement>,
+        ],
+    },
+    // Tech Logo Template - Modern Branding
+    {
+        id: 'tech-logo-nexcore',
+        name: 'Tech Logo',
+        category: 'Branding',
+        width: 400,
+        height: 200,
+        background: { type: 'solid', color: '#FFFFFF' },
+        elements: [
+            // Background Container
+            {
+                type: 'shape',
+                name: 'Logo BG',
+                shapeType: 'rectangle',
+                transform: { x: 200, y: 100, width: 360, height: 160, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: 'transparent', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 0,
+            } as Partial<ShapeElement>,
+            // Cube Icon - Main Shape
+            {
+                type: 'shape',
+                name: 'Cube Base',
+                shapeType: 'rectangle',
+                transform: { x: 80, y: 100, width: 50, height: 50, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#4F46E5', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 2,
+            } as Partial<ShapeElement>,
+            // Cube Icon - 3D Effect Top
+            {
+                type: 'shape',
+                name: 'Cube Top',
+                shapeType: 'rectangle',
+                transform: { x: 80, y: 85, width: 35, height: 20, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#6366F1', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            // Cube Icon - 3D Effect Side
+            {
+                type: 'shape',
+                name: 'Cube Side',
+                shapeType: 'rectangle',
+                transform: { x: 95, y: 100, width: 20, height: 35, rotation: 45, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#818CF8', stroke: null, strokeWidth: 0, opacity: 1 },
+                zIndex: 3,
+            } as Partial<ShapeElement>,
+            // Company Name - Main Title
+            {
+                type: 'text',
+                name: 'Company Name',
+                content: 'NEXCORE',
+                transform: { x: 245, y: 85, width: 200, height: 45, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#111827', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 36, fontWeight: 800, fontStyle: 'normal', textAlign: 'left', lineHeight: 1, letterSpacing: 0, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 5,
+            } as Partial<TextElement>,
+            // Tagline
+            {
+                type: 'text',
+                name: 'Tagline',
+                content: 'FUTURE SYSTEMS',
+                transform: { x: 230, y: 120, width: 180, height: 20, rotation: 0, scaleX: 1, scaleY: 1, originX: 'center', originY: 'center' },
+                style: { fill: '#6B7280', opacity: 1 },
+                textStyle: { fontFamily: 'Inter', fontSize: 11, fontWeight: 500, fontStyle: 'normal', textAlign: 'left', lineHeight: 1.2, letterSpacing: 3, textDecoration: 'none', textTransform: 'uppercase' },
+                zIndex: 6,
+            } as Partial<TextElement>,
+        ],
+    },
 ];
 
 export function TemplatesPanel() {
@@ -3675,6 +3956,73 @@ export function TemplatesPanel() {
                                                 {/* RSVP */}
                                                 <div className="absolute bottom-[10%] text-center">
                                                     <span className="text-[#D4AF37] text-[1.5px] font-bold tracking-widest uppercase" style={{ fontFamily: 'Montserrat' }}>RECEPTION TO FOLLOW</span>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'letterhead-corporate-1' ? (
+                                            // Letterhead Corporate Preview - Professional Design
+                                            <div className="flex-1 flex items-center justify-center bg-gray-50">
+                                                <div className="w-[92%] h-[96%] relative overflow-hidden bg-white shadow-sm border border-gray-100">
+                                                    {/* Header */}
+                                                    <div className="w-full bg-[#1E3A8A] py-1.5 px-1.5 flex items-center gap-1">
+                                                        {/* Logo */}
+                                                        <div className="w-4 h-4 rounded-full bg-white flex items-center justify-center">
+                                                            <div className="w-2 h-2 bg-[#1E3A8A] rotate-45"></div>
+                                                        </div>
+                                                        {/* Company Info */}
+                                                        <div className="flex-1">
+                                                            <p className="text-white text-[5px] font-bold tracking-[0.5px]">NEXUS INNOVATIONS</p>
+                                                            <p className="text-blue-200 text-[2.5px] italic">Transforming Ideas Into Reality</p>
+                                                        </div>
+                                                        {/* Contact */}
+                                                        <div className="text-right">
+                                                            <p className="text-blue-100 text-[2px]">📞 +1 (555) 123-4567</p>
+                                                            <p className="text-blue-100 text-[2px]">✉️ info@nexus.com</p>
+                                                        </div>
+                                                    </div>
+                                                    {/* Accent Stripe */}
+                                                    <div className="w-full h-[2px] bg-[#3B82F6]"></div>
+                                                    {/* Date */}
+                                                    <p className="text-gray-400 text-[2.5px] text-right pr-1.5 mt-1">January 11, 2026</p>
+                                                    {/* Letter Content */}
+                                                    <div className="px-1.5 mt-1">
+                                                        <p className="text-gray-500 text-[2.5px]">To, Recipient Name</p>
+                                                        <p className="text-[#1E3A8A] text-[3px] font-semibold mt-1">Subject: Your Subject Here</p>
+                                                        <p className="text-gray-700 text-[2.5px] mt-0.5">Dear Sir/Madam,</p>
+                                                        <div className="mt-0.5 space-y-[1px]">
+                                                            <div className="w-full h-[1px] bg-gray-200"></div>
+                                                            <div className="w-[80%] h-[1px] bg-gray-200"></div>
+                                                            <div className="w-[90%] h-[1px] bg-gray-200"></div>
+                                                        </div>
+                                                    </div>
+                                                    {/* Signature Area */}
+                                                    <div className="px-1.5 mt-2">
+                                                        <p className="text-gray-600 text-[2.5px]">Yours sincerely,</p>
+                                                        <div className="w-6 h-[0.5px] bg-gray-300 mt-1"></div>
+                                                        <p className="text-gray-700 text-[2.5px] font-semibold mt-0.5">John Anderson</p>
+                                                    </div>
+                                                    {/* Footer */}
+                                                    <div className="absolute bottom-0.5 left-0 right-0 px-1.5">
+                                                        <div className="w-full h-[0.5px] bg-[#1E3A8A]"></div>
+                                                        <p className="text-gray-400 text-[2px] text-center mt-[1px]">📍 1234 Innovation Drive | 📞 +1 (555) 123-4567</p>
+                                                        <p className="text-[#3B82F6] text-[1.5px] text-center tracking-wide">EXCELLENCE • INNOVATION • INTEGRITY</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ) : template.id === 'tech-logo-nexcore' ? (
+                                            // Tech Logo Preview
+                                            <div className="flex-1 flex items-center justify-center bg-white">
+                                                <div className="flex items-center gap-2 p-3">
+                                                    {/* Cube Icon */}
+                                                    <div className="relative w-6 h-6">
+                                                        <div className="absolute inset-0 bg-[#4F46E5] rotate-45 rounded-sm"></div>
+                                                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-4 h-2 bg-[#6366F1] rotate-45 rounded-sm"></div>
+                                                        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-2 h-4 bg-[#818CF8] rotate-45 rounded-sm"></div>
+                                                    </div>
+                                                    {/* Text */}
+                                                    <div className="flex flex-col">
+                                                        <p className="text-[#111827] text-[10px] font-extrabold tracking-tight leading-none">NEXCORE</p>
+                                                        <p className="text-gray-500 text-[4px] tracking-[1px] mt-0.5">FUTURE SYSTEMS</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         ) : (

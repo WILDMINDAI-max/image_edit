@@ -71,7 +71,7 @@ interface CanvasActions {
     addStickerElement: (stickerId: string, options?: Partial<StickerElement>) => string;
     updateStickerColor: (elementId: string, originalColor: string, newColor: string) => void;
     updateStickerStrokeWidth: (elementId: string, strokeWidth: number) => void;
-    updateElement: (id: string, updates: Partial<CanvasElement>) => void;
+    updateElement: (id: string, updates: Partial<CanvasElement>, historyLabel?: string) => void;
     removeElement: (id: string | string[]) => void;
     duplicateElements: (ids?: string[]) => string[];
 
@@ -114,6 +114,7 @@ interface CanvasActions {
     cancelCrop: () => void;
 
     // Utility
+    pushToHistory: (label: string) => void;
     getSelectedElements: () => CanvasElement[];
     getElement: (id: string) => CanvasElement | undefined;
     getElements: () => CanvasElement[];
@@ -145,10 +146,8 @@ const updateActivePageElements = (updater: (elements: CanvasElement[]) => void) 
 
 // Helper to push history state after changes
 const pushHistory = (label: string) => {
-    // Use setTimeout to ensure state is updated before capturing
-    setTimeout(() => {
-        useHistoryStore.getState().pushState(label);
-    }, 0);
+    // Capture state immediately (synchronously) before changes are applied
+    useHistoryStore.getState().pushState(label);
 };
 
 export const useCanvasStore = create<CanvasStore>()(
@@ -166,6 +165,11 @@ export const useCanvasStore = create<CanvasStore>()(
         cropBounds: null,
         cropElementId: null,
         activeTransform: null,
+
+        // Utility: Exposed history push
+        pushToHistory: (label: string) => {
+            pushHistory(label);
+        },
 
         // Selection actions
         select: (id: string | string[], addToSelection = false) => {
@@ -208,6 +212,8 @@ export const useCanvasStore = create<CanvasStore>()(
 
         // Element CRUD
         addElement: (element: CanvasElement) => {
+            pushHistory(`Add ${element.type}`);
+
             const editorStore = useEditorStore.getState();
             if (!editorStore.project) return;
 
@@ -222,8 +228,6 @@ export const useCanvasStore = create<CanvasStore>()(
             set((state) => {
                 state.selectedIds = [element.id];
             });
-
-            pushHistory(`Add ${element.type}`);
         },
 
         addTextElement: (options?: Partial<TextElement>) => {
@@ -423,6 +427,8 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         updateStickerColor: (elementId: string, originalColor: string, newColor: string) => {
+            pushHistory('Update sticker color');
+
             const elements = getActivePageElements();
             const element = elements.find(el => el.id === elementId);
 
@@ -451,11 +457,11 @@ export const useCanvasStore = create<CanvasStore>()(
             // Sync to Fabric.js canvas - update the SVG object
             const fabricCanvas = getFabricCanvas();
             fabricCanvas.updateStickerSvg(elementId, newSvgContent);
-
-            pushHistory('Update sticker color');
         },
 
         updateStickerStrokeWidth: (elementId: string, strokeWidth: number) => {
+            pushHistory('Update sticker stroke width');
+
             const elements = getActivePageElements();
             const element = elements.find(el => el.id === elementId);
 
@@ -502,11 +508,13 @@ export const useCanvasStore = create<CanvasStore>()(
             // Sync to Fabric.js canvas
             const fabricCanvas = getFabricCanvas();
             fabricCanvas.updateStickerSvg(elementId, newSvgContent);
-
-            pushHistory('Update sticker stroke width');
         },
 
-        updateElement: (id: string, updates: Partial<CanvasElement>) => {
+        updateElement: (id: string, updates: Partial<CanvasElement>, historyLabel?: string) => {
+            if (historyLabel) {
+                pushHistory(historyLabel);
+            }
+
             const editorStore = useEditorStore.getState();
             if (!editorStore.project) return;
 
@@ -522,6 +530,8 @@ export const useCanvasStore = create<CanvasStore>()(
 
         removeElement: (id: string | string[]) => {
             const ids = Array.isArray(id) ? id : [id];
+            pushHistory(`Delete ${ids.length} element(s)`);
+
             const editorStore = useEditorStore.getState();
             if (!editorStore.project) return;
 
@@ -541,13 +551,14 @@ export const useCanvasStore = create<CanvasStore>()(
             set((state) => {
                 state.selectedIds = state.selectedIds.filter(i => !ids.includes(i));
             });
-
-            pushHistory(`Delete ${ids.length} element(s)`);
         },
 
         duplicateElements: (ids?: string[]) => {
             const targetIds = ids ?? get().selectedIds;
             if (targetIds.length === 0) return [];
+
+            // Capture history before duplication
+            pushHistory(`Duplicate ${targetIds.length} element(s)`);
 
             const elements = getActivePageElements();
             const duplicatedIds: string[] = [];
@@ -603,8 +614,6 @@ export const useCanvasStore = create<CanvasStore>()(
             // Select the duplicated elements on canvas
             fabricCanvas.selectObjects(duplicatedIds);
 
-            pushHistory(`Duplicate ${duplicatedIds.length} element(s)`);
-
             return duplicatedIds;
         },
 
@@ -613,6 +622,10 @@ export const useCanvasStore = create<CanvasStore>()(
             const elements = getActivePageElements();
             const element = elements.find(el => el.id === id);
             if (element) {
+                // Only push history if this is a direct update (not during drag)
+                // We assume explicit calls to this action are "final"
+                pushHistory('Transform element');
+
                 get().updateElement(id, {
                     transform: { ...element.transform, ...transform },
                 });
@@ -624,6 +637,8 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         updateStyle: (id: string, style: Partial<Style>) => {
+            pushHistory('Update style');
+
             const elements = getActivePageElements();
             const element = elements.find(el => el.id === id);
             if (element) {
@@ -639,6 +654,7 @@ export const useCanvasStore = create<CanvasStore>()(
 
         // Z-index operations
         bringToFront: (id: string) => {
+            pushHistory('Bring to front');
             const elements = getActivePageElements();
             const maxZIndex = Math.max(...elements.map(e => e.zIndex));
             get().updateElement(id, { zIndex: maxZIndex + 1 });
@@ -654,6 +670,7 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         sendToBack: (id: string) => {
+            pushHistory('Send to back');
             const elements = getActivePageElements();
             const minZIndex = Math.min(...elements.map(e => e.zIndex));
             get().updateElement(id, { zIndex: minZIndex - 1 });
@@ -672,6 +689,7 @@ export const useCanvasStore = create<CanvasStore>()(
             const elements = getActivePageElements();
             const element = elements.find(e => e.id === id);
             if (element) {
+                pushHistory('Bring forward');
                 get().updateElement(id, { zIndex: element.zIndex + 1 });
 
                 // Sync with Fabric.js canvas
@@ -689,6 +707,7 @@ export const useCanvasStore = create<CanvasStore>()(
             const elements = getActivePageElements();
             const element = elements.find(e => e.id === id);
             if (element) {
+                pushHistory('Send backward');
                 get().updateElement(id, { zIndex: element.zIndex - 1 });
 
                 // Sync with Fabric.js canvas
@@ -705,6 +724,8 @@ export const useCanvasStore = create<CanvasStore>()(
         // Group operations
         groupElements: (ids: string[]) => {
             if (ids.length < 2) return '';
+
+            pushHistory('Group elements');
 
             const elements = getActivePageElements();
             const elementsToGroup = elements.filter(el => ids.includes(el.id));
@@ -794,12 +815,12 @@ export const useCanvasStore = create<CanvasStore>()(
                 state.selectedIds = [groupId];
             });
 
-            pushHistory('Group elements');
-
             return groupId;
         },
 
         ungroupElement: (groupId: string) => {
+            pushHistory('Ungroup elements');
+
             const elements = getActivePageElements();
             const groupElement = elements.find(el => el.id === groupId) as GroupElement | undefined;
 
@@ -845,13 +866,12 @@ export const useCanvasStore = create<CanvasStore>()(
             // Select restored elements on canvas
             fabricCanvas.selectObjects(childIds);
 
-            pushHistory('Ungroup elements');
-
             return childIds;
         },
 
         // Layer operations
         lockElement: (id: string) => {
+            pushHistory('Lock element');
             get().updateElement(id, { locked: true, selectable: false });
 
             // Sync to Fabric.js canvas
@@ -880,6 +900,7 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         unlockElement: (id: string) => {
+            pushHistory('Unlock element');
             get().updateElement(id, { locked: false, selectable: true });
 
             // Sync to Fabric.js canvas
@@ -903,6 +924,7 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         toggleVisibility: (id: string) => {
+            pushHistory('Toggle visibility');
             const elements = getActivePageElements();
             const element = elements.find(el => el.id === id);
             if (element) {
@@ -911,13 +933,12 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         updateBlendMode: (id: string, blendMode: BlendMode) => {
+            pushHistory('Change blend mode');
             get().updateElement(id, { blendMode });
 
             // Sync to Fabric.js canvas using dedicated blend mode method
             const fabricCanvas = getFabricCanvas();
             fabricCanvas.updateElementBlendMode(id, blendMode);
-
-            pushHistory('Change blend mode');
         },
 
         // Clipboard operations
@@ -946,6 +967,7 @@ export const useCanvasStore = create<CanvasStore>()(
         },
 
         paste: () => {
+            pushHistory('Paste elements');
             const { clipboard } = get();
             if (clipboard.length === 0) return;
 
@@ -1084,6 +1106,8 @@ export const useCanvasStore = create<CanvasStore>()(
             const { cropBounds, cropElementId } = get();
             if (!cropBounds || !cropElementId) return;
 
+            pushHistory('Crop image');
+
             const element = get().getElement(cropElementId);
             if (!element || element.type !== 'image') return;
 
@@ -1181,8 +1205,6 @@ export const useCanvasStore = create<CanvasStore>()(
                     },
                     crop: null, // Clear crop data since we've actually cropped
                 });
-
-                pushHistory('Crop image');
             }, { crossOrigin: 'anonymous' });
 
             // Exit crop mode

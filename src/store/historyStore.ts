@@ -47,7 +47,7 @@ export const useHistoryStore = create<HistoryStore>()(
         // Initial state
         past: [],
         future: [],
-        maxHistorySize: 50,
+        maxHistorySize: 10,
         isUndoing: false,
         isRedoing: false,
 
@@ -78,6 +78,8 @@ export const useHistoryStore = create<HistoryStore>()(
 
                 // Clear future on new action
                 state.future = [];
+
+                console.log(`[History] Pushed state: "${label}". History size: ${state.past.length}`);
             });
         },
 
@@ -115,6 +117,8 @@ export const useHistoryStore = create<HistoryStore>()(
                 // Remove from past
                 state.past.pop();
                 state.isUndoing = false;
+
+                console.log(`[History] Undo successful. Restored: "${previousEntry.label}". Remaining history: ${state.past.length}`);
             });
         },
 
@@ -151,6 +155,8 @@ export const useHistoryStore = create<HistoryStore>()(
                 // Remove from future
                 state.future.shift();
                 state.isRedoing = false;
+
+                console.log(`[History] Redo successful. Restored: "${nextEntry.label}". Future steps: ${state.future.length}`);
             });
         },
 
@@ -202,6 +208,7 @@ export const useHistoryStore = create<HistoryStore>()(
             set((state) => {
                 state.future = [currentEntry, ...statesAfter.reverse(), ...state.future];
                 state.past = past.slice(0, entryIndex);
+                console.log(`[History] Jumped to state: "${entry.label}". New history size: ${state.past.length}`);
             });
         },
 

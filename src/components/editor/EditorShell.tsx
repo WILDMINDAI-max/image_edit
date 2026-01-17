@@ -133,9 +133,15 @@ export function EditorShell() {
                 store.setActivePage(project.pages[currentIndex + 1].id);
             }
 
-            // Delete/Backspace to delete current page (only if no elements selected)
-            if ((e.key === 'Delete' || e.key === 'Backspace') && selectedIds.length === 0) {
-                if (project.pages.length > 1) {
+            // Delete/Backspace
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                // If elements are selected, delete them
+                if (selectedIds.length > 0) {
+                    e.preventDefault();
+                    useCanvasStore.getState().removeElement(selectedIds);
+                }
+                // If no elements selected, delete current page
+                else if (project.pages.length > 1) {
                     e.preventDefault();
                     store.removePage(project.activePageId);
                 }
@@ -145,6 +151,24 @@ export function EditorShell() {
             if (e.key === 'Tab') {
                 e.preventDefault();
                 store.openPreviewMode();
+            }
+
+            // Select All (Ctrl+A / Cmd+A)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'a') {
+                e.preventDefault();
+                useCanvasStore.getState().selectAll();
+            }
+
+            // Escape to deselect
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                useCanvasStore.getState().deselect();
+            }
+
+            // Zoom to selection (Z key)
+            if (e.key.toLowerCase() === 'z' && !e.ctrlKey && !e.metaKey && !e.shiftKey) {
+                e.preventDefault();
+                useEditorStore.getState().zoomToSelection();
             }
         };
 

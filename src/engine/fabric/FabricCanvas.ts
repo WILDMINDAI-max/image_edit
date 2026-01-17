@@ -42,6 +42,9 @@ export class FabricCanvas {
     private logicalHeight: number = 1080;
     private workingScale: number = 1; // Ratio of working canvas to logical canvas
 
+    // Visual zoom level (from UI) to ensure constant control size on screen
+    private visualZoom: number = 1;
+
     // Event callbacks
     public onSelectionChange?: (selectedIds: string[]) => void;
     public onObjectModified?: (id: string) => void;
@@ -339,13 +342,32 @@ export class FabricCanvas {
 
         // Helper to get inverse scale for controls (keeps controls same visual size regardless of zoom)
         const getControlScale = (): number => {
-            const canvas = fabricCanvasInstance.getCanvas();
-            if (!canvas) return 1;
-            const zoom = canvas.getZoom();
-            // Inverse scale: when zoom is 0.5, controls should be 2x larger
-            // Cap at 2.5x to prevent oversized controls on very large canvases
-            const inverseScale = 1 / zoom;
-            return Math.min(inverseScale, 2.5);
+            // Goal: constant handle size on SCREEN regardless of canvas size or zoom.
+            //
+            // Drawing flow:
+            // 1. Fabric canvas uses internal zoom = workingScale (to fit large canvases)
+            // 2. We draw handles at size X on the Fabric canvas (in its internal coordinates)
+            // 3. Fabric renders to backing canvas at: X * workingScale pixels
+            // 4. CSS transform scales backing canvas by: cssScale = userZoom / workingScale
+            // 5. Final screen size = X * workingScale * (userZoom / workingScale) = X * userZoom
+            //
+            // BUT... handles are drawn AFTER Fabric's internal zoom is applied, so
+            // the handle coordinates are already in backing canvas space.
+            // Actually, control render functions draw directly in screen coords.
+            // So: screen_size = X * cssScale = X * (userZoom / workingScale)
+            //
+            // To get TARGET screen pixels:
+            //   X * (userZoom / workingScale) = TARGET
+            //   X = TARGET * workingScale / userZoom
+            //   scale = workingScale / userZoom
+
+            const ws = fabricCanvasInstance.workingScale;
+            const vz = Math.max(0.1, fabricCanvasInstance.visualZoom);
+
+            const scale = ws / vz;
+
+            // Clamp to reasonable range
+            return Math.max(0.3, Math.min(scale, 4.0));
         };
 
         // Render function for circular corner controls (tl, tr, bl, br)
@@ -480,6 +502,43 @@ export class FabricCanvas {
         return activeObjects
             .filter((obj: fabric.Object & { data?: { id: string } }) => obj.data?.id)
             .map((obj: fabric.Object & { data?: { id: string } }) => obj.data!.id);
+    }
+
+    /**
+     * Get bounding box of current selection in logical coordinates
+     */
+    public getSelectionBounds(): { x: number; y: number; width: number; height: number } | null {
+        if (!this.canvas) return null;
+
+        const activeObject = this.canvas.getActiveObject();
+        if (!activeObject) return null;
+
+        // activeObject.getBoundingRect(true, true) returns coordinates in the canvas plane
+        // ignoring the viewportTransform (zoom/pan).
+        // Since our objects are stored in logical coordinates, this returns logical bounds directly.
+        // We do NOT need to divide by workingScale.
+        const bound = activeObject.getBoundingRect(true, true);
+
+        return {
+            x: bound.left,
+            y: bound.top,
+            width: bound.width,
+            height: bound.height
+        };
+    }
+
+    /**
+     * Set the visual zoom level (user interface zoom)
+     * This is used to scale controls so they appear at constant size on screen
+     */
+    public setVisualZoom(zoom: number): void {
+        if (this.visualZoom === zoom) return;
+
+        this.visualZoom = zoom;
+        // Re-render to update control sizes
+        if (this.canvas) {
+            this.canvas.requestRenderAll();
+        }
     }
 
     /**

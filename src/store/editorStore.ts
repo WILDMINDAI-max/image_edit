@@ -57,6 +57,12 @@ interface EditorState {
     // Preview mode state
     isPreviewMode: boolean;
     previewPageIndex: number;
+
+    // Canvas reload signal (increments on loadProject/Undo/Redo)
+    canvasLoadRevision: number;
+
+    // Zoom to selection signal
+    zoomToSelectionTrigger: number;
 }
 
 interface EditorActions {
@@ -118,6 +124,9 @@ interface EditorActions {
     // Utility
     markAsChanged: () => void;
     markAsSaved: () => void;
+
+    // Zoom to selection
+    zoomToSelection: () => void;
 }
 
 export type EditorStore = EditorState & EditorActions;
@@ -145,6 +154,8 @@ export const useEditorStore = create<EditorStore>()(
         isNewProjectModalOpen: false,
         isPreviewMode: false,
         previewPageIndex: 0,
+        canvasLoadRevision: 0,
+        zoomToSelectionTrigger: 0,
 
         // Project actions
         createNewProject: (preset?: PagePreset) => {
@@ -160,6 +171,7 @@ export const useEditorStore = create<EditorStore>()(
                 state.project = project;
                 state.hasUnsavedChanges = false;
                 state.isLoading = false;
+                state.canvasLoadRevision += 1;
             });
         },
 
@@ -391,6 +403,13 @@ export const useEditorStore = create<EditorStore>()(
         toggleSnapToGuides: () => {
             set((state) => {
                 state.snapToGuides = !state.snapToGuides;
+            });
+        },
+
+        zoomToSelection: () => {
+            set((state) => {
+                state.zoomToSelectionTrigger += 1;
+                state.isFitMode = false;
             });
         },
 

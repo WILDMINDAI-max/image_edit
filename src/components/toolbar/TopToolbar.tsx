@@ -200,6 +200,25 @@ export function TopToolbar() {
         }
     };
 
+    // Keyboard Shortcuts for Undo/Redo
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            const target = e.target as HTMLElement;
+            if ((e.ctrlKey || e.metaKey) && !target?.isContentEditable) {
+                if (e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    if (canUndo) undo();
+                } else if ((e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
+                    e.preventDefault();
+                    if (canRedo) redo();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [undo, redo, canUndo, canRedo]);
+
     return (
         <header className="h-14 bg-[#18181b] text-gray-200 flex items-center justify-between px-4 pr-16 select-none z-50 relative border-b border-gray-800">
             {/* Left Section */}
@@ -286,6 +305,7 @@ export function TopToolbar() {
                         onClick={undo}
                         disabled={!canUndo}
                         className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        title="Undo (Ctrl+Z)"
                     >
                         <Undo2 size={18} aria-hidden="true" />
                     </button>
@@ -293,11 +313,13 @@ export function TopToolbar() {
                         onClick={redo}
                         disabled={!canRedo}
                         className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-white disabled:opacity-30 disabled:hover:bg-transparent transition-colors"
+                        title="Redo (Ctrl+Y)"
                     >
                         <Redo2 size={18} aria-hidden="true" />
                     </button>
                 </div>
             </div>
+
 
             {/* Center Section - Project Title */}
             <div className="absolute left-1/2 transform -translate-x-1/2 max-w-xs hidden lg:block">
@@ -359,6 +381,6 @@ export function TopToolbar() {
                     Export
                 </button>
             </div>
-        </header>
+        </header >
     );
 }

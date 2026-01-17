@@ -180,7 +180,7 @@ export function ContextToolbar() {
             updateElement(imageElement.id, {
                 src: newSrc,
                 colorReplace: colorReplaceEffect,
-            });
+            }, 'Replace image color');
 
             // Update Fabric.js canvas
             fabric.Image.fromURL(newSrc, (img) => {
@@ -286,7 +286,7 @@ export function ContextToolbar() {
         const updatedStyle = { ...lineStyleSafe, ...newLineStyle };
         updateElement(lineElement.id, {
             lineStyle: updatedStyle
-        } as Partial<LineElement>);
+        } as Partial<LineElement>, 'Update line style');
         // Also update the fabric object's lineElement so _render can read the new values
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(lineElement.id) as any;
@@ -301,7 +301,7 @@ export function ContextToolbar() {
         if (!shapeElement) return;
         updateElement(shapeElement.id, {
             style: { ...shapeElement.style, fill: color }
-        } as Partial<ShapeElement>);
+        } as Partial<ShapeElement>, 'Change shape fill');
         // Sync to Fabric.js
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
@@ -341,7 +341,7 @@ export function ContextToolbar() {
         updateElement(stickerElement.id, {
             svgContent: newSvgContent,
             colorMap: newColorMap,
-        } as Partial<StickerElement>);
+        } as Partial<StickerElement>, 'Change sticker color');
 
         // Update Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -356,7 +356,7 @@ export function ContextToolbar() {
         const newStrokeWidth = currentStrokeWidth === 0 ? 2 : currentStrokeWidth;
         updateElement(shapeElement.id, {
             style: { ...shapeElement.style, stroke: color, strokeWidth: newStrokeWidth }
-        } as Partial<ShapeElement>);
+        } as Partial<ShapeElement>, 'Change shape stroke color');
         // Sync to Fabric.js
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
@@ -371,7 +371,7 @@ export function ContextToolbar() {
         if (!shapeElement) return;
         updateElement(shapeElement.id, {
             style: { ...shapeElement.style, strokeWidth: width }
-        } as Partial<ShapeElement>);
+        } as Partial<ShapeElement>, 'Change shape stroke width');
         // Sync to Fabric.js
         const fabricCanvas = getFabricCanvas();
         const fabricObj = fabricCanvas.getObjectById(shapeElement.id);
@@ -393,7 +393,7 @@ export function ContextToolbar() {
         if (style === 'none') {
             updateElement(shapeElement.id, {
                 style: { ...shapeElement.style, stroke: null, strokeWidth: 0 }
-            } as Partial<ShapeElement>);
+            } as Partial<ShapeElement>, 'Remove shape stroke');
             if (fabricObj) {
                 (fabricObj as any).set({ stroke: null, strokeWidth: 0, strokeDashArray: null });
                 fabricCanvas.getCanvas()?.renderAll();
@@ -411,7 +411,7 @@ export function ContextToolbar() {
 
             updateElement(shapeElement.id, {
                 style: { ...shapeElement.style, stroke: currentStroke, strokeWidth: currentWidth }
-            } as Partial<ShapeElement>);
+            } as Partial<ShapeElement>, 'Update shape stroke style');
 
             if (fabricObj) {
                 (fabricObj as any).set({
@@ -431,7 +431,7 @@ export function ContextToolbar() {
         const newSize = Math.max(8, Math.min(200, textElement.textStyle.fontSize + delta));
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, fontSize: newSize }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Change font size');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -450,7 +450,7 @@ export function ContextToolbar() {
         const newWeight = isBold ? 'normal' : 'bold';
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, fontWeight: newWeight }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Toggle bold');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -468,7 +468,7 @@ export function ContextToolbar() {
         const newStyle = textElement.textStyle.fontStyle === 'italic' ? 'normal' : 'italic';
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, fontStyle: newStyle }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Toggle italic');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -487,7 +487,7 @@ export function ContextToolbar() {
         const newDecoration = isUnderline ? 'none' : 'underline';
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, textDecoration: newDecoration }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Toggle underline');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -506,7 +506,7 @@ export function ContextToolbar() {
         const newDecoration = isStrikethrough ? 'none' : 'line-through';
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, textDecoration: newDecoration }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Toggle strikethrough');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -542,12 +542,12 @@ export function ContextToolbar() {
             updateElement(textElement.id, {
                 content: newText,
                 textStyle: { ...textElement.textStyle, textTransform: newTransform }
-            } as Partial<TextElement>);
+            } as Partial<TextElement>, 'Toggle uppercase');
         } else {
             // Fallback if no fabric object
             updateElement(textElement.id, {
                 textStyle: { ...textElement.textStyle, textTransform: newTransform }
-            } as Partial<TextElement>);
+            } as Partial<TextElement>, 'Toggle uppercase');
         }
     };
 
@@ -557,7 +557,7 @@ export function ContextToolbar() {
         const newSpacing = Math.max(-5, Math.min(20, currentSpacing + delta));
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, letterSpacing: newSpacing }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Change letter spacing');
 
         // Sync to Fabric.js canvas (charSpacing is in 1/1000 em)
         const fabricCanvas = getFabricCanvas();
@@ -574,7 +574,7 @@ export function ContextToolbar() {
         if (!textElement) return;
         updateElement(textElement.id, {
             textStyle: { ...textElement.textStyle, textAlign: align }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Change alignment');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -592,7 +592,7 @@ export function ContextToolbar() {
         if (!textElement) return;
         updateElement(textElement.id, {
             style: { ...textElement.style, fill: color }
-        } as Partial<TextElement>);
+        } as Partial<TextElement>, 'Change text color');
 
         // Sync to Fabric.js canvas
         const fabricCanvas = getFabricCanvas();
@@ -646,7 +646,7 @@ export function ContextToolbar() {
             // Update store
             updateElement(textElement.id, {
                 content: newText
-            } as Partial<TextElement>);
+            } as Partial<TextElement>, 'Change list style');
         }
     };
 
