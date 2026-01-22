@@ -170,6 +170,24 @@ export function EditorShell() {
                 e.preventDefault();
                 useEditorStore.getState().zoomToSelection();
             }
+
+            // Copy (Ctrl+C / Cmd+C)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'c') {
+                e.preventDefault();
+                useCanvasStore.getState().copy();
+            }
+
+            // Paste (Ctrl+V / Cmd+V)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'v') {
+                e.preventDefault();
+                useCanvasStore.getState().paste();
+            }
+
+            // Cut (Ctrl+X / Cmd+X)
+            if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'x') {
+                e.preventDefault();
+                useCanvasStore.getState().cut();
+            }
         };
 
         window.addEventListener('keydown', handleKeyDown);

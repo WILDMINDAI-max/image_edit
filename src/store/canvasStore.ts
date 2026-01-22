@@ -827,21 +827,54 @@ export const useCanvasStore = create<CanvasStore>()(
             if (!groupElement || groupElement.type !== 'group') return [];
 
             // Restore children with absolute positions
-            const restoredChildren: CanvasElement[] = groupElement.children.map((child, index) => ({
-                ...child,
-                transform: {
-                    ...child.transform,
-                    // Convert back to absolute coordinates
-                    x: child.transform.x + groupElement.transform.x,
-                    y: child.transform.y + groupElement.transform.y,
-                    // Apply group's scale and rotation to children
-                    scaleX: child.transform.scaleX * groupElement.transform.scaleX,
-                    scaleY: child.transform.scaleY * groupElement.transform.scaleY,
-                    rotation: child.transform.rotation + groupElement.transform.rotation,
-                },
-                // Ensure unique zIndex for each restored element
-                zIndex: groupElement.zIndex + index,
-            }));
+            const restoredChildren: CanvasElement[] = groupElement.children.map((child, index) => {
+                // Group transform properties
+                const gX = groupElement.transform.x;
+                const gY = groupElement.transform.y;
+                const gScaleX = groupElement.transform.scaleX || 1;
+                const gScaleY = groupElement.transform.scaleY || 1;
+                const gAngle = groupElement.transform.rotation || 0;
+
+                // Child relative properties
+                const cX = child.transform.x;
+                const cY = child.transform.y;
+
+                // 1. Apply Group Scaling
+                const scaledX = cX * gScaleX;
+                const scaledY = cY * gScaleY;
+
+                // 2. Apply Group Rotation (standard 2D rotation matrix)
+                // Fabric uses clockwise degrees, so specific formula needed
+                const angleRad = (gAngle * Math.PI) / 180;
+                const cos = Math.cos(angleRad);
+                const sin = Math.sin(angleRad);
+
+                // Rotated vector
+                const rotatedX = scaledX * cos - scaledY * sin;
+                const rotatedY = scaledX * sin + scaledY * cos;
+
+                // 3. Translate to absolute position
+                const finalX = rotatedX + gX;
+                const finalY = rotatedY + gY;
+
+                return {
+                    ...child,
+                    transform: {
+                        ...child.transform,
+                        // Convert back to absolute coordinates
+                        x: finalX,
+                        y: finalY,
+                        // Apply group's scale and rotation to children
+                        // Note: If group has non-uniform scaling AND rotation, this is an approximation
+                        // as true restoration would require skewing. For 99% of cases this is sufficient.
+                        scaleX: (child.transform.scaleX || 1) * gScaleX,
+                        scaleY: (child.transform.scaleY || 1) * gScaleY,
+                        rotation: (child.transform.rotation || 0) + gAngle,
+                    },
+                    // Ensure unique zIndex for each restored element
+                    zIndex: groupElement.zIndex + index,
+                };
+            });
 
             const childIds = restoredChildren.map(c => c.id);
 
