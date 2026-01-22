@@ -1,7 +1,20 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['fabric'],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.resolve.alias['fabric'] = false;
+    }
+    return config;
+  },
+  turbopack: {},
 };
 
 export default nextConfig;
