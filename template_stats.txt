@@ -1,0 +1,62 @@
+--- Template Statistics ---
+Total Categories: 13
+
+Category: business
+  Total Themes: 2
+    Theme: businesscard, Templates: 2
+    Theme: pricelist, Templates: 1
+
+Category: documents
+  Total Themes: 3
+    Theme: resume, Templates: 2
+    Theme: certificate, Templates: 1
+    Theme: companystationery, Templates: 1
+
+Category: ecommerce
+  Total Themes: 1
+    Theme: sale, Templates: 1
+
+Category: events
+  Total Themes: 2
+    Theme: publicevent, Templates: 3
+    Theme: tech, Templates: 1
+
+Category: festival
+  Total Themes: 1
+    Theme: diwali, Templates: 3
+
+Category: food-restaurant
+  Total Themes: 2
+    Theme: foodblog, Templates: 1
+    Theme: menu, Templates: 1
+
+Category: healthcare
+  Total Themes: 1
+    Theme: healthcareprofessional, Templates: 1
+
+Category: invitation
+  Total Themes: 1
+    Theme: wedding, Templates: 1
+
+Category: lifestyle
+  Total Themes: 1
+    Theme: motivationalquote, Templates: 1
+
+Category: marketing
+  Total Themes: 1
+    Theme: pricingtable, Templates: 1
+
+Category: presentation
+  Total Themes: 1
+    Theme: corporate, Templates: 1
+
+Category: sports-fitness
+  Total Themes: 1
+    Theme: gymposter, Templates: 1
+
+Category: technology
+  Total Themes: 1
+    Theme: corporatebranding, Templates: 1
+
+--- Grand Total ---
+Total Templates: 24

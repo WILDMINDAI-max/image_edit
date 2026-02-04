@@ -20,6 +20,11 @@ import {
   Fredoka,
   Alfa_Slab_One,
   Archivo_Black,
+  Cinzel,
+  Zhi_Mang_Xing,
+  Lato,
+  Inter,
+  Caveat_Brush,
 } from "next/font/google";
 import "./globals.css";
 
@@ -145,6 +150,37 @@ const archivoBlack = Archivo_Black({
   weight: "400",
 });
 
+const cinzel = Cinzel({
+  variable: "--font-cinzel",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const zhiMangXing = Zhi_Mang_Xing({
+  variable: "--font-zhi-mang-xing",
+  subsets: ["latin"],
+  weight: "400",
+});
+
+const lato = Lato({
+  variable: "--font-lato",
+  subsets: ["latin"],
+  weight: ["100", "300", "400", "700", "900"],
+  style: ["normal", "italic"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+});
+
+const caveatBrush = Caveat_Brush({
+  variable: "--font-caveat-brush",
+  subsets: ["latin"],
+  weight: "400",
+});
+
 export const metadata: Metadata = {
   title: "Wild Mind Editor",
   description: "Professional Design Editor",
@@ -179,6 +215,11 @@ export default function RootLayout({
           ${fredoka.variable}
           ${alfaSlabOne.variable}
           ${archivoBlack.variable}
+          ${cinzel.variable}
+          ${zhiMangXing.variable}
+          ${lato.variable}
+          ${inter.variable}
+          ${caveatBrush.variable}
           antialiased
         `}
         suppressHydrationWarning
